@@ -1,0 +1,9 @@
+[package]
+name = "fittle"
+version = "0.1.0"
+authors = ["Jason Gedge"]
+edition = "2018"
+description = "A set of tools and libraries for parsing FIT files"
+
+[dependencies]
+nom = "4.1.1"
