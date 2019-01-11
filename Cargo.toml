@@ -7,3 +7,4 @@ description = "A set of tools and libraries for parsing FIT files"
 
 [dependencies]
 nom = "4.1.1"
+byteorder = "1.2.7"
