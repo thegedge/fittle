@@ -1,0 +1,10 @@
+[package]
+name = "fittle-profile-gen"
+version = "0.1.0"
+authors = ["Jason Gedge"]
+edition = "2018"
+description = "A tool to generate Rust code for a FIT profile"
+
+[dependencies]
+calamine = "0.15.3"
+Inflector = "0.11.4"

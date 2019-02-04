@@ -4,6 +4,8 @@ use std::io::{Cursor, Read};
 use byteorder::ReadBytesExt;
 use nom::{le_u8, be_u16, le_u16, le_u32};
 
+use crate::messages::{MessageType};
+
 #[derive(Debug)]
 pub enum ParserError {
     FailedToParse,
@@ -98,7 +100,7 @@ impl Field {
 #[derive(Clone, Debug)]
 struct DataDefinition {
     architecture: u8,
-    global_message_number: u16,
+    global_message: MessageType,
     fields: Vec<Field>,
 }
 
@@ -181,7 +183,7 @@ fn data_definition<'i>(input: &'i [u8]) -> nom::IResult<&'i [u8], DataDefinition
         remaining,
         DataDefinition {
             architecture,
-            global_message_number,
+            global_message: MessageType::from(global_message_number),
             fields
         }
     ))

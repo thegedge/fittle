@@ -4,7 +4,15 @@ version = "0.1.0"
 authors = ["Jason Gedge"]
 edition = "2018"
 description = "A set of tools and libraries for parsing FIT files"
+keywords = ["fits", "parser", "garmin", "fittle"]
+homepage = "https://github.com/thegedge/fittle"
+repository = "https://github.com/thegedge/fittle"
+categories = ["parsing"]
+license = "MIT"
 
 [dependencies]
 nom = "4.1.1"
 byteorder = "1.2.7"
+
+[workspace]
+members = ["profile-gen"]

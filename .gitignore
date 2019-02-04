@@ -1,2 +1,5 @@
 /target
 **/*.rs.bk
+
+/profile-gen/Cargo.lock
+/profile-gen/sdk/*
