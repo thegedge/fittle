@@ -88,6 +88,7 @@ pub enum MessageType {
     WorkoutSession,
     WorkoutStep,
     ZonesTarget,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for MessageType
@@ -181,7 +182,7 @@ impl<N> From<N> for MessageType
             262 => MessageType::DiveAlarm,
             264 => MessageType::ExerciseTitle,
             268 => MessageType::DiveSummary,
-            n => panic!("Unknown value: {}", n)
+            n => MessageType::UnknownValue(n)
         }
     }
 }

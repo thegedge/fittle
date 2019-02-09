@@ -162,7 +162,7 @@ fn write_enum<W>(stream: &mut W, enum_name: &str, mut entries: Vec<(String, u64)
     where
         W: Write,
 {
-    // Write the message enum
+    // Write the message enum (sorted by name)
     entries.sort();
 
     stream.write(b"#[derive(Clone, Debug)]\n")?;
@@ -170,9 +170,10 @@ fn write_enum<W>(stream: &mut W, enum_name: &str, mut entries: Vec<(String, u64)
     for (message_name, _) in &entries {
         stream.write_fmt(format_args!("    {0},\n", message_name))?;
     }
+    stream.write(b"    UnknownValue(u64),\n")?;
     stream.write(b"}\n\n")?;
 
-    // Write function to map the message number (sorted) to the message enum type
+    // Write function to map the message number (sorted by value) to the message enum type
     entries.sort_by_key(|(_, v)| *v);
 
     stream.write_fmt(format_args!("impl<N> From<N> for {}\n", enum_name))?;
@@ -183,7 +184,7 @@ fn write_enum<W>(stream: &mut W, enum_name: &str, mut entries: Vec<(String, u64)
     for (message_name, value) in entries {
         stream.write_fmt(format_args!("            {0} => {2}::{1},\n", value, message_name, enum_name))?;
     }
-    stream.write(b"            n => panic!(\"Unknown value: {}\", n)\n")?;
+    stream.write_fmt(format_args!("            n => {0}::UnknownValue(n)\n", enum_name))?;
     stream.write(b"        }\n")?;
     stream.write(b"    }\n")?;
     stream.write(b"}\n\n")?;

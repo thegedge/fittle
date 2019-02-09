@@ -20,6 +20,7 @@ pub enum File {
     Totals,
     Weight,
     Workout,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for File
@@ -45,7 +46,7 @@ impl<N> From<N> for File
             34 => File::Segment,
             35 => File::SegmentList,
             40 => File::ExdConfiguration,
-            n => panic!("Unknown value: {}", n)
+            n => File::UnknownValue(n)
         }
     }
 }
@@ -55,6 +56,7 @@ pub enum FileFlags {
     Erase,
     Read,
     Write,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for FileFlags
@@ -65,7 +67,7 @@ impl<N> From<N> for FileFlags
             2 => FileFlags::Read,
             4 => FileFlags::Write,
             8 => FileFlags::Erase,
-            n => panic!("Unknown value: {}", n)
+            n => FileFlags::UnknownValue(n)
         }
     }
 }
@@ -75,6 +77,7 @@ pub enum MesgCount {
     MaxPerFile,
     MaxPerFileType,
     NumPerFile,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for MesgCount
@@ -85,7 +88,7 @@ impl<N> From<N> for MesgCount
             0 => MesgCount::NumPerFile,
             1 => MesgCount::MaxPerFile,
             2 => MesgCount::MaxPerFileType,
-            n => panic!("Unknown value: {}", n)
+            n => MesgCount::UnknownValue(n)
         }
     }
 }
@@ -93,6 +96,7 @@ impl<N> From<N> for MesgCount
 #[derive(Clone, Debug)]
 pub enum DateTime {
     Min,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DateTime
@@ -101,7 +105,7 @@ impl<N> From<N> for DateTime
     fn from(number: N) -> DateTime {
         match number.into() {
             268435456 => DateTime::Min,
-            n => panic!("Unknown value: {}", n)
+            n => DateTime::UnknownValue(n)
         }
     }
 }
@@ -109,6 +113,7 @@ impl<N> From<N> for DateTime
 #[derive(Clone, Debug)]
 pub enum LocalDateTime {
     Min,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LocalDateTime
@@ -117,7 +122,7 @@ impl<N> From<N> for LocalDateTime
     fn from(number: N) -> LocalDateTime {
         match number.into() {
             268435456 => LocalDateTime::Min,
-            n => panic!("Unknown value: {}", n)
+            n => LocalDateTime::UnknownValue(n)
         }
     }
 }
@@ -127,6 +132,7 @@ pub enum MessageIndex {
     Mask,
     Reserved,
     Selected,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for MessageIndex
@@ -137,7 +143,7 @@ impl<N> From<N> for MessageIndex
             4095 => MessageIndex::Mask,
             28672 => MessageIndex::Reserved,
             32768 => MessageIndex::Selected,
-            n => panic!("Unknown value: {}", n)
+            n => MessageIndex::UnknownValue(n)
         }
     }
 }
@@ -145,6 +151,7 @@ impl<N> From<N> for MessageIndex
 #[derive(Clone, Debug)]
 pub enum DeviceIndex {
     Creator,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DeviceIndex
@@ -153,7 +160,7 @@ impl<N> From<N> for DeviceIndex
     fn from(number: N) -> DeviceIndex {
         match number.into() {
             0 => DeviceIndex::Creator,
-            n => panic!("Unknown value: {}", n)
+            n => DeviceIndex::UnknownValue(n)
         }
     }
 }
@@ -162,6 +169,7 @@ impl<N> From<N> for DeviceIndex
 pub enum Gender {
     Female,
     Male,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Gender
@@ -171,7 +179,7 @@ impl<N> From<N> for Gender
         match number.into() {
             0 => Gender::Female,
             1 => Gender::Male,
-            n => panic!("Unknown value: {}", n)
+            n => Gender::UnknownValue(n)
         }
     }
 }
@@ -217,6 +225,7 @@ pub enum Language {
     Turkish,
     Ukrainian,
     Vietnamese,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Language
@@ -263,7 +272,7 @@ impl<N> From<N> for Language
             36 => Language::Burmese,
             37 => Language::Mongolian,
             254 => Language::Custom,
-            n => panic!("Unknown value: {}", n)
+            n => Language::UnknownValue(n)
         }
     }
 }
@@ -278,6 +287,7 @@ pub enum LanguageBits0 {
     German,
     Italian,
     Spanish,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LanguageBits0
@@ -293,7 +303,7 @@ impl<N> From<N> for LanguageBits0
             32 => LanguageBits0::Croatian,
             64 => LanguageBits0::Czech,
             128 => LanguageBits0::Danish,
-            n => panic!("Unknown value: {}", n)
+            n => LanguageBits0::UnknownValue(n)
         }
     }
 }
@@ -308,6 +318,7 @@ pub enum LanguageBits1 {
     Polish,
     Portuguese,
     Slovakian,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LanguageBits1
@@ -323,7 +334,7 @@ impl<N> From<N> for LanguageBits1
             32 => LanguageBits1::Polish,
             64 => LanguageBits1::Portuguese,
             128 => LanguageBits1::Slovakian,
-            n => panic!("Unknown value: {}", n)
+            n => LanguageBits1::UnknownValue(n)
         }
     }
 }
@@ -338,6 +349,7 @@ pub enum LanguageBits2 {
     Swedish,
     Turkish,
     Ukrainian,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LanguageBits2
@@ -353,7 +365,7 @@ impl<N> From<N> for LanguageBits2
             32 => LanguageBits2::Ukrainian,
             64 => LanguageBits2::Arabic,
             128 => LanguageBits2::Farsi,
-            n => panic!("Unknown value: {}", n)
+            n => LanguageBits2::UnknownValue(n)
         }
     }
 }
@@ -368,6 +380,7 @@ pub enum LanguageBits3 {
     Romanian,
     Taiwanese,
     Thai,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LanguageBits3
@@ -383,7 +396,7 @@ impl<N> From<N> for LanguageBits3
             32 => LanguageBits3::Taiwanese,
             64 => LanguageBits3::Thai,
             128 => LanguageBits3::Hebrew,
-            n => panic!("Unknown value: {}", n)
+            n => LanguageBits3::UnknownValue(n)
         }
     }
 }
@@ -396,6 +409,7 @@ pub enum LanguageBits4 {
     Malaysian,
     Mongolian,
     Vietnamese,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LanguageBits4
@@ -409,7 +423,7 @@ impl<N> From<N> for LanguageBits4
             8 => LanguageBits4::Vietnamese,
             16 => LanguageBits4::Burmese,
             32 => LanguageBits4::Mongolian,
-            n => panic!("Unknown value: {}", n)
+            n => LanguageBits4::UnknownValue(n)
         }
     }
 }
@@ -419,6 +433,7 @@ pub enum DisplayMeasure {
     Metric,
     Nautical,
     Statute,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DisplayMeasure
@@ -429,7 +444,7 @@ impl<N> From<N> for DisplayMeasure
             0 => DisplayMeasure::Metric,
             1 => DisplayMeasure::Statute,
             2 => DisplayMeasure::Nautical,
-            n => panic!("Unknown value: {}", n)
+            n => DisplayMeasure::UnknownValue(n)
         }
     }
 }
@@ -439,6 +454,7 @@ pub enum DisplayHeart {
     Bpm,
     Max,
     Reserve,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DisplayHeart
@@ -449,7 +465,7 @@ impl<N> From<N> for DisplayHeart
             0 => DisplayHeart::Bpm,
             1 => DisplayHeart::Max,
             2 => DisplayHeart::Reserve,
-            n => panic!("Unknown value: {}", n)
+            n => DisplayHeart::UnknownValue(n)
         }
     }
 }
@@ -458,6 +474,7 @@ impl<N> From<N> for DisplayHeart
 pub enum DisplayPower {
     PercentFtp,
     Watts,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DisplayPower
@@ -467,7 +484,7 @@ impl<N> From<N> for DisplayPower
         match number.into() {
             0 => DisplayPower::Watts,
             1 => DisplayPower::PercentFtp,
-            n => panic!("Unknown value: {}", n)
+            n => DisplayPower::UnknownValue(n)
         }
     }
 }
@@ -516,6 +533,7 @@ pub enum DisplayPosition {
     UnitedStatesGrid,
     UtmUpsGrid,
     WestMalayan,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DisplayPosition
@@ -565,7 +583,7 @@ impl<N> From<N> for DisplayPosition
             39 => DisplayPosition::EstonianGrid,
             40 => DisplayPosition::LatvianGrid,
             41 => DisplayPosition::SwedishRef99Grid,
-            n => panic!("Unknown value: {}", n)
+            n => DisplayPosition::UnknownValue(n)
         }
     }
 }
@@ -575,6 +593,7 @@ pub enum Switch {
     Auto,
     Off,
     On,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Switch
@@ -585,7 +604,7 @@ impl<N> From<N> for Switch
             0 => Switch::Off,
             1 => Switch::On,
             2 => Switch::Auto,
-            n => panic!("Unknown value: {}", n)
+            n => Switch::UnknownValue(n)
         }
     }
 }
@@ -600,6 +619,7 @@ pub enum SportBits0 {
     Soccer,
     Swimming,
     Transition,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SportBits0
@@ -615,7 +635,7 @@ impl<N> From<N> for SportBits0
             32 => SportBits0::Swimming,
             64 => SportBits0::Basketball,
             128 => SportBits0::Soccer,
-            n => panic!("Unknown value: {}", n)
+            n => SportBits0::UnknownValue(n)
         }
     }
 }
@@ -630,6 +650,7 @@ pub enum SportBits1 {
     Tennis,
     Training,
     Walking,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SportBits1
@@ -645,7 +666,7 @@ impl<N> From<N> for SportBits1
             32 => SportBits1::AlpineSkiing,
             64 => SportBits1::Snowboarding,
             128 => SportBits1::Rowing,
-            n => panic!("Unknown value: {}", n)
+            n => SportBits1::UnknownValue(n)
         }
     }
 }
@@ -660,6 +681,7 @@ pub enum SportBits2 {
     Mountaineering,
     Multisport,
     Paddling,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SportBits2
@@ -675,7 +697,7 @@ impl<N> From<N> for SportBits2
             32 => SportBits2::EBiking,
             64 => SportBits2::Motorcycling,
             128 => SportBits2::Boating,
-            n => panic!("Unknown value: {}", n)
+            n => SportBits2::UnknownValue(n)
         }
     }
 }
@@ -690,6 +712,7 @@ pub enum SportBits3 {
     Hunting,
     InlineSkating,
     RockClimbing,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SportBits3
@@ -705,7 +728,7 @@ impl<N> From<N> for SportBits3
             32 => SportBits3::Fishing,
             64 => SportBits3::InlineSkating,
             128 => SportBits3::RockClimbing,
-            n => panic!("Unknown value: {}", n)
+            n => SportBits3::UnknownValue(n)
         }
     }
 }
@@ -720,6 +743,7 @@ pub enum SportBits4 {
     StandUpPaddleboarding,
     Surfing,
     Wakeboarding,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SportBits4
@@ -735,7 +759,7 @@ impl<N> From<N> for SportBits4
             32 => SportBits4::StandUpPaddleboarding,
             64 => SportBits4::Surfing,
             128 => SportBits4::Wakeboarding,
-            n => panic!("Unknown value: {}", n)
+            n => SportBits4::UnknownValue(n)
         }
     }
 }
@@ -750,6 +774,7 @@ pub enum SportBits5 {
     Tactical,
     WaterSkiing,
     Windsurfing,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SportBits5
@@ -765,7 +790,7 @@ impl<N> From<N> for SportBits5
             32 => SportBits5::Tactical,
             64 => SportBits5::Jumpmaster,
             128 => SportBits5::Boxing,
-            n => panic!("Unknown value: {}", n)
+            n => SportBits5::UnknownValue(n)
         }
     }
 }
@@ -773,6 +798,7 @@ impl<N> From<N> for SportBits5
 #[derive(Clone, Debug)]
 pub enum SportBits6 {
     FloorClimbing,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SportBits6
@@ -781,7 +807,7 @@ impl<N> From<N> for SportBits6
     fn from(number: N) -> SportBits6 {
         match number.into() {
             1 => SportBits6::FloorClimbing,
-            n => panic!("Unknown value: {}", n)
+            n => SportBits6::UnknownValue(n)
         }
     }
 }
@@ -849,6 +875,7 @@ pub enum SubSport {
     Whitewater,
     Wingsuit,
     Yoga,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SubSport
@@ -917,7 +944,7 @@ impl<N> From<N> for SubSport
             58 => SubSport::VirtualActivity,
             59 => SubSport::Obstacle,
             254 => SubSport::All,
-            n => panic!("Unknown value: {}", n)
+            n => SubSport::UnknownValue(n)
         }
     }
 }
@@ -933,6 +960,7 @@ pub enum SportEvent {
     Training,
     Transportation,
     Uncategorized,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SportEvent
@@ -949,7 +977,7 @@ impl<N> From<N> for SportEvent
             6 => SportEvent::Training,
             7 => SportEvent::Transportation,
             8 => SportEvent::Touring,
-            n => panic!("Unknown value: {}", n)
+            n => SportEvent::UnknownValue(n)
         }
     }
 }
@@ -958,6 +986,7 @@ impl<N> From<N> for SportEvent
 pub enum Activity {
     AutoMultiSport,
     Manual,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Activity
@@ -967,7 +996,7 @@ impl<N> From<N> for Activity
         match number.into() {
             0 => Activity::Manual,
             1 => Activity::AutoMultiSport,
-            n => panic!("Unknown value: {}", n)
+            n => Activity::UnknownValue(n)
         }
     }
 }
@@ -978,6 +1007,7 @@ pub enum Intensity {
     Cooldown,
     Rest,
     Warmup,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Intensity
@@ -989,7 +1019,7 @@ impl<N> From<N> for Intensity
             1 => Intensity::Rest,
             2 => Intensity::Warmup,
             3 => Intensity::Cooldown,
-            n => panic!("Unknown value: {}", n)
+            n => Intensity::UnknownValue(n)
         }
     }
 }
@@ -1000,6 +1030,7 @@ pub enum SessionTrigger {
     AutoMultiSport,
     FitnessEquipment,
     Manual,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SessionTrigger
@@ -1011,7 +1042,7 @@ impl<N> From<N> for SessionTrigger
             1 => SessionTrigger::Manual,
             2 => SessionTrigger::AutoMultiSport,
             3 => SessionTrigger::FitnessEquipment,
-            n => panic!("Unknown value: {}", n)
+            n => SessionTrigger::UnknownValue(n)
         }
     }
 }
@@ -1025,6 +1056,7 @@ pub enum AutolapTrigger {
     PositionStart,
     PositionWaypoint,
     Time,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for AutolapTrigger
@@ -1039,7 +1071,7 @@ impl<N> From<N> for AutolapTrigger
             4 => AutolapTrigger::PositionWaypoint,
             5 => AutolapTrigger::PositionMarked,
             6 => AutolapTrigger::Off,
-            n => panic!("Unknown value: {}", n)
+            n => AutolapTrigger::UnknownValue(n)
         }
     }
 }
@@ -1055,6 +1087,7 @@ pub enum LapTrigger {
     PositionWaypoint,
     SessionEnd,
     Time,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LapTrigger
@@ -1071,7 +1104,7 @@ impl<N> From<N> for LapTrigger
             6 => LapTrigger::PositionMarked,
             7 => LapTrigger::SessionEnd,
             8 => LapTrigger::FitnessEquipment,
-            n => panic!("Unknown value: {}", n)
+            n => LapTrigger::UnknownValue(n)
         }
     }
 }
@@ -1084,6 +1117,7 @@ pub enum TimeMode {
     Hour24WithSeconds,
     Military,
     Utc,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for TimeMode
@@ -1097,7 +1131,7 @@ impl<N> From<N> for TimeMode
             3 => TimeMode::Hour12WithSeconds,
             4 => TimeMode::Hour24WithSeconds,
             5 => TimeMode::Utc,
-            n => panic!("Unknown value: {}", n)
+            n => TimeMode::UnknownValue(n)
         }
     }
 }
@@ -1106,6 +1140,7 @@ impl<N> From<N> for TimeMode
 pub enum DateMode {
     DayMonth,
     MonthDay,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DateMode
@@ -1115,7 +1150,7 @@ impl<N> From<N> for DateMode
         match number.into() {
             0 => DateMode::DayMonth,
             1 => DateMode::MonthDay,
-            n => panic!("Unknown value: {}", n)
+            n => DateMode::UnknownValue(n)
         }
     }
 }
@@ -1158,6 +1193,7 @@ pub enum Event {
     VirtualPartnerPace,
     Workout,
     WorkoutStep,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Event
@@ -1201,7 +1237,7 @@ impl<N> From<N> for Event
             45 => Event::ElevHighAlert,
             46 => Event::ElevLowAlert,
             47 => Event::CommTimeout,
-            n => panic!("Unknown value: {}", n)
+            n => Event::UnknownValue(n)
         }
     }
 }
@@ -1218,6 +1254,7 @@ pub enum EventType {
     StopAll,
     StopDisable,
     StopDisableAll,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for EventType
@@ -1235,7 +1272,7 @@ impl<N> From<N> for EventType
             7 => EventType::EndAllDepreciated,
             8 => EventType::StopDisable,
             9 => EventType::StopDisableAll,
-            n => panic!("Unknown value: {}", n)
+            n => EventType::UnknownValue(n)
         }
     }
 }
@@ -1245,6 +1282,7 @@ pub enum TimerTrigger {
     Auto,
     FitnessEquipment,
     Manual,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for TimerTrigger
@@ -1255,7 +1293,7 @@ impl<N> From<N> for TimerTrigger
             0 => TimerTrigger::Manual,
             1 => TimerTrigger::Auto,
             2 => TimerTrigger::FitnessEquipment,
-            n => panic!("Unknown value: {}", n)
+            n => TimerTrigger::UnknownValue(n)
         }
     }
 }
@@ -1266,6 +1304,7 @@ pub enum FitnessEquipmentState {
     Paused,
     Ready,
     Unknown,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for FitnessEquipmentState
@@ -1277,7 +1316,7 @@ impl<N> From<N> for FitnessEquipmentState
             1 => FitnessEquipmentState::InUse,
             2 => FitnessEquipmentState::Paused,
             3 => FitnessEquipmentState::Unknown,
-            n => panic!("Unknown value: {}", n)
+            n => FitnessEquipmentState::UnknownValue(n)
         }
     }
 }
@@ -1288,6 +1327,7 @@ pub enum Tone {
     Tone,
     ToneAndVibrate,
     Vibrate,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Tone
@@ -1299,7 +1339,7 @@ impl<N> From<N> for Tone
             1 => Tone::Tone,
             2 => Tone::Vibrate,
             3 => Tone::ToneAndVibrate,
-            n => panic!("Unknown value: {}", n)
+            n => Tone::UnknownValue(n)
         }
     }
 }
@@ -1309,6 +1349,7 @@ pub enum ActivityClass {
     Athlete,
     Level,
     LevelMax,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ActivityClass
@@ -1319,7 +1360,7 @@ impl<N> From<N> for ActivityClass
             100 => ActivityClass::LevelMax,
             127 => ActivityClass::Level,
             128 => ActivityClass::Athlete,
-            n => panic!("Unknown value: {}", n)
+            n => ActivityClass::UnknownValue(n)
         }
     }
 }
@@ -1329,6 +1370,7 @@ pub enum HrZoneCalc {
     Custom,
     PercentHrr,
     PercentMaxHr,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for HrZoneCalc
@@ -1339,7 +1381,7 @@ impl<N> From<N> for HrZoneCalc
             0 => HrZoneCalc::Custom,
             1 => HrZoneCalc::PercentMaxHr,
             2 => HrZoneCalc::PercentHrr,
-            n => panic!("Unknown value: {}", n)
+            n => HrZoneCalc::UnknownValue(n)
         }
     }
 }
@@ -1348,6 +1390,7 @@ impl<N> From<N> for HrZoneCalc
 pub enum PwrZoneCalc {
     Custom,
     PercentFtp,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for PwrZoneCalc
@@ -1357,7 +1400,7 @@ impl<N> From<N> for PwrZoneCalc
         match number.into() {
             0 => PwrZoneCalc::Custom,
             1 => PwrZoneCalc::PercentFtp,
-            n => panic!("Unknown value: {}", n)
+            n => PwrZoneCalc::UnknownValue(n)
         }
     }
 }
@@ -1394,6 +1437,7 @@ pub enum WktStepDuration {
     Reps,
     Time,
     TrainingPeaksTss,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WktStepDuration
@@ -1431,7 +1475,7 @@ impl<N> From<N> for WktStepDuration
             27 => WktStepDuration::RepeatUntilTrainingPeaksTss,
             28 => WktStepDuration::RepetitionTime,
             29 => WktStepDuration::Reps,
-            n => panic!("Unknown value: {}", n)
+            n => WktStepDuration::UnknownValue(n)
         }
     }
 }
@@ -1452,6 +1496,7 @@ pub enum WktStepTarget {
     Speed,
     SpeedLap,
     SwimStroke,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WktStepTarget
@@ -1473,7 +1518,7 @@ impl<N> From<N> for WktStepTarget
             11 => WktStepTarget::SwimStroke,
             12 => WktStepTarget::SpeedLap,
             13 => WktStepTarget::HeartRateLap,
-            n => panic!("Unknown value: {}", n)
+            n => WktStepTarget::UnknownValue(n)
         }
     }
 }
@@ -1487,6 +1532,7 @@ pub enum Goal {
     Frequency,
     Steps,
     Time,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Goal
@@ -1501,7 +1547,7 @@ impl<N> From<N> for Goal
             4 => Goal::Steps,
             5 => Goal::Ascent,
             6 => Goal::ActiveMinutes,
-            n => panic!("Unknown value: {}", n)
+            n => Goal::UnknownValue(n)
         }
     }
 }
@@ -1514,6 +1560,7 @@ pub enum GoalRecurrence {
     Off,
     Weekly,
     Yearly,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for GoalRecurrence
@@ -1527,7 +1574,7 @@ impl<N> From<N> for GoalRecurrence
             3 => GoalRecurrence::Monthly,
             4 => GoalRecurrence::Yearly,
             5 => GoalRecurrence::Custom,
-            n => panic!("Unknown value: {}", n)
+            n => GoalRecurrence::UnknownValue(n)
         }
     }
 }
@@ -1537,6 +1584,7 @@ pub enum GoalSource {
     Auto,
     Community,
     User,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for GoalSource
@@ -1547,7 +1595,7 @@ impl<N> From<N> for GoalSource
             0 => GoalSource::Auto,
             1 => GoalSource::Community,
             2 => GoalSource::User,
-            n => panic!("Unknown value: {}", n)
+            n => GoalSource::UnknownValue(n)
         }
     }
 }
@@ -1580,6 +1628,7 @@ pub enum CoursePoint {
     UTurn,
     Valley,
     Water,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for CoursePoint
@@ -1613,7 +1662,7 @@ impl<N> From<N> for CoursePoint
             23 => CoursePoint::UTurn,
             24 => CoursePoint::SegmentStart,
             25 => CoursePoint::SegmentEnd,
-            n => panic!("Unknown value: {}", n)
+            n => CoursePoint::UnknownValue(n)
         }
     }
 }
@@ -1785,6 +1834,7 @@ pub enum Manufacturer {
     Xplova,
     Zephyr,
     Zwift,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Manufacturer
@@ -1957,7 +2007,7 @@ impl<N> From<N> for Manufacturer
             296 => Manufacturer::Velosense,
             297 => Manufacturer::Cycligentinc,
             5759 => Manufacturer::Actigraphcorp,
-            n => panic!("Unknown value: {}", n)
+            n => Manufacturer::UnknownValue(n)
         }
     }
 }
@@ -2121,6 +2171,7 @@ pub enum GarminProduct {
     VivoSmartApac,
     VivoSmartGpsHr,
     VivoSmartHr,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for GarminProduct
@@ -2285,7 +2336,7 @@ impl<N> From<N> for GarminProduct
             65531 => GarminProduct::ConnectiqSimulator,
             65532 => GarminProduct::AndroidAntplusPlugin,
             65534 => GarminProduct::Connect,
-            n => panic!("Unknown value: {}", n)
+            n => GarminProduct::UnknownValue(n)
         }
     }
 }
@@ -2316,6 +2367,7 @@ pub enum AntplusDeviceType {
     Racquet,
     StrideSpeedDistance,
     WeightScale,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for AntplusDeviceType
@@ -2347,7 +2399,7 @@ impl<N> From<N> for AntplusDeviceType
             122 => AntplusDeviceType::BikeCadence,
             123 => AntplusDeviceType::BikeSpeed,
             124 => AntplusDeviceType::StrideSpeedDistance,
-            n => panic!("Unknown value: {}", n)
+            n => AntplusDeviceType::UnknownValue(n)
         }
     }
 }
@@ -2358,6 +2410,7 @@ pub enum AntNetwork {
     Antplus,
     Private,
     Public,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for AntNetwork
@@ -2369,7 +2422,7 @@ impl<N> From<N> for AntNetwork
             1 => AntNetwork::Antplus,
             2 => AntNetwork::Antfs,
             3 => AntNetwork::Private,
-            n => panic!("Unknown value: {}", n)
+            n => AntNetwork::UnknownValue(n)
         }
     }
 }
@@ -2390,6 +2443,7 @@ pub enum WorkoutCapabilities {
     Resistance,
     Speed,
     Tcx,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WorkoutCapabilities
@@ -2411,7 +2465,7 @@ impl<N> From<N> for WorkoutCapabilities
             4096 => WorkoutCapabilities::Grade,
             8192 => WorkoutCapabilities::Resistance,
             16384 => WorkoutCapabilities::Protected,
-            n => panic!("Unknown value: {}", n)
+            n => WorkoutCapabilities::UnknownValue(n)
         }
     }
 }
@@ -2425,6 +2479,7 @@ pub enum BatteryStatus {
     New,
     Ok,
     Unknown,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for BatteryStatus
@@ -2439,7 +2494,7 @@ impl<N> From<N> for BatteryStatus
             5 => BatteryStatus::Critical,
             6 => BatteryStatus::Charging,
             7 => BatteryStatus::Unknown,
-            n => panic!("Unknown value: {}", n)
+            n => BatteryStatus::UnknownValue(n)
         }
     }
 }
@@ -2448,6 +2503,7 @@ impl<N> From<N> for BatteryStatus
 pub enum HrType {
     Irregular,
     Normal,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for HrType
@@ -2457,7 +2513,7 @@ impl<N> From<N> for HrType
         match number.into() {
             0 => HrType::Normal,
             1 => HrType::Irregular,
-            n => panic!("Unknown value: {}", n)
+            n => HrType::UnknownValue(n)
         }
     }
 }
@@ -2475,6 +2531,7 @@ pub enum CourseCapabilities {
     Time,
     Training,
     Valid,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for CourseCapabilities
@@ -2493,7 +2550,7 @@ impl<N> From<N> for CourseCapabilities
             256 => CourseCapabilities::Training,
             512 => CourseCapabilities::Navigation,
             1024 => CourseCapabilities::Bikeway,
-            n => panic!("Unknown value: {}", n)
+            n => CourseCapabilities::UnknownValue(n)
         }
     }
 }
@@ -2501,6 +2558,7 @@ impl<N> From<N> for CourseCapabilities
 #[derive(Clone, Debug)]
 pub enum Weight {
     Calculating,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Weight
@@ -2509,7 +2567,7 @@ impl<N> From<N> for Weight
     fn from(number: N) -> Weight {
         match number.into() {
             65534 => Weight::Calculating,
-            n => panic!("Unknown value: {}", n)
+            n => Weight::UnknownValue(n)
         }
     }
 }
@@ -2517,6 +2575,7 @@ impl<N> From<N> for Weight
 #[derive(Clone, Debug)]
 pub enum WorkoutHr {
     BpmOffset,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WorkoutHr
@@ -2525,7 +2584,7 @@ impl<N> From<N> for WorkoutHr
     fn from(number: N) -> WorkoutHr {
         match number.into() {
             100 => WorkoutHr::BpmOffset,
-            n => panic!("Unknown value: {}", n)
+            n => WorkoutHr::UnknownValue(n)
         }
     }
 }
@@ -2533,6 +2592,7 @@ impl<N> From<N> for WorkoutHr
 #[derive(Clone, Debug)]
 pub enum WorkoutPower {
     WattsOffset,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WorkoutPower
@@ -2541,7 +2601,7 @@ impl<N> From<N> for WorkoutPower
     fn from(number: N) -> WorkoutPower {
         match number.into() {
             1000 => WorkoutPower::WattsOffset,
-            n => panic!("Unknown value: {}", n)
+            n => WorkoutPower::UnknownValue(n)
         }
     }
 }
@@ -2553,6 +2613,7 @@ pub enum BpStatus {
     ErrorIrregularHeartRate,
     ErrorNoMeasurement,
     NoError,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for BpStatus
@@ -2565,7 +2626,7 @@ impl<N> From<N> for BpStatus
             2 => BpStatus::ErrorNoMeasurement,
             3 => BpStatus::ErrorDataOutOfRange,
             4 => BpStatus::ErrorIrregularHeartRate,
-            n => panic!("Unknown value: {}", n)
+            n => BpStatus::UnknownValue(n)
         }
     }
 }
@@ -2578,6 +2639,7 @@ pub enum UserLocalId {
     PortableMin,
     StationaryMax,
     StationaryMin,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for UserLocalId
@@ -2591,7 +2653,7 @@ impl<N> From<N> for UserLocalId
             255 => UserLocalId::StationaryMax,
             256 => UserLocalId::PortableMin,
             65534 => UserLocalId::PortableMax,
-            n => panic!("Unknown value: {}", n)
+            n => UserLocalId::UnknownValue(n)
         }
     }
 }
@@ -2605,6 +2667,7 @@ pub enum SwimStroke {
     Freestyle,
     Im,
     Mixed,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SwimStroke
@@ -2619,7 +2682,7 @@ impl<N> From<N> for SwimStroke
             4 => SwimStroke::Drill,
             5 => SwimStroke::Mixed,
             6 => SwimStroke::Im,
-            n => panic!("Unknown value: {}", n)
+            n => SwimStroke::UnknownValue(n)
         }
     }
 }
@@ -2635,6 +2698,7 @@ pub enum ActivityType {
     Swimming,
     Transition,
     Walking,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ActivityType
@@ -2651,7 +2715,7 @@ impl<N> From<N> for ActivityType
             6 => ActivityType::Walking,
             8 => ActivityType::Sedentary,
             254 => ActivityType::All,
-            n => panic!("Unknown value: {}", n)
+            n => ActivityType::UnknownValue(n)
         }
     }
 }
@@ -2678,6 +2742,7 @@ pub enum ActivitySubtype {
     TrackCycling,
     Trail,
     Treadmill,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ActivitySubtype
@@ -2705,7 +2770,7 @@ impl<N> From<N> for ActivitySubtype
             17 => ActivitySubtype::LapSwimming,
             18 => ActivitySubtype::OpenWater,
             254 => ActivitySubtype::All,
-            n => panic!("Unknown value: {}", n)
+            n => ActivitySubtype::UnknownValue(n)
         }
     }
 }
@@ -2715,6 +2780,7 @@ pub enum ActivityLevel {
     High,
     Low,
     Medium,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ActivityLevel
@@ -2725,7 +2791,7 @@ impl<N> From<N> for ActivityLevel
             0 => ActivityLevel::Low,
             1 => ActivityLevel::Medium,
             2 => ActivityLevel::High,
-            n => panic!("Unknown value: {}", n)
+            n => ActivityLevel::UnknownValue(n)
         }
     }
 }
@@ -2734,6 +2800,7 @@ impl<N> From<N> for ActivityLevel
 pub enum Side {
     Left,
     Right,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for Side
@@ -2743,7 +2810,7 @@ impl<N> From<N> for Side
         match number.into() {
             0 => Side::Right,
             1 => Side::Left,
-            n => panic!("Unknown value: {}", n)
+            n => Side::UnknownValue(n)
         }
     }
 }
@@ -2752,6 +2819,7 @@ impl<N> From<N> for Side
 pub enum LeftRightBalance100 {
     Mask,
     Right,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LeftRightBalance100
@@ -2761,7 +2829,7 @@ impl<N> From<N> for LeftRightBalance100
         match number.into() {
             16383 => LeftRightBalance100::Mask,
             32768 => LeftRightBalance100::Right,
-            n => panic!("Unknown value: {}", n)
+            n => LeftRightBalance100::UnknownValue(n)
         }
     }
 }
@@ -2770,6 +2838,7 @@ impl<N> From<N> for LeftRightBalance100
 pub enum LengthType {
     Active,
     Idle,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LengthType
@@ -2779,7 +2848,7 @@ impl<N> From<N> for LengthType
         match number.into() {
             0 => LengthType::Idle,
             1 => LengthType::Active,
-            n => panic!("Unknown value: {}", n)
+            n => LengthType::UnknownValue(n)
         }
     }
 }
@@ -2793,6 +2862,7 @@ pub enum DayOfWeek {
     Thursday,
     Tuesday,
     Wednesday,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DayOfWeek
@@ -2807,7 +2877,7 @@ impl<N> From<N> for DayOfWeek
             4 => DayOfWeek::Thursday,
             5 => DayOfWeek::Friday,
             6 => DayOfWeek::Saturday,
-            n => panic!("Unknown value: {}", n)
+            n => DayOfWeek::UnknownValue(n)
         }
     }
 }
@@ -2817,6 +2887,7 @@ pub enum WeatherReport {
     Current,
     DailyForecast,
     HourlyForecast,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WeatherReport
@@ -2827,7 +2898,7 @@ impl<N> From<N> for WeatherReport
             0 => WeatherReport::Current,
             1 => WeatherReport::HourlyForecast,
             2 => WeatherReport::DailyForecast,
-            n => panic!("Unknown value: {}", n)
+            n => WeatherReport::UnknownValue(n)
         }
     }
 }
@@ -2855,6 +2926,7 @@ pub enum WeatherStatus {
     UnknownPrecipitation,
     Windy,
     WintryMix,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WeatherStatus
@@ -2883,7 +2955,7 @@ impl<N> From<N> for WeatherStatus
             20 => WeatherStatus::LightRainSnow,
             21 => WeatherStatus::HeavyRainSnow,
             22 => WeatherStatus::Cloudy,
-            n => panic!("Unknown value: {}", n)
+            n => WeatherStatus::UnknownValue(n)
         }
     }
 }
@@ -2895,6 +2967,7 @@ pub enum WeatherSeverity {
     Unknown,
     Warning,
     Watch,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WeatherSeverity
@@ -2907,7 +2980,7 @@ impl<N> From<N> for WeatherSeverity
             2 => WeatherSeverity::Watch,
             3 => WeatherSeverity::Advisory,
             4 => WeatherSeverity::Statement,
-            n => panic!("Unknown value: {}", n)
+            n => WeatherSeverity::UnknownValue(n)
         }
     }
 }
@@ -2999,6 +3072,7 @@ pub enum WeatherSevereType {
     WinterStorm,
     WinterWeather,
     WreckhouseWinds,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WeatherSevereType
@@ -3091,13 +3165,14 @@ impl<N> From<N> for WeatherSevereType
             82 => WeatherSevereType::LowWater,
             83 => WeatherSevereType::Hydrological,
             84 => WeatherSevereType::SpecialWeather,
-            n => panic!("Unknown value: {}", n)
+            n => WeatherSevereType::UnknownValue(n)
         }
     }
 }
 
 #[derive(Clone, Debug)]
 pub enum TimeIntoDay {
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for TimeIntoDay
@@ -3105,13 +3180,14 @@ impl<N> From<N> for TimeIntoDay
 {
     fn from(number: N) -> TimeIntoDay {
         match number.into() {
-            n => panic!("Unknown value: {}", n)
+            n => TimeIntoDay::UnknownValue(n)
         }
     }
 }
 
 #[derive(Clone, Debug)]
 pub enum LocaltimeIntoDay {
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LocaltimeIntoDay
@@ -3119,7 +3195,7 @@ impl<N> From<N> for LocaltimeIntoDay
 {
     fn from(number: N) -> LocaltimeIntoDay {
         match number.into() {
-            n => panic!("Unknown value: {}", n)
+            n => LocaltimeIntoDay::UnknownValue(n)
         }
     }
 }
@@ -3166,6 +3242,7 @@ pub enum BodyLocation {
     WaistLeft,
     WaistMidBack,
     WaistRight,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for BodyLocation
@@ -3213,7 +3290,7 @@ impl<N> From<N> for BodyLocation
             37 => BodyLocation::WaistFront,
             38 => BodyLocation::WaistLeft,
             39 => BodyLocation::WaistRight,
-            n => panic!("Unknown value: {}", n)
+            n => BodyLocation::UnknownValue(n)
         }
     }
 }
@@ -3222,6 +3299,7 @@ impl<N> From<N> for BodyLocation
 pub enum SegmentLapStatus {
     End,
     Fail,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SegmentLapStatus
@@ -3231,7 +3309,7 @@ impl<N> From<N> for SegmentLapStatus
         match number.into() {
             0 => SegmentLapStatus::End,
             1 => SegmentLapStatus::Fail,
-            n => panic!("Unknown value: {}", n)
+            n => SegmentLapStatus::UnknownValue(n)
         }
     }
 }
@@ -3249,6 +3327,7 @@ pub enum SegmentLeaderboardType {
     Pr,
     Qom,
     Rival,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SegmentLeaderboardType
@@ -3267,7 +3346,7 @@ impl<N> From<N> for SegmentLeaderboardType
             8 => SegmentLeaderboardType::Goal,
             9 => SegmentLeaderboardType::Rival,
             10 => SegmentLeaderboardType::ClubLeader,
-            n => panic!("Unknown value: {}", n)
+            n => SegmentLeaderboardType::UnknownValue(n)
         }
     }
 }
@@ -3277,6 +3356,7 @@ pub enum SegmentDeleteStatus {
     DeleteAll,
     DeleteOne,
     DoNotDelete,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SegmentDeleteStatus
@@ -3287,7 +3367,7 @@ impl<N> From<N> for SegmentDeleteStatus
             0 => SegmentDeleteStatus::DoNotDelete,
             1 => SegmentDeleteStatus::DeleteOne,
             2 => SegmentDeleteStatus::DeleteAll,
-            n => panic!("Unknown value: {}", n)
+            n => SegmentDeleteStatus::UnknownValue(n)
         }
     }
 }
@@ -3296,6 +3376,7 @@ impl<N> From<N> for SegmentDeleteStatus
 pub enum SegmentSelectionType {
     Starred,
     Suggested,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SegmentSelectionType
@@ -3305,7 +3386,7 @@ impl<N> From<N> for SegmentSelectionType
         match number.into() {
             0 => SegmentSelectionType::Starred,
             1 => SegmentSelectionType::Suggested,
-            n => panic!("Unknown value: {}", n)
+            n => SegmentSelectionType::UnknownValue(n)
         }
     }
 }
@@ -3318,6 +3399,7 @@ pub enum SourceType {
     BluetoothLowEnergy,
     Local,
     Wifi,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SourceType
@@ -3331,13 +3413,14 @@ impl<N> From<N> for SourceType
             3 => SourceType::BluetoothLowEnergy,
             4 => SourceType::Wifi,
             5 => SourceType::Local,
-            n => panic!("Unknown value: {}", n)
+            n => SourceType::UnknownValue(n)
         }
     }
 }
 
 #[derive(Clone, Debug)]
 pub enum LocalDeviceType {
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LocalDeviceType
@@ -3345,7 +3428,7 @@ impl<N> From<N> for LocalDeviceType
 {
     fn from(number: N) -> LocalDeviceType {
         match number.into() {
-            n => panic!("Unknown value: {}", n)
+            n => LocalDeviceType::UnknownValue(n)
         }
     }
 }
@@ -3358,6 +3441,7 @@ pub enum WorkoutEquipment {
     SwimPaddles,
     SwimPullBuoy,
     SwimSnorkel,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WorkoutEquipment
@@ -3371,7 +3455,7 @@ impl<N> From<N> for WorkoutEquipment
             3 => WorkoutEquipment::SwimPaddles,
             4 => WorkoutEquipment::SwimPullBuoy,
             5 => WorkoutEquipment::SwimSnorkel,
-            n => panic!("Unknown value: {}", n)
+            n => WorkoutEquipment::UnknownValue(n)
         }
     }
 }
@@ -3381,6 +3465,7 @@ pub enum DigitalWatchfaceLayout {
     Bold,
     Modern,
     Traditional,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DigitalWatchfaceLayout
@@ -3391,7 +3476,7 @@ impl<N> From<N> for DigitalWatchfaceLayout
             0 => DigitalWatchfaceLayout::Traditional,
             1 => DigitalWatchfaceLayout::Modern,
             2 => DigitalWatchfaceLayout::Bold,
-            n => panic!("Unknown value: {}", n)
+            n => DigitalWatchfaceLayout::UnknownValue(n)
         }
     }
 }
@@ -3402,6 +3487,7 @@ pub enum RiderPositionType {
     Standing,
     TransitionToSeated,
     TransitionToStanding,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for RiderPositionType
@@ -3413,7 +3499,7 @@ impl<N> From<N> for RiderPositionType
             1 => RiderPositionType::Standing,
             2 => RiderPositionType::TransitionToSeated,
             3 => RiderPositionType::TransitionToStanding,
-            n => panic!("Unknown value: {}", n)
+            n => RiderPositionType::UnknownValue(n)
         }
     }
 }
@@ -3424,6 +3510,7 @@ pub enum PowerPhaseType {
     PowerPhaseCenter,
     PowerPhaseEndAngle,
     PowerPhaseStartAngle,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for PowerPhaseType
@@ -3435,7 +3522,7 @@ impl<N> From<N> for PowerPhaseType
             1 => PowerPhaseType::PowerPhaseEndAngle,
             2 => PowerPhaseType::PowerPhaseArcLength,
             3 => PowerPhaseType::PowerPhaseCenter,
-            n => panic!("Unknown value: {}", n)
+            n => PowerPhaseType::UnknownValue(n)
         }
     }
 }
@@ -3455,6 +3542,7 @@ pub enum CameraEventType {
     VideoSplit,
     VideoSplitStart,
     VideoStart,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for CameraEventType
@@ -3475,7 +3563,7 @@ impl<N> From<N> for CameraEventType
             12 => CameraEventType::VideoSecondStreamPause,
             13 => CameraEventType::VideoResume,
             14 => CameraEventType::VideoSecondStreamResume,
-            n => panic!("Unknown value: {}", n)
+            n => CameraEventType::UnknownValue(n)
         }
     }
 }
@@ -3486,6 +3574,7 @@ pub enum SensorType {
     Barometer,
     Compass,
     Gyroscope,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SensorType
@@ -3497,7 +3586,7 @@ impl<N> From<N> for SensorType
             1 => SensorType::Gyroscope,
             2 => SensorType::Compass,
             3 => SensorType::Barometer,
-            n => panic!("Unknown value: {}", n)
+            n => SensorType::UnknownValue(n)
         }
     }
 }
@@ -3508,6 +3597,7 @@ pub enum BikeLightNetworkConfigType {
     HighVisibility,
     Individual,
     Trail,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for BikeLightNetworkConfigType
@@ -3519,7 +3609,7 @@ impl<N> From<N> for BikeLightNetworkConfigType
             4 => BikeLightNetworkConfigType::Individual,
             5 => BikeLightNetworkConfigType::HighVisibility,
             6 => BikeLightNetworkConfigType::Trail,
-            n => panic!("Unknown value: {}", n)
+            n => BikeLightNetworkConfigType::UnknownValue(n)
         }
     }
 }
@@ -3530,6 +3620,7 @@ pub enum CameraOrientationType {
     CameraOrientation180,
     CameraOrientation270,
     CameraOrientation90,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for CameraOrientationType
@@ -3541,7 +3632,7 @@ impl<N> From<N> for CameraOrientationType
             1 => CameraOrientationType::CameraOrientation90,
             2 => CameraOrientationType::CameraOrientation180,
             3 => CameraOrientationType::CameraOrientation270,
-            n => panic!("Unknown value: {}", n)
+            n => CameraOrientationType::UnknownValue(n)
         }
     }
 }
@@ -3552,6 +3643,7 @@ pub enum AttitudeStage {
     Degraded,
     Failed,
     Valid,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for AttitudeStage
@@ -3563,7 +3655,7 @@ impl<N> From<N> for AttitudeStage
             1 => AttitudeStage::Aligning,
             2 => AttitudeStage::Degraded,
             3 => AttitudeStage::Valid,
-            n => panic!("Unknown value: {}", n)
+            n => AttitudeStage::UnknownValue(n)
         }
     }
 }
@@ -3583,6 +3675,7 @@ pub enum AttitudeValidity {
     TrackAngleHeadingValid,
     TrueTrackAngle,
     TurnRateValid,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for AttitudeValidity
@@ -3603,7 +3696,7 @@ impl<N> From<N> for AttitudeValidity
             1024 => AttitudeValidity::SolutionCoasting,
             2048 => AttitudeValidity::TrueTrackAngle,
             4096 => AttitudeValidity::MagneticHeading,
-            n => panic!("Unknown value: {}", n)
+            n => AttitudeValidity::UnknownValue(n)
         }
     }
 }
@@ -3615,6 +3708,7 @@ pub enum AutoSyncFrequency {
     Occasionally,
     OnceADay,
     Remote,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for AutoSyncFrequency
@@ -3627,7 +3721,7 @@ impl<N> From<N> for AutoSyncFrequency
             2 => AutoSyncFrequency::Frequent,
             3 => AutoSyncFrequency::OnceADay,
             4 => AutoSyncFrequency::Remote,
-            n => panic!("Unknown value: {}", n)
+            n => AutoSyncFrequency::UnknownValue(n)
         }
     }
 }
@@ -3645,6 +3739,7 @@ pub enum ExdDisplayType {
     String,
     StringList,
     VirtualPartner,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ExdDisplayType
@@ -3663,7 +3758,7 @@ impl<N> From<N> for ExdDisplayType
             8 => ExdDisplayType::String,
             9 => ExdDisplayType::SimpleDynamicIcon,
             10 => ExdDisplayType::Gauge,
-            n => panic!("Unknown value: {}", n)
+            n => ExdDisplayType::UnknownValue(n)
         }
     }
 }
@@ -3720,6 +3815,7 @@ pub enum ExdDataUnits {
     WattsPerKilogram,
     Yards,
     Zone,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ExdDataUnits
@@ -3777,7 +3873,7 @@ impl<N> From<N> for ExdDataUnits
             47 => ExdDataUnits::MetersPerMin,
             48 => ExdDataUnits::MetersPerSec,
             49 => ExdDataUnits::EightCardinal,
-            n => panic!("Unknown value: {}", n)
+            n => ExdDataUnits::UnknownValue(n)
         }
     }
 }
@@ -3828,6 +3924,7 @@ pub enum ExdQualifiers {
     Zone7,
     Zone8,
     Zone9,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ExdQualifiers
@@ -3879,7 +3976,7 @@ impl<N> From<N> for ExdQualifiers
             248 => ExdQualifiers::Zone3,
             249 => ExdQualifiers::Zone2,
             250 => ExdQualifiers::Zone1,
-            n => panic!("Unknown value: {}", n)
+            n => ExdQualifiers::UnknownValue(n)
         }
     }
 }
@@ -3983,6 +4080,7 @@ pub enum ExdDescriptors {
     Vmg,
     Work,
     WorkoutStep,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ExdDescriptors
@@ -4087,7 +4185,7 @@ impl<N> From<N> for ExdDescriptors
             94 => ExdDescriptors::AmbientPressure,
             95 => ExdDescriptors::Pressure,
             96 => ExdDescriptors::Vam,
-            n => panic!("Unknown value: {}", n)
+            n => ExdDescriptors::UnknownValue(n)
         }
     }
 }
@@ -4102,6 +4200,7 @@ pub enum SupportedExdScreenLayouts {
     HalfVertical,
     HalfVerticalLeftSplit,
     HalfVerticalRightSplit,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SupportedExdScreenLayouts
@@ -4117,7 +4216,7 @@ impl<N> From<N> for SupportedExdScreenLayouts
             32 => SupportedExdScreenLayouts::FullQuarterSplit,
             64 => SupportedExdScreenLayouts::HalfVerticalLeftSplit,
             128 => SupportedExdScreenLayouts::HalfHorizontalTopSplit,
-            n => panic!("Unknown value: {}", n)
+            n => SupportedExdScreenLayouts::UnknownValue(n)
         }
     }
 }
@@ -4141,6 +4240,7 @@ pub enum FitBaseType {
     Uint64Z,
     Uint8,
     Uint8Z,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for FitBaseType
@@ -4165,7 +4265,7 @@ impl<N> From<N> for FitBaseType
             142 => FitBaseType::Sint64,
             143 => FitBaseType::Uint64,
             144 => FitBaseType::Uint64Z,
-            n => panic!("Unknown value: {}", n)
+            n => FitBaseType::UnknownValue(n)
         }
     }
 }
@@ -4174,6 +4274,7 @@ impl<N> From<N> for FitBaseType
 pub enum BikeLightBeamAngleMode {
     Auto,
     Manual,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for BikeLightBeamAngleMode
@@ -4183,7 +4284,7 @@ impl<N> From<N> for BikeLightBeamAngleMode
         match number.into() {
             0 => BikeLightBeamAngleMode::Manual,
             1 => BikeLightBeamAngleMode::Auto,
-            n => panic!("Unknown value: {}", n)
+            n => BikeLightBeamAngleMode::UnknownValue(n)
         }
     }
 }
@@ -4193,6 +4294,7 @@ pub enum FitBaseUnit {
     Kilogram,
     Other,
     Pound,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for FitBaseUnit
@@ -4203,7 +4305,7 @@ impl<N> From<N> for FitBaseUnit
             0 => FitBaseUnit::Other,
             1 => FitBaseUnit::Kilogram,
             2 => FitBaseUnit::Pound,
-            n => panic!("Unknown value: {}", n)
+            n => FitBaseUnit::UnknownValue(n)
         }
     }
 }
@@ -4244,6 +4346,7 @@ pub enum ExerciseCategory {
     TricepsExtension,
     Unknown,
     WarmUp,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ExerciseCategory
@@ -4285,7 +4388,7 @@ impl<N> From<N> for ExerciseCategory
             31 => ExerciseCategory::WarmUp,
             32 => ExerciseCategory::Run,
             65534 => ExerciseCategory::Unknown,
-            n => panic!("Unknown value: {}", n)
+            n => ExerciseCategory::UnknownValue(n)
         }
     }
 }
@@ -4313,6 +4416,7 @@ pub enum CalfRaiseExerciseName {
     WeightedSingleLegBentKneeCalfRaise,
     WeightedSingleLegDonkeyCalfRaise,
     WeightedStandingCalfRaise,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for CalfRaiseExerciseName
@@ -4341,7 +4445,7 @@ impl<N> From<N> for CalfRaiseExerciseName
             18 => CalfRaiseExerciseName::StandingCalfRaise,
             19 => CalfRaiseExerciseName::WeightedStandingCalfRaise,
             20 => CalfRaiseExerciseName::StandingDumbbellCalfRaise,
-            n => panic!("Unknown value: {}", n)
+            n => CalfRaiseExerciseName::UnknownValue(n)
         }
     }
 }
@@ -4353,6 +4457,7 @@ pub enum CarryExerciseName {
     FarmersWalkOnToes,
     HexDumbbellHold,
     OverheadCarry,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for CarryExerciseName
@@ -4365,7 +4470,7 @@ impl<N> From<N> for CarryExerciseName
             2 => CarryExerciseName::FarmersWalkOnToes,
             3 => CarryExerciseName::HexDumbbellHold,
             4 => CarryExerciseName::OverheadCarry,
-            n => panic!("Unknown value: {}", n)
+            n => CarryExerciseName::UnknownValue(n)
         }
     }
 }
@@ -4445,6 +4550,7 @@ pub enum CoreExerciseName {
     WeightedUBoat,
     WeightedWindmillSwitches,
     WindmillSwitches,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for CoreExerciseName
@@ -4525,7 +4631,7 @@ impl<N> From<N> for CoreExerciseName
             70 => CoreExerciseName::Swimming,
             71 => CoreExerciseName::Teaser,
             72 => CoreExerciseName::TheHundred,
-            n => panic!("Unknown value: {}", n)
+            n => CoreExerciseName::UnknownValue(n)
         }
     }
 }
@@ -4617,6 +4723,7 @@ pub enum CrunchExerciseName {
     WeightedSwissBallSideCrunch,
     WeightedThoracicCrunchesOnFoamRoller,
     WeightedToesToBar,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for CrunchExerciseName
@@ -4709,7 +4816,7 @@ impl<N> From<N> for CrunchExerciseName
             82 => CrunchExerciseName::WeightedToesToBar,
             83 => CrunchExerciseName::Crunch,
             84 => CrunchExerciseName::StraightLegCrunchWithBall,
-            n => panic!("Unknown value: {}", n)
+            n => CrunchExerciseName::UnknownValue(n)
         }
     }
 }
@@ -4760,6 +4867,7 @@ pub enum CurlExerciseName {
     SwissBallEzBarPreacherCurl,
     TwistingStandingDumbbellBicepsCurl,
     WideGripEzBarBicepsCurl,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for CurlExerciseName
@@ -4811,7 +4919,7 @@ impl<N> From<N> for CurlExerciseName
             41 => CurlExerciseName::SwissBallEzBarPreacherCurl,
             42 => CurlExerciseName::TwistingStandingDumbbellBicepsCurl,
             43 => CurlExerciseName::WideGripEzBarBicepsCurl,
-            n => panic!("Unknown value: {}", n)
+            n => CurlExerciseName::UnknownValue(n)
         }
     }
 }
@@ -4828,6 +4936,7 @@ pub enum FlyeExerciseName {
     KneelingRearFlye,
     SingleArmStandingCableReverseFlye,
     SwissBallDumbbellFlye,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for FlyeExerciseName
@@ -4845,7 +4954,7 @@ impl<N> From<N> for FlyeExerciseName
             7 => FlyeExerciseName::SwissBallDumbbellFlye,
             8 => FlyeExerciseName::ArmRotations,
             9 => FlyeExerciseName::HugATree,
-            n => panic!("Unknown value: {}", n)
+            n => FlyeExerciseName::UnknownValue(n)
         }
     }
 }
@@ -4902,6 +5011,7 @@ pub enum HipRaiseExerciseName {
     WeightedSingleLegHipRaiseWithFootOnFoamRoller,
     WeightedSingleLegHipRaiseWithFootOnMedicineBall,
     WeightedSingleLegHipRaiseWithHeadOnBosuBall,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for HipRaiseExerciseName
@@ -4959,7 +5069,7 @@ impl<N> From<N> for HipRaiseExerciseName
             47 => HipRaiseExerciseName::LegCircles,
             48 => HipRaiseExerciseName::LegLift,
             49 => HipRaiseExerciseName::LegLiftInExternalRotation,
-            n => panic!("Unknown value: {}", n)
+            n => HipRaiseExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5000,6 +5110,7 @@ pub enum HipStabilityExerciseName {
     WeightedStandingHipAbduction,
     WeightedStandingRearLegRaise,
     WeightedSupineHipInternalRotation,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for HipStabilityExerciseName
@@ -5041,7 +5152,7 @@ impl<N> From<N> for HipStabilityExerciseName
             31 => HipStabilityExerciseName::WeightedStandingRearLegRaise,
             32 => HipStabilityExerciseName::SupineHipInternalRotation,
             33 => HipStabilityExerciseName::WeightedSupineHipInternalRotation,
-            n => panic!("Unknown value: {}", n)
+            n => HipStabilityExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5088,6 +5199,7 @@ pub enum HyperextensionExerciseName {
     WeightedSwissBallBackExtension,
     WeightedSwissBallHyperextension,
     WeightedSwissBallOppositeArmAndLegLift,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for HyperextensionExerciseName
@@ -5135,7 +5247,7 @@ impl<N> From<N> for HyperextensionExerciseName
             37 => HyperextensionExerciseName::SupermanOnSwissBall,
             38 => HyperextensionExerciseName::Cobra,
             39 => HyperextensionExerciseName::SupineFloorBarre,
-            n => panic!("Unknown value: {}", n)
+            n => HyperextensionExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5154,6 +5266,7 @@ pub enum LegCurlExerciseName {
     SwissBallHipRaiseAndLegCurl,
     WeightedLegCurl,
     ZercherGoodMorning,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LegCurlExerciseName
@@ -5173,7 +5286,7 @@ impl<N> From<N> for LegCurlExerciseName
             9 => LegCurlExerciseName::StaggeredStanceGoodMorning,
             10 => LegCurlExerciseName::SwissBallHipRaiseAndLegCurl,
             11 => LegCurlExerciseName::ZercherGoodMorning,
-            n => panic!("Unknown value: {}", n)
+            n => LegCurlExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5261,6 +5374,7 @@ pub enum LungeExerciseName {
     WeightedSlidingLateralLunge,
     WeightedWalkingLunge,
     WideGripOverheadBarbellSplitSquat,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for LungeExerciseName
@@ -5349,7 +5463,7 @@ impl<N> From<N> for LungeExerciseName
             78 => LungeExerciseName::WalkingLunge,
             79 => LungeExerciseName::WeightedWalkingLunge,
             80 => LungeExerciseName::WideGripOverheadBarbellSplitSquat,
-            n => panic!("Unknown value: {}", n)
+            n => LungeExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5491,6 +5605,7 @@ pub enum PlankExerciseName {
     WideStancePlankWithDiagonalLegLift,
     WideStancePlankWithLegLift,
     WideStancePlankWithOppositeArmAndLegLift,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for PlankExerciseName
@@ -5633,7 +5748,7 @@ impl<N> From<N> for PlankExerciseName
             132 => PlankExerciseName::PlankWithArmVariations,
             133 => PlankExerciseName::PlankWithLegLift,
             134 => PlankExerciseName::ReversePlankWithLegPull,
-            n => panic!("Unknown value: {}", n)
+            n => PlankExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5679,6 +5794,7 @@ pub enum PullUpExerciseName {
     WeightedWideGripPullUp,
     WideGripLatPulldown,
     WideGripPullUp,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for PullUpExerciseName
@@ -5725,7 +5841,7 @@ impl<N> From<N> for PullUpExerciseName
             36 => PullUpExerciseName::SuspendedChinUp,
             37 => PullUpExerciseName::WeightedSuspendedChinUp,
             38 => PullUpExerciseName::PullUp,
-            n => panic!("Unknown value: {}", n)
+            n => PullUpExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5766,6 +5882,7 @@ pub enum RowExerciseName {
     WeightedSuspendedInvertedRow,
     WeightedTowelGripInvertedRow,
     WideGripSeatedCableRow,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for RowExerciseName
@@ -5807,7 +5924,7 @@ impl<N> From<N> for RowExerciseName
             31 => RowExerciseName::UnderhandGripCableRow,
             32 => RowExerciseName::VGripCableRow,
             33 => RowExerciseName::WideGripSeatedCableRow,
-            n => panic!("Unknown value: {}", n)
+            n => RowExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5847,6 +5964,7 @@ pub enum ShoulderStabilityExerciseName {
     WeightedSwissBallTRaise,
     WeightedSwissBallWRaise,
     WeightedSwissBallYRaise,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for ShoulderStabilityExerciseName
@@ -5887,7 +6005,7 @@ impl<N> From<N> for ShoulderStabilityExerciseName
             30 => ShoulderStabilityExerciseName::WeightedSwissBallWRaise,
             31 => ShoulderStabilityExerciseName::SwissBallYRaise,
             32 => ShoulderStabilityExerciseName::WeightedSwissBallYRaise,
-            n => panic!("Unknown value: {}", n)
+            n => ShoulderStabilityExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5932,6 +6050,7 @@ pub enum SitUpExerciseName {
     WeightedVUp,
     WeightedXAbs,
     XAbs,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for SitUpExerciseName
@@ -5977,7 +6096,7 @@ impl<N> From<N> for SitUpExerciseName
             35 => SitUpExerciseName::XAbs,
             36 => SitUpExerciseName::WeightedXAbs,
             37 => SitUpExerciseName::SitUp,
-            n => panic!("Unknown value: {}", n)
+            n => SitUpExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5997,6 +6116,7 @@ pub enum TotalBodyExerciseName {
     WeightedSquatPlankPushUp,
     WeightedSquatThrusts,
     WeightedStandingTRotationBalance,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for TotalBodyExerciseName
@@ -6017,7 +6137,7 @@ impl<N> From<N> for TotalBodyExerciseName
             10 => TotalBodyExerciseName::WeightedSquatPlankPushUp,
             11 => TotalBodyExerciseName::StandingTRotationBalance,
             12 => TotalBodyExerciseName::WeightedStandingTRotationBalance,
-            n => panic!("Unknown value: {}", n)
+            n => TotalBodyExerciseName::UnknownValue(n)
         }
     }
 }
@@ -6055,6 +6175,7 @@ pub enum WarmUpExerciseName {
     WalkingLegCradles,
     Walkout,
     WalkoutFromPushUpPosition,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WarmUpExerciseName
@@ -6093,7 +6214,7 @@ impl<N> From<N> for WarmUpExerciseName
             28 => WarmUpExerciseName::WalkingLegCradles,
             29 => WarmUpExerciseName::Walkout,
             30 => WarmUpExerciseName::WalkoutFromPushUpPosition,
-            n => panic!("Unknown value: {}", n)
+            n => WarmUpExerciseName::UnknownValue(n)
         }
     }
 }
@@ -6104,6 +6225,7 @@ pub enum WaterType {
     En13319,
     Fresh,
     Salt,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for WaterType
@@ -6115,7 +6237,7 @@ impl<N> From<N> for WaterType
             1 => WaterType::Salt,
             2 => WaterType::En13319,
             3 => WaterType::Custom,
-            n => panic!("Unknown value: {}", n)
+            n => WaterType::UnknownValue(n)
         }
     }
 }
@@ -6125,6 +6247,7 @@ pub enum DiveGasStatus {
     BackupOnly,
     Disabled,
     Enabled,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DiveGasStatus
@@ -6135,7 +6258,7 @@ impl<N> From<N> for DiveGasStatus
             0 => DiveGasStatus::Disabled,
             1 => DiveGasStatus::Enabled,
             2 => DiveGasStatus::BackupOnly,
-            n => panic!("Unknown value: {}", n)
+            n => DiveGasStatus::UnknownValue(n)
         }
     }
 }
@@ -6144,6 +6267,7 @@ impl<N> From<N> for DiveGasStatus
 pub enum DiveBacklightMode {
     AlwaysOn,
     AtDepth,
+    UnknownValue(u64),
 }
 
 impl<N> From<N> for DiveBacklightMode
@@ -6153,7 +6277,7 @@ impl<N> From<N> for DiveBacklightMode
         match number.into() {
             0 => DiveBacklightMode::AtDepth,
             1 => DiveBacklightMode::AlwaysOn,
-            n => panic!("Unknown value: {}", n)
+            n => DiveBacklightMode::UnknownValue(n)
         }
     }
 }
