@@ -1,10 +1,11 @@
 use std::result;
-use std::io::{Cursor, Read};
 
-use byteorder::ReadBytesExt;
 use nom::{le_u8, be_u16, le_u16, le_u32};
 
-use crate::messages::{MessageType};
+use crate::{
+    fields::FieldDefinition,
+    messages::MessageType,
+};
 
 #[derive(Debug)]
 pub enum ParserError {
@@ -58,50 +59,10 @@ impl RecordHeader {
 }
 
 #[derive(Clone, Debug)]
-struct Field {
-    number: u8,
-    size: usize,
-    base_type: u8,
-}
-
-impl Field {
-    fn base_size(&self) -> usize {
-        match self.base_type {
-            0 => 1,
-            1 => 1,
-            2 => 1,
-            3 => 2,
-            4 => 2,
-            5 => 4,
-            6 => 4,
-            7 => 1,
-            8 => 4,
-            9 => 8,
-            10 => 1,
-            11 => 2,
-            12 => 4,
-            13 => 1,
-            14 => 8,
-            15 => 8,
-            16 => 8,
-            _ => panic!("impossible base type: {}", self.base_type),
-        }
-    }
-
-    fn value_count(&self) -> usize {
-        match self.base_type {
-            7 => 1,
-            13 => 1,
-            _ => self.size / self.base_size(),
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
 struct DataDefinition {
     architecture: u8,
     global_message: MessageType,
-    fields: Vec<Field>,
+    fields: Vec<FieldDefinition>,
 }
 
 named!(
@@ -131,30 +92,8 @@ named!(
     bits!(alt!(normal_header | compressed_header))
 );
 
-#[derive(Debug)]
-enum FieldContent {
-    Enum(u8),
-    SignedInt8(i8),
-    UnsignedInt8(u8),
-    SignedInt16(i16),
-    UnsignedInt16(u16),
-    SignedInt32(i32),
-    UnsignedInt32(u32),
-    String(String),
-    Float32(f32),
-    Float64(f64),
-    UnsignedInt8z(u8),
-    UnsignedInt16z(u16),
-    UnsignedInt32z(u32),
-    ByteArray(Vec<u8>),
-    SignedInt64(i64),
-    UnsignedInt64(u64),
-    UnsignedInt64z(u64),
-    Invalid,
-}
-
 named_args!(
-    fields(num_fields: usize)<&[u8], Vec<Field>>,
+    fields(num_fields: usize)<&[u8], Vec<FieldDefinition>>,
     many_m_n!(
         num_fields,
         num_fields,
@@ -162,7 +101,7 @@ named_args!(
             number: le_u8
             >> size: map!(le_u8, |b| b as usize)
             >> base_type: map!(le_u8, |b| b & 0x0F) // just take the bits for the base type number
-            >> (Field { number, size, base_type })
+            >> (FieldDefinition::new(number, size, base_type))
         )
     )
 );
@@ -187,48 +126,6 @@ fn data_definition<'i>(input: &'i [u8]) -> nom::IResult<&'i [u8], DataDefinition
             fields
         }
     ))
-}
-
-fn field_content<'i, Order: byteorder::ByteOrder>(input: &'i [u8], field: &Field)
-    -> result::Result<(&'i [u8], Vec<FieldContent>), std::io::Error>
-{
-    let mut cursor = Cursor::new(input);
-    let data = (0..field.value_count()).map({ |_|
-        match field.base_type {
-            0 => Ok(FieldContent::Enum(cursor.read_u8()?)),
-            1 => Ok(FieldContent::SignedInt8(cursor.read_i8()?)),
-            2 => Ok(FieldContent::UnsignedInt8(cursor.read_u8()?)),
-            3 => Ok(FieldContent::SignedInt16(cursor.read_i16::<Order>()?)),
-            4 => Ok(FieldContent::UnsignedInt16(cursor.read_u16::<Order>()?)),
-            5 => Ok(FieldContent::SignedInt32(cursor.read_i32::<Order>()?)),
-            6 => Ok(FieldContent::UnsignedInt32(cursor.read_u32::<Order>()?)),
-            7 => {
-                let mut data = vec![0; field.size];
-                cursor.read_exact(&mut data)?;
-
-                let mut iter = data.splitn(2, |b| *b == 0);
-                let string = String::from_utf8_lossy(iter.next().expect("should have at least one item"));
-                Ok(FieldContent::String(string.into_owned()))
-            },
-            8 => Ok(FieldContent::Float32(cursor.read_f32::<Order>()?)),
-            9 => Ok(FieldContent::Float64(cursor.read_f64::<Order>()?)),
-            10 => Ok(FieldContent::UnsignedInt8z(cursor.read_u8()?)),
-            11 => Ok(FieldContent::UnsignedInt16z(cursor.read_u16::<Order>()?)),
-            12 => Ok(FieldContent::UnsignedInt32z(cursor.read_u32::<Order>()?)),
-            13 => {
-                let mut data = Vec::with_capacity(field.size);
-                cursor.read_exact(&mut data)?;
-                Ok(FieldContent::ByteArray(data))
-            },
-            14 => Ok(FieldContent::SignedInt64(cursor.read_i64::<Order>()?)),
-            15 => Ok(FieldContent::UnsignedInt64(cursor.read_u64::<Order>()?)),
-            16 => Ok(FieldContent::UnsignedInt64z(cursor.read_u64::<Order>()?)),
-            _ => panic!("impossible base type: {}", field.base_type),
-        }
-    }).map({ |content: result::Result<FieldContent, std::io::Error>|
-        content.unwrap_or(FieldContent::Invalid)
-    }).collect();
-    Ok((&input[field.size..], data))
 }
 
 named!(
@@ -269,12 +166,12 @@ fn file<'i>(input: &'i [u8]) -> nom::IResult<&'i [u8], ()> {
                     remaining = record_header.0;
                     for field in data_definition.fields.iter() {
                         let field_content = if data_definition.architecture == BIG_ENDIANNESS {
-                            field_content::<byteorder::BE>(remaining, field)
+                            field.content_from_bytes::<byteorder::BE>(remaining)
                         } else {
-                            field_content::<byteorder::LE>(remaining, field)
+                            field.content_from_bytes::<byteorder::LE>(remaining)
                         }.unwrap();
 
-                        println!("\t{} (size {}) = {:?}", field.number, field.size, field_content.1);
+                        println!("\t{:?} = {:?}", field, field_content.1);
                         remaining = field_content.0;
                     }
                 },

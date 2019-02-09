@@ -3,6 +3,7 @@ extern crate nom;
 extern crate byteorder;
 
 mod data_types;
+mod fields;
 mod messages;
 mod parser;
 mod types;
