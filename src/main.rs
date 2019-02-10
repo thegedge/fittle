@@ -3,10 +3,10 @@ extern crate nom;
 extern crate byteorder;
 
 mod data_types;
+mod enums;
 mod fields;
 mod messages;
 mod parser;
-mod types;
 
 use std::io::prelude::*;
 use std::io;

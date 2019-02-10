@@ -52,6 +52,212 @@ impl<N> From<N> for File
 }
 
 #[derive(Clone, Debug)]
+pub enum MesgNum {
+    AccelerometerData,
+    Activity,
+    AntChannelId,
+    AntRx,
+    AntTx,
+    AviationAttitude,
+    BarometerData,
+    BikeProfile,
+    BloodPressure,
+    CadenceZone,
+    CameraEvent,
+    Capabilities,
+    Connectivity,
+    Course,
+    CoursePoint,
+    DeveloperDataId,
+    DeviceInfo,
+    DeviceSettings,
+    DiveAlarm,
+    DiveGas,
+    DiveSettings,
+    DiveSummary,
+    Event,
+    ExdDataConceptConfiguration,
+    ExdDataFieldConfiguration,
+    ExdScreenConfiguration,
+    ExerciseTitle,
+    FieldCapabilities,
+    FieldDescription,
+    FileCapabilities,
+    FileCreator,
+    FileId,
+    Goal,
+    GpsMetadata,
+    GyroscopeData,
+    Hr,
+    HrZone,
+    HrmProfile,
+    Hrv,
+    Lap,
+    Length,
+    MagnetometerData,
+    MemoGlob,
+    MesgCapabilities,
+    MetZone,
+    Monitoring,
+    MonitoringInfo,
+    NmeaSentence,
+    ObdiiData,
+    OhrSettings,
+    OneDSensorCalibration,
+    Pad,
+    PowerZone,
+    Record,
+    Schedule,
+    SdmProfile,
+    SegmentFile,
+    SegmentId,
+    SegmentLap,
+    SegmentLeaderboardEntry,
+    SegmentPoint,
+    Session,
+    Set,
+    SlaveDevice,
+    Software,
+    SpeedZone,
+    Sport,
+    StressLevel,
+    ThreeDSensorCalibration,
+    TimestampCorrelation,
+    Totals,
+    TrainingFile,
+    UserProfile,
+    Video,
+    VideoClip,
+    VideoDescription,
+    VideoFrame,
+    VideoTitle,
+    WatchfaceSettings,
+    WeatherAlert,
+    WeatherConditions,
+    WeightScale,
+    Workout,
+    WorkoutSession,
+    WorkoutStep,
+    ZonesTarget,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for MesgNum
+    where N: Into<u64>
+{
+    fn from(number: N) -> MesgNum {
+        match number.into() {
+            0 => MesgNum::FileId,
+            1 => MesgNum::Capabilities,
+            2 => MesgNum::DeviceSettings,
+            3 => MesgNum::UserProfile,
+            4 => MesgNum::HrmProfile,
+            5 => MesgNum::SdmProfile,
+            6 => MesgNum::BikeProfile,
+            7 => MesgNum::ZonesTarget,
+            8 => MesgNum::HrZone,
+            9 => MesgNum::PowerZone,
+            10 => MesgNum::MetZone,
+            12 => MesgNum::Sport,
+            15 => MesgNum::Goal,
+            18 => MesgNum::Session,
+            19 => MesgNum::Lap,
+            20 => MesgNum::Record,
+            21 => MesgNum::Event,
+            23 => MesgNum::DeviceInfo,
+            26 => MesgNum::Workout,
+            27 => MesgNum::WorkoutStep,
+            28 => MesgNum::Schedule,
+            30 => MesgNum::WeightScale,
+            31 => MesgNum::Course,
+            32 => MesgNum::CoursePoint,
+            33 => MesgNum::Totals,
+            34 => MesgNum::Activity,
+            35 => MesgNum::Software,
+            37 => MesgNum::FileCapabilities,
+            38 => MesgNum::MesgCapabilities,
+            39 => MesgNum::FieldCapabilities,
+            49 => MesgNum::FileCreator,
+            51 => MesgNum::BloodPressure,
+            53 => MesgNum::SpeedZone,
+            55 => MesgNum::Monitoring,
+            72 => MesgNum::TrainingFile,
+            78 => MesgNum::Hrv,
+            80 => MesgNum::AntRx,
+            81 => MesgNum::AntTx,
+            82 => MesgNum::AntChannelId,
+            101 => MesgNum::Length,
+            103 => MesgNum::MonitoringInfo,
+            105 => MesgNum::Pad,
+            106 => MesgNum::SlaveDevice,
+            127 => MesgNum::Connectivity,
+            128 => MesgNum::WeatherConditions,
+            129 => MesgNum::WeatherAlert,
+            131 => MesgNum::CadenceZone,
+            132 => MesgNum::Hr,
+            142 => MesgNum::SegmentLap,
+            145 => MesgNum::MemoGlob,
+            148 => MesgNum::SegmentId,
+            149 => MesgNum::SegmentLeaderboardEntry,
+            150 => MesgNum::SegmentPoint,
+            151 => MesgNum::SegmentFile,
+            158 => MesgNum::WorkoutSession,
+            159 => MesgNum::WatchfaceSettings,
+            160 => MesgNum::GpsMetadata,
+            161 => MesgNum::CameraEvent,
+            162 => MesgNum::TimestampCorrelation,
+            164 => MesgNum::GyroscopeData,
+            165 => MesgNum::AccelerometerData,
+            167 => MesgNum::ThreeDSensorCalibration,
+            169 => MesgNum::VideoFrame,
+            174 => MesgNum::ObdiiData,
+            177 => MesgNum::NmeaSentence,
+            178 => MesgNum::AviationAttitude,
+            184 => MesgNum::Video,
+            185 => MesgNum::VideoTitle,
+            186 => MesgNum::VideoDescription,
+            187 => MesgNum::VideoClip,
+            188 => MesgNum::OhrSettings,
+            200 => MesgNum::ExdScreenConfiguration,
+            201 => MesgNum::ExdDataFieldConfiguration,
+            202 => MesgNum::ExdDataConceptConfiguration,
+            206 => MesgNum::FieldDescription,
+            207 => MesgNum::DeveloperDataId,
+            208 => MesgNum::MagnetometerData,
+            209 => MesgNum::BarometerData,
+            210 => MesgNum::OneDSensorCalibration,
+            225 => MesgNum::Set,
+            227 => MesgNum::StressLevel,
+            258 => MesgNum::DiveSettings,
+            259 => MesgNum::DiveGas,
+            262 => MesgNum::DiveAlarm,
+            264 => MesgNum::ExerciseTitle,
+            268 => MesgNum::DiveSummary,
+            n => MesgNum::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum Checksum {
+    Clear,
+    Ok,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for Checksum
+    where N: Into<u64>
+{
+    fn from(number: N) -> Checksum {
+        match number.into() {
+            0 => Checksum::Clear,
+            1 => Checksum::Ok,
+            n => Checksum::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum FileFlags {
     Erase,
     Read,
@@ -278,152 +484,228 @@ impl<N> From<N> for Language
 }
 
 #[derive(Clone, Debug)]
-pub enum LanguageBits0 {
-    Croatian,
-    Czech,
-    Danish,
-    English,
-    French,
-    German,
-    Italian,
-    Spanish,
+pub enum TimeZone {
+    Adelaide,
+    Alberta,
+    Almaty,
+    Amsterdam,
+    Athens,
+    Auckland,
+    AustraliaLh,
+    Automatic,
+    Bangkok,
+    Barcelona,
+    Berlin,
+    Boise,
+    Bombay,
+    Boston,
+    Brasilia,
+    Brisbane,
+    BritishColumbia,
+    Brussels,
+    Budapest,
+    Cairo,
+    CapeTown,
+    CapeVerdeIs,
+    Chicago,
+    Chita,
+    Copenhagen,
+    Dallas,
+    Darwin,
+    Denver,
+    Dublin,
+    Ekaterinburg,
+    Eniwetok,
+    EuropeCentralCet,
+    EuropeEasternEet,
+    EuropeWesternWet,
+    Fiji,
+    Helsinki,
+    HongKong,
+    Iceland,
+    Irkutsk,
+    Islamabad,
+    Jakarta,
+    Kabul,
+    Kaliningrad,
+    KansasCity,
+    Kathmandu,
+    Krasnoyarsk,
+    Lagos,
+    LasVegas,
+    Lisbon,
+    London,
+    LosAngeles,
+    Madrid,
+    Magadan,
+    Manitoba,
+    Manual,
+    MexicoCentral,
+    MexicoMountain,
+    MexicoPacific,
+    Miami,
+    MidAtlantic,
+    Minneapolis,
+    Moscow,
+    Munich,
+    Muscat,
+    NewOrleans,
+    NewYork,
+    Newfoundland,
+    Novosibirsk,
+    Ontario,
+    Oslo,
+    Other,
+    Paris,
+    Perth,
+    PetropavlovskKamchatskiy,
+    Phoenix,
+    Prague,
+    Quebec,
+    Reykjavik,
+    Riyahd,
+    Rome,
+    Samara,
+    Samoa,
+    SantaFe,
+    Santiago,
+    Saskatchewan,
+    Seattle,
+    Stockholm,
+    Sydney,
+    Tasmania,
+    Tehran,
+    Tokyo,
+    UsAlaska,
+    UsArizona,
+    UsAtlantic,
+    UsCentral,
+    UsEastern,
+    UsHawaii,
+    UsMountain,
+    UsPacific,
+    Venezuela,
+    Vienna,
+    Vladivostok,
+    Warsaw,
+    WashingtonDc,
+    Winkhoek,
+    Zurich,
     UnknownValue(u64),
 }
 
-impl<N> From<N> for LanguageBits0
+impl<N> From<N> for TimeZone
     where N: Into<u64>
 {
-    fn from(number: N) -> LanguageBits0 {
+    fn from(number: N) -> TimeZone {
         match number.into() {
-            1 => LanguageBits0::English,
-            2 => LanguageBits0::French,
-            4 => LanguageBits0::Italian,
-            8 => LanguageBits0::German,
-            16 => LanguageBits0::Spanish,
-            32 => LanguageBits0::Croatian,
-            64 => LanguageBits0::Czech,
-            128 => LanguageBits0::Danish,
-            n => LanguageBits0::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum LanguageBits1 {
-    Dutch,
-    Finnish,
-    Greek,
-    Hungarian,
-    Norwegian,
-    Polish,
-    Portuguese,
-    Slovakian,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for LanguageBits1
-    where N: Into<u64>
-{
-    fn from(number: N) -> LanguageBits1 {
-        match number.into() {
-            1 => LanguageBits1::Dutch,
-            2 => LanguageBits1::Finnish,
-            4 => LanguageBits1::Greek,
-            8 => LanguageBits1::Hungarian,
-            16 => LanguageBits1::Norwegian,
-            32 => LanguageBits1::Polish,
-            64 => LanguageBits1::Portuguese,
-            128 => LanguageBits1::Slovakian,
-            n => LanguageBits1::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum LanguageBits2 {
-    Arabic,
-    Farsi,
-    Latvian,
-    Russian,
-    Slovenian,
-    Swedish,
-    Turkish,
-    Ukrainian,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for LanguageBits2
-    where N: Into<u64>
-{
-    fn from(number: N) -> LanguageBits2 {
-        match number.into() {
-            1 => LanguageBits2::Slovenian,
-            2 => LanguageBits2::Swedish,
-            4 => LanguageBits2::Russian,
-            8 => LanguageBits2::Turkish,
-            16 => LanguageBits2::Latvian,
-            32 => LanguageBits2::Ukrainian,
-            64 => LanguageBits2::Arabic,
-            128 => LanguageBits2::Farsi,
-            n => LanguageBits2::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum LanguageBits3 {
-    Bulgarian,
-    Chinese,
-    Hebrew,
-    Japanese,
-    Korean,
-    Romanian,
-    Taiwanese,
-    Thai,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for LanguageBits3
-    where N: Into<u64>
-{
-    fn from(number: N) -> LanguageBits3 {
-        match number.into() {
-            1 => LanguageBits3::Bulgarian,
-            2 => LanguageBits3::Romanian,
-            4 => LanguageBits3::Chinese,
-            8 => LanguageBits3::Japanese,
-            16 => LanguageBits3::Korean,
-            32 => LanguageBits3::Taiwanese,
-            64 => LanguageBits3::Thai,
-            128 => LanguageBits3::Hebrew,
-            n => LanguageBits3::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum LanguageBits4 {
-    BrazilianPortuguese,
-    Burmese,
-    Indonesian,
-    Malaysian,
-    Mongolian,
-    Vietnamese,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for LanguageBits4
-    where N: Into<u64>
-{
-    fn from(number: N) -> LanguageBits4 {
-        match number.into() {
-            1 => LanguageBits4::BrazilianPortuguese,
-            2 => LanguageBits4::Indonesian,
-            4 => LanguageBits4::Malaysian,
-            8 => LanguageBits4::Vietnamese,
-            16 => LanguageBits4::Burmese,
-            32 => LanguageBits4::Mongolian,
-            n => LanguageBits4::UnknownValue(n)
+            0 => TimeZone::Almaty,
+            1 => TimeZone::Bangkok,
+            2 => TimeZone::Bombay,
+            3 => TimeZone::Brasilia,
+            4 => TimeZone::Cairo,
+            5 => TimeZone::CapeVerdeIs,
+            6 => TimeZone::Darwin,
+            7 => TimeZone::Eniwetok,
+            8 => TimeZone::Fiji,
+            9 => TimeZone::HongKong,
+            10 => TimeZone::Islamabad,
+            11 => TimeZone::Kabul,
+            12 => TimeZone::Magadan,
+            13 => TimeZone::MidAtlantic,
+            14 => TimeZone::Moscow,
+            15 => TimeZone::Muscat,
+            16 => TimeZone::Newfoundland,
+            17 => TimeZone::Samoa,
+            18 => TimeZone::Sydney,
+            19 => TimeZone::Tehran,
+            20 => TimeZone::Tokyo,
+            21 => TimeZone::UsAlaska,
+            22 => TimeZone::UsAtlantic,
+            23 => TimeZone::UsCentral,
+            24 => TimeZone::UsEastern,
+            25 => TimeZone::UsHawaii,
+            26 => TimeZone::UsMountain,
+            27 => TimeZone::UsPacific,
+            28 => TimeZone::Other,
+            29 => TimeZone::Auckland,
+            30 => TimeZone::Kathmandu,
+            31 => TimeZone::EuropeWesternWet,
+            32 => TimeZone::EuropeCentralCet,
+            33 => TimeZone::EuropeEasternEet,
+            34 => TimeZone::Jakarta,
+            35 => TimeZone::Perth,
+            36 => TimeZone::Adelaide,
+            37 => TimeZone::Brisbane,
+            38 => TimeZone::Tasmania,
+            39 => TimeZone::Iceland,
+            40 => TimeZone::Amsterdam,
+            41 => TimeZone::Athens,
+            42 => TimeZone::Barcelona,
+            43 => TimeZone::Berlin,
+            44 => TimeZone::Brussels,
+            45 => TimeZone::Budapest,
+            46 => TimeZone::Copenhagen,
+            47 => TimeZone::Dublin,
+            48 => TimeZone::Helsinki,
+            49 => TimeZone::Lisbon,
+            50 => TimeZone::London,
+            51 => TimeZone::Madrid,
+            52 => TimeZone::Munich,
+            53 => TimeZone::Oslo,
+            54 => TimeZone::Paris,
+            55 => TimeZone::Prague,
+            56 => TimeZone::Reykjavik,
+            57 => TimeZone::Rome,
+            58 => TimeZone::Stockholm,
+            59 => TimeZone::Vienna,
+            60 => TimeZone::Warsaw,
+            61 => TimeZone::Zurich,
+            62 => TimeZone::Quebec,
+            63 => TimeZone::Ontario,
+            64 => TimeZone::Manitoba,
+            65 => TimeZone::Saskatchewan,
+            66 => TimeZone::Alberta,
+            67 => TimeZone::BritishColumbia,
+            68 => TimeZone::Boise,
+            69 => TimeZone::Boston,
+            70 => TimeZone::Chicago,
+            71 => TimeZone::Dallas,
+            72 => TimeZone::Denver,
+            73 => TimeZone::KansasCity,
+            74 => TimeZone::LasVegas,
+            75 => TimeZone::LosAngeles,
+            76 => TimeZone::Miami,
+            77 => TimeZone::Minneapolis,
+            78 => TimeZone::NewYork,
+            79 => TimeZone::NewOrleans,
+            80 => TimeZone::Phoenix,
+            81 => TimeZone::SantaFe,
+            82 => TimeZone::Seattle,
+            83 => TimeZone::WashingtonDc,
+            84 => TimeZone::UsArizona,
+            85 => TimeZone::Chita,
+            86 => TimeZone::Ekaterinburg,
+            87 => TimeZone::Irkutsk,
+            88 => TimeZone::Kaliningrad,
+            89 => TimeZone::Krasnoyarsk,
+            90 => TimeZone::Novosibirsk,
+            91 => TimeZone::PetropavlovskKamchatskiy,
+            92 => TimeZone::Samara,
+            93 => TimeZone::Vladivostok,
+            94 => TimeZone::MexicoCentral,
+            95 => TimeZone::MexicoMountain,
+            96 => TimeZone::MexicoPacific,
+            97 => TimeZone::CapeTown,
+            98 => TimeZone::Winkhoek,
+            99 => TimeZone::Lagos,
+            100 => TimeZone::Riyahd,
+            101 => TimeZone::Venezuela,
+            102 => TimeZone::AustraliaLh,
+            103 => TimeZone::Santiago,
+            253 => TimeZone::Manual,
+            254 => TimeZone::Automatic,
+            n => TimeZone::UnknownValue(n)
         }
     }
 }
@@ -610,204 +892,116 @@ impl<N> From<N> for Switch
 }
 
 #[derive(Clone, Debug)]
-pub enum SportBits0 {
-    Basketball,
-    Cycling,
-    FitnessEquipment,
-    Generic,
-    Running,
-    Soccer,
-    Swimming,
-    Transition,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for SportBits0
-    where N: Into<u64>
-{
-    fn from(number: N) -> SportBits0 {
-        match number.into() {
-            1 => SportBits0::Generic,
-            2 => SportBits0::Running,
-            4 => SportBits0::Cycling,
-            8 => SportBits0::Transition,
-            16 => SportBits0::FitnessEquipment,
-            32 => SportBits0::Swimming,
-            64 => SportBits0::Basketball,
-            128 => SportBits0::Soccer,
-            n => SportBits0::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum SportBits1 {
+pub enum Sport {
+    All,
     AlpineSkiing,
     AmericanFootball,
-    CrossCountrySkiing,
-    Rowing,
-    Snowboarding,
-    Tennis,
-    Training,
-    Walking,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for SportBits1
-    where N: Into<u64>
-{
-    fn from(number: N) -> SportBits1 {
-        match number.into() {
-            1 => SportBits1::Tennis,
-            2 => SportBits1::AmericanFootball,
-            4 => SportBits1::Training,
-            8 => SportBits1::Walking,
-            16 => SportBits1::CrossCountrySkiing,
-            32 => SportBits1::AlpineSkiing,
-            64 => SportBits1::Snowboarding,
-            128 => SportBits1::Rowing,
-            n => SportBits1::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum SportBits2 {
+    Basketball,
     Boating,
+    Boxing,
+    CrossCountrySkiing,
+    Cycling,
+    Driving,
     EBiking,
+    Fishing,
+    FitnessEquipment,
+    FloorClimbing,
     Flying,
+    Generic,
+    Golf,
+    HangGliding,
     Hiking,
+    HorsebackRiding,
+    Hunting,
+    IceSkating,
+    InlineSkating,
+    Jumpmaster,
+    Kayaking,
+    Kitesurfing,
     Motorcycling,
     Mountaineering,
     Multisport,
     Paddling,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for SportBits2
-    where N: Into<u64>
-{
-    fn from(number: N) -> SportBits2 {
-        match number.into() {
-            1 => SportBits2::Mountaineering,
-            2 => SportBits2::Hiking,
-            4 => SportBits2::Multisport,
-            8 => SportBits2::Paddling,
-            16 => SportBits2::Flying,
-            32 => SportBits2::EBiking,
-            64 => SportBits2::Motorcycling,
-            128 => SportBits2::Boating,
-            n => SportBits2::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum SportBits3 {
-    Driving,
-    Fishing,
-    Golf,
-    HangGliding,
-    HorsebackRiding,
-    Hunting,
-    InlineSkating,
+    Rafting,
     RockClimbing,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for SportBits3
-    where N: Into<u64>
-{
-    fn from(number: N) -> SportBits3 {
-        match number.into() {
-            1 => SportBits3::Driving,
-            2 => SportBits3::Golf,
-            4 => SportBits3::HangGliding,
-            8 => SportBits3::HorsebackRiding,
-            16 => SportBits3::Hunting,
-            32 => SportBits3::Fishing,
-            64 => SportBits3::InlineSkating,
-            128 => SportBits3::RockClimbing,
-            n => SportBits3::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum SportBits4 {
-    IceSkating,
+    Rowing,
+    Running,
     Sailing,
     SkyDiving,
+    Snowboarding,
     Snowmobiling,
     Snowshoeing,
+    Soccer,
     StandUpPaddleboarding,
     Surfing,
-    Wakeboarding,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for SportBits4
-    where N: Into<u64>
-{
-    fn from(number: N) -> SportBits4 {
-        match number.into() {
-            1 => SportBits4::Sailing,
-            2 => SportBits4::IceSkating,
-            4 => SportBits4::SkyDiving,
-            8 => SportBits4::Snowshoeing,
-            16 => SportBits4::Snowmobiling,
-            32 => SportBits4::StandUpPaddleboarding,
-            64 => SportBits4::Surfing,
-            128 => SportBits4::Wakeboarding,
-            n => SportBits4::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum SportBits5 {
-    Boxing,
-    Jumpmaster,
-    Kayaking,
-    Kitesurfing,
-    Rafting,
+    Swimming,
     Tactical,
+    Tennis,
+    Training,
+    Transition,
+    Wakeboarding,
+    Walking,
     WaterSkiing,
     Windsurfing,
     UnknownValue(u64),
 }
 
-impl<N> From<N> for SportBits5
+impl<N> From<N> for Sport
     where N: Into<u64>
 {
-    fn from(number: N) -> SportBits5 {
+    fn from(number: N) -> Sport {
         match number.into() {
-            1 => SportBits5::WaterSkiing,
-            2 => SportBits5::Kayaking,
-            4 => SportBits5::Rafting,
-            8 => SportBits5::Windsurfing,
-            16 => SportBits5::Kitesurfing,
-            32 => SportBits5::Tactical,
-            64 => SportBits5::Jumpmaster,
-            128 => SportBits5::Boxing,
-            n => SportBits5::UnknownValue(n)
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum SportBits6 {
-    FloorClimbing,
-    UnknownValue(u64),
-}
-
-impl<N> From<N> for SportBits6
-    where N: Into<u64>
-{
-    fn from(number: N) -> SportBits6 {
-        match number.into() {
-            1 => SportBits6::FloorClimbing,
-            n => SportBits6::UnknownValue(n)
+            0 => Sport::Generic,
+            1 => Sport::Running,
+            2 => Sport::Cycling,
+            3 => Sport::Transition,
+            4 => Sport::FitnessEquipment,
+            5 => Sport::Swimming,
+            6 => Sport::Basketball,
+            7 => Sport::Soccer,
+            8 => Sport::Tennis,
+            9 => Sport::AmericanFootball,
+            10 => Sport::Training,
+            11 => Sport::Walking,
+            12 => Sport::CrossCountrySkiing,
+            13 => Sport::AlpineSkiing,
+            14 => Sport::Snowboarding,
+            15 => Sport::Rowing,
+            16 => Sport::Mountaineering,
+            17 => Sport::Hiking,
+            18 => Sport::Multisport,
+            19 => Sport::Paddling,
+            20 => Sport::Flying,
+            21 => Sport::EBiking,
+            22 => Sport::Motorcycling,
+            23 => Sport::Boating,
+            24 => Sport::Driving,
+            25 => Sport::Golf,
+            26 => Sport::HangGliding,
+            27 => Sport::HorsebackRiding,
+            28 => Sport::Hunting,
+            29 => Sport::Fishing,
+            30 => Sport::InlineSkating,
+            31 => Sport::RockClimbing,
+            32 => Sport::Sailing,
+            33 => Sport::IceSkating,
+            34 => Sport::SkyDiving,
+            35 => Sport::Snowshoeing,
+            36 => Sport::Snowmobiling,
+            37 => Sport::StandUpPaddleboarding,
+            38 => Sport::Surfing,
+            39 => Sport::Wakeboarding,
+            40 => Sport::WaterSkiing,
+            41 => Sport::Kayaking,
+            42 => Sport::Rafting,
+            43 => Sport::Windsurfing,
+            44 => Sport::Kitesurfing,
+            45 => Sport::Tactical,
+            46 => Sport::Jumpmaster,
+            47 => Sport::Boxing,
+            48 => Sport::FloorClimbing,
+            254 => Sport::All,
+            n => Sport::UnknownValue(n)
         }
     }
 }
@@ -1137,6 +1331,35 @@ impl<N> From<N> for TimeMode
 }
 
 #[derive(Clone, Debug)]
+pub enum BacklightMode {
+    AutoBrightness,
+    KeyAndMessages,
+    KeyAndMessagesAndSmartNotifications,
+    KeyAndMessagesNight,
+    Manual,
+    Off,
+    SmartNotifications,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for BacklightMode
+    where N: Into<u64>
+{
+    fn from(number: N) -> BacklightMode {
+        match number.into() {
+            0 => BacklightMode::Off,
+            1 => BacklightMode::Manual,
+            2 => BacklightMode::KeyAndMessages,
+            3 => BacklightMode::AutoBrightness,
+            4 => BacklightMode::SmartNotifications,
+            5 => BacklightMode::KeyAndMessagesNight,
+            6 => BacklightMode::KeyAndMessagesAndSmartNotifications,
+            n => BacklightMode::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum DateMode {
     DayMonth,
     MonthDay,
@@ -1151,6 +1374,23 @@ impl<N> From<N> for DateMode
             0 => DateMode::DayMonth,
             1 => DateMode::MonthDay,
             n => DateMode::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum BacklightTimeout {
+    Infinite,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for BacklightTimeout
+    where N: Into<u64>
+{
+    fn from(number: N) -> BacklightTimeout {
+        match number.into() {
+            0 => BacklightTimeout::Infinite,
+            n => BacklightTimeout::UnknownValue(n)
         }
     }
 }
@@ -1340,6 +1580,29 @@ impl<N> From<N> for Tone
             2 => Tone::Vibrate,
             3 => Tone::ToneAndVibrate,
             n => Tone::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum Autoscroll {
+    Fast,
+    Medium,
+    None,
+    Slow,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for Autoscroll
+    where N: Into<u64>
+{
+    fn from(number: N) -> Autoscroll {
+        match number.into() {
+            0 => Autoscroll::None,
+            1 => Autoscroll::Slow,
+            2 => Autoscroll::Medium,
+            3 => Autoscroll::Fast,
+            n => Autoscroll::UnknownValue(n)
         }
     }
 }
@@ -1596,6 +1859,25 @@ impl<N> From<N> for GoalSource
             1 => GoalSource::Community,
             2 => GoalSource::User,
             n => GoalSource::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum Schedule {
+    Course,
+    Workout,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for Schedule
+    where N: Into<u64>
+{
+    fn from(number: N) -> Schedule {
+        match number.into() {
+            0 => Schedule::Workout,
+            1 => Schedule::Course,
+            n => Schedule::UnknownValue(n)
         }
     }
 }
@@ -2816,6 +3098,25 @@ impl<N> From<N> for Side
 }
 
 #[derive(Clone, Debug)]
+pub enum LeftRightBalance {
+    Mask,
+    Right,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for LeftRightBalance
+    where N: Into<u64>
+{
+    fn from(number: N) -> LeftRightBalance {
+        match number.into() {
+            127 => LeftRightBalance::Mask,
+            128 => LeftRightBalance::Right,
+            n => LeftRightBalance::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum LeftRightBalance100 {
     Mask,
     Right,
@@ -2878,6 +3179,85 @@ impl<N> From<N> for DayOfWeek
             5 => DayOfWeek::Friday,
             6 => DayOfWeek::Saturday,
             n => DayOfWeek::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum ConnectivityCapabilities {
+    ActivityUpload,
+    Ant,
+    AudioPrompts,
+    Bluetooth,
+    BluetoothLe,
+    ConnectIqAppDownload,
+    ConnectIqAppManagment,
+    ConnectIqDataFieldDownload,
+    ConnectIqWatchAppDownload,
+    ConnectIqWatchFaceDownload,
+    ConnectIqWidgetDownload,
+    ContinueSyncAfterSoftwareUpdate,
+    CourseDownload,
+    DeviceInitiatesSync,
+    ExplicitArchive,
+    FindMyWatch,
+    GolfCourseDownload,
+    GpsEphemerisDownload,
+    IncidentDetection,
+    InstantInput,
+    LiveTrack,
+    LiveTrackAutoStart,
+    LiveTrackMessaging,
+    RemoteManualSync,
+    SetupIncomplete,
+    SwingSensor,
+    SwingSensorRemote,
+    TrueUp,
+    WeatherAlerts,
+    WeatherConditions,
+    WifiVerification,
+    WorkoutDownload,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for ConnectivityCapabilities
+    where N: Into<u64>
+{
+    fn from(number: N) -> ConnectivityCapabilities {
+        match number.into() {
+            1 => ConnectivityCapabilities::Bluetooth,
+            2 => ConnectivityCapabilities::BluetoothLe,
+            4 => ConnectivityCapabilities::Ant,
+            8 => ConnectivityCapabilities::ActivityUpload,
+            16 => ConnectivityCapabilities::CourseDownload,
+            32 => ConnectivityCapabilities::WorkoutDownload,
+            64 => ConnectivityCapabilities::LiveTrack,
+            128 => ConnectivityCapabilities::WeatherConditions,
+            256 => ConnectivityCapabilities::WeatherAlerts,
+            512 => ConnectivityCapabilities::GpsEphemerisDownload,
+            1024 => ConnectivityCapabilities::ExplicitArchive,
+            2048 => ConnectivityCapabilities::SetupIncomplete,
+            4096 => ConnectivityCapabilities::ContinueSyncAfterSoftwareUpdate,
+            8192 => ConnectivityCapabilities::ConnectIqAppDownload,
+            16384 => ConnectivityCapabilities::GolfCourseDownload,
+            32768 => ConnectivityCapabilities::DeviceInitiatesSync,
+            65536 => ConnectivityCapabilities::ConnectIqWatchAppDownload,
+            131072 => ConnectivityCapabilities::ConnectIqWidgetDownload,
+            262144 => ConnectivityCapabilities::ConnectIqWatchFaceDownload,
+            524288 => ConnectivityCapabilities::ConnectIqDataFieldDownload,
+            1048576 => ConnectivityCapabilities::ConnectIqAppManagment,
+            2097152 => ConnectivityCapabilities::SwingSensor,
+            4194304 => ConnectivityCapabilities::SwingSensorRemote,
+            8388608 => ConnectivityCapabilities::IncidentDetection,
+            16777216 => ConnectivityCapabilities::AudioPrompts,
+            33554432 => ConnectivityCapabilities::WifiVerification,
+            67108864 => ConnectivityCapabilities::TrueUp,
+            134217728 => ConnectivityCapabilities::FindMyWatch,
+            268435456 => ConnectivityCapabilities::RemoteManualSync,
+            536870912 => ConnectivityCapabilities::LiveTrackAutoStart,
+            1073741824 => ConnectivityCapabilities::LiveTrackMessaging,
+            2147483648 => ConnectivityCapabilities::InstantInput,
+            n => ConnectivityCapabilities::UnknownValue(n)
         }
     }
 }
@@ -3201,6 +3581,33 @@ impl<N> From<N> for LocaltimeIntoDay
 }
 
 #[derive(Clone, Debug)]
+pub enum StrokeType {
+    Backhand,
+    Forehand,
+    NoEvent,
+    Other,
+    Serve,
+    Smash,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for StrokeType
+    where N: Into<u64>
+{
+    fn from(number: N) -> StrokeType {
+        match number.into() {
+            0 => StrokeType::NoEvent,
+            1 => StrokeType::Other,
+            2 => StrokeType::Serve,
+            3 => StrokeType::Forehand,
+            4 => StrokeType::Backhand,
+            5 => StrokeType::Smash,
+            n => StrokeType::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum BodyLocation {
     LeftAbdomen,
     LeftArm,
@@ -3434,6 +3841,31 @@ impl<N> From<N> for LocalDeviceType
 }
 
 #[derive(Clone, Debug)]
+pub enum DisplayOrientation {
+    Auto,
+    Landscape,
+    LandscapeFlipped,
+    Portrait,
+    PortraitFlipped,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for DisplayOrientation
+    where N: Into<u64>
+{
+    fn from(number: N) -> DisplayOrientation {
+        match number.into() {
+            0 => DisplayOrientation::Auto,
+            1 => DisplayOrientation::Portrait,
+            2 => DisplayOrientation::Landscape,
+            3 => DisplayOrientation::PortraitFlipped,
+            4 => DisplayOrientation::LandscapeFlipped,
+            n => DisplayOrientation::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum WorkoutEquipment {
     None,
     SwimFins,
@@ -3461,6 +3893,29 @@ impl<N> From<N> for WorkoutEquipment
 }
 
 #[derive(Clone, Debug)]
+pub enum WatchfaceMode {
+    Analog,
+    ConnectIq,
+    Digital,
+    Disabled,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for WatchfaceMode
+    where N: Into<u64>
+{
+    fn from(number: N) -> WatchfaceMode {
+        match number.into() {
+            0 => WatchfaceMode::Digital,
+            1 => WatchfaceMode::Analog,
+            2 => WatchfaceMode::ConnectIq,
+            3 => WatchfaceMode::Disabled,
+            n => WatchfaceMode::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum DigitalWatchfaceLayout {
     Bold,
     Modern,
@@ -3477,6 +3932,27 @@ impl<N> From<N> for DigitalWatchfaceLayout
             1 => DigitalWatchfaceLayout::Modern,
             2 => DigitalWatchfaceLayout::Bold,
             n => DigitalWatchfaceLayout::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum AnalogWatchfaceLayout {
+    Minimal,
+    Modern,
+    Traditional,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for AnalogWatchfaceLayout
+    where N: Into<u64>
+{
+    fn from(number: N) -> AnalogWatchfaceLayout {
+        match number.into() {
+            0 => AnalogWatchfaceLayout::Minimal,
+            1 => AnalogWatchfaceLayout::Traditional,
+            2 => AnalogWatchfaceLayout::Modern,
+            n => AnalogWatchfaceLayout::UnknownValue(n)
         }
     }
 }
@@ -3615,6 +4091,29 @@ impl<N> From<N> for BikeLightNetworkConfigType
 }
 
 #[derive(Clone, Debug)]
+pub enum CommTimeoutType {
+    ConnectionLost,
+    ConnectionTimeout,
+    PairingTimeout,
+    WildcardPairingTimeout,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for CommTimeoutType
+    where N: Into<u64>
+{
+    fn from(number: N) -> CommTimeoutType {
+        match number.into() {
+            0 => CommTimeoutType::WildcardPairingTimeout,
+            1 => CommTimeoutType::PairingTimeout,
+            2 => CommTimeoutType::ConnectionLost,
+            3 => CommTimeoutType::ConnectionTimeout,
+            n => CommTimeoutType::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum CameraOrientationType {
     CameraOrientation0,
     CameraOrientation180,
@@ -3722,6 +4221,37 @@ impl<N> From<N> for AutoSyncFrequency
             3 => AutoSyncFrequency::OnceADay,
             4 => AutoSyncFrequency::Remote,
             n => AutoSyncFrequency::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum ExdLayout {
+    FullQuarterSplit,
+    FullScreen,
+    HalfHorizontal,
+    HalfHorizontalBottomSplit,
+    HalfHorizontalTopSplit,
+    HalfVertical,
+    HalfVerticalLeftSplit,
+    HalfVerticalRightSplit,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for ExdLayout
+    where N: Into<u64>
+{
+    fn from(number: N) -> ExdLayout {
+        match number.into() {
+            0 => ExdLayout::FullScreen,
+            1 => ExdLayout::HalfVertical,
+            2 => ExdLayout::HalfHorizontal,
+            3 => ExdLayout::HalfVerticalRightSplit,
+            4 => ExdLayout::HalfHorizontalBottomSplit,
+            5 => ExdLayout::FullQuarterSplit,
+            6 => ExdLayout::HalfVerticalLeftSplit,
+            7 => ExdLayout::HalfHorizontalTopSplit,
+            n => ExdLayout::UnknownValue(n)
         }
     }
 }
@@ -4191,6 +4721,35 @@ impl<N> From<N> for ExdDescriptors
 }
 
 #[derive(Clone, Debug)]
+pub enum AutoActivityDetect {
+    Cycling,
+    Elliptical,
+    None,
+    Running,
+    Sedentary,
+    Swimming,
+    Walking,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for AutoActivityDetect
+    where N: Into<u64>
+{
+    fn from(number: N) -> AutoActivityDetect {
+        match number.into() {
+            0 => AutoActivityDetect::None,
+            1 => AutoActivityDetect::Running,
+            2 => AutoActivityDetect::Cycling,
+            4 => AutoActivityDetect::Swimming,
+            8 => AutoActivityDetect::Walking,
+            32 => AutoActivityDetect::Elliptical,
+            1024 => AutoActivityDetect::Sedentary,
+            n => AutoActivityDetect::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum SupportedExdScreenLayouts {
     FullQuarterSplit,
     FullScreen,
@@ -4271,6 +4830,97 @@ impl<N> From<N> for FitBaseType
 }
 
 #[derive(Clone, Debug)]
+pub enum TurnType {
+    ArrivingIdx,
+    ArrivingLeftIdx,
+    ArrivingRightIdx,
+    ArrivingViaIdx,
+    ArrivingViaLeftIdx,
+    ArrivingViaRightIdx,
+    BearKeepLeftIdx,
+    BearKeepRightIdx,
+    ContinueIdx,
+    ExitLeftIdx,
+    ExitRightIdx,
+    FerryIdx,
+    IconIdxCnt,
+    IconInvIdx,
+    Roundabout135Idx,
+    Roundabout180Idx,
+    Roundabout225Idx,
+    Roundabout270Idx,
+    Roundabout315Idx,
+    Roundabout360Idx,
+    Roundabout45Idx,
+    Roundabout90Idx,
+    RoundaboutGenericIdx,
+    RoundaboutNeg135Idx,
+    RoundaboutNeg180Idx,
+    RoundaboutNeg225Idx,
+    RoundaboutNeg270Idx,
+    RoundaboutNeg315Idx,
+    RoundaboutNeg360Idx,
+    RoundaboutNeg45Idx,
+    RoundaboutNeg90Idx,
+    RoundaboutNegGenericIdx,
+    SharpTurnLeftIdx,
+    SharpTurnRightIdx,
+    TurnLeftIdx,
+    TurnRightIdx,
+    UturnLeftIdx,
+    UturnRightIdx,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for TurnType
+    where N: Into<u64>
+{
+    fn from(number: N) -> TurnType {
+        match number.into() {
+            0 => TurnType::ArrivingIdx,
+            1 => TurnType::ArrivingLeftIdx,
+            2 => TurnType::ArrivingRightIdx,
+            3 => TurnType::ArrivingViaIdx,
+            4 => TurnType::ArrivingViaLeftIdx,
+            5 => TurnType::ArrivingViaRightIdx,
+            6 => TurnType::BearKeepLeftIdx,
+            7 => TurnType::BearKeepRightIdx,
+            8 => TurnType::ContinueIdx,
+            9 => TurnType::ExitLeftIdx,
+            10 => TurnType::ExitRightIdx,
+            11 => TurnType::FerryIdx,
+            12 => TurnType::Roundabout45Idx,
+            13 => TurnType::Roundabout90Idx,
+            14 => TurnType::Roundabout135Idx,
+            15 => TurnType::Roundabout180Idx,
+            16 => TurnType::Roundabout225Idx,
+            17 => TurnType::Roundabout270Idx,
+            18 => TurnType::Roundabout315Idx,
+            19 => TurnType::Roundabout360Idx,
+            20 => TurnType::RoundaboutNeg45Idx,
+            21 => TurnType::RoundaboutNeg90Idx,
+            22 => TurnType::RoundaboutNeg135Idx,
+            23 => TurnType::RoundaboutNeg180Idx,
+            24 => TurnType::RoundaboutNeg225Idx,
+            25 => TurnType::RoundaboutNeg270Idx,
+            26 => TurnType::RoundaboutNeg315Idx,
+            27 => TurnType::RoundaboutNeg360Idx,
+            28 => TurnType::RoundaboutGenericIdx,
+            29 => TurnType::RoundaboutNegGenericIdx,
+            30 => TurnType::SharpTurnLeftIdx,
+            31 => TurnType::SharpTurnRightIdx,
+            32 => TurnType::TurnLeftIdx,
+            33 => TurnType::TurnRightIdx,
+            34 => TurnType::UturnLeftIdx,
+            35 => TurnType::UturnRightIdx,
+            36 => TurnType::IconInvIdx,
+            37 => TurnType::IconIdxCnt,
+            n => TurnType::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum BikeLightBeamAngleMode {
     Auto,
     Manual,
@@ -4306,6 +4956,25 @@ impl<N> From<N> for FitBaseUnit
             1 => FitBaseUnit::Kilogram,
             2 => FitBaseUnit::Pound,
             n => FitBaseUnit::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum SetType {
+    Active,
+    Rest,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for SetType
+    where N: Into<u64>
+{
+    fn from(number: N) -> SetType {
+        match number.into() {
+            0 => SetType::Rest,
+            1 => SetType::Active,
+            n => SetType::UnknownValue(n)
         }
     }
 }
@@ -4394,6 +5063,75 @@ impl<N> From<N> for ExerciseCategory
 }
 
 #[derive(Clone, Debug)]
+pub enum BenchPressExerciseName {
+    AlternatingDumbbellChestPress,
+    AlternatingDumbbellChestPressOnSwissBall,
+    BarbellBenchPress,
+    BarbellBoardBenchPress,
+    BarbellFloorPress,
+    CloseGripBarbellBenchPress,
+    DeclineDumbbellBenchPress,
+    DumbbellBenchPress,
+    DumbbellFloorPress,
+    InclineBarbellBenchPress,
+    InclineDumbbellBenchPress,
+    InclineSmithMachineBenchPress,
+    IsometricBarbellBenchPress,
+    KettlebellChestPress,
+    NeutralGripDumbbellBenchPress,
+    NeutralGripDumbbellInclineBenchPress,
+    OneArmFloorPress,
+    PartialLockout,
+    ReverseGripBarbellBenchPress,
+    ReverseGripInclineBenchPress,
+    SingleArmCableChestPress,
+    SingleArmDumbbellBenchPress,
+    SmithMachineBenchPress,
+    SwissBallDumbbellChestPress,
+    TripleStopBarbellBenchPress,
+    WeightedOneArmFloorPress,
+    WideGripBarbellBenchPress,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for BenchPressExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> BenchPressExerciseName {
+        match number.into() {
+            0 => BenchPressExerciseName::AlternatingDumbbellChestPressOnSwissBall,
+            1 => BenchPressExerciseName::BarbellBenchPress,
+            2 => BenchPressExerciseName::BarbellBoardBenchPress,
+            3 => BenchPressExerciseName::BarbellFloorPress,
+            4 => BenchPressExerciseName::CloseGripBarbellBenchPress,
+            5 => BenchPressExerciseName::DeclineDumbbellBenchPress,
+            6 => BenchPressExerciseName::DumbbellBenchPress,
+            7 => BenchPressExerciseName::DumbbellFloorPress,
+            8 => BenchPressExerciseName::InclineBarbellBenchPress,
+            9 => BenchPressExerciseName::InclineDumbbellBenchPress,
+            10 => BenchPressExerciseName::InclineSmithMachineBenchPress,
+            11 => BenchPressExerciseName::IsometricBarbellBenchPress,
+            12 => BenchPressExerciseName::KettlebellChestPress,
+            13 => BenchPressExerciseName::NeutralGripDumbbellBenchPress,
+            14 => BenchPressExerciseName::NeutralGripDumbbellInclineBenchPress,
+            15 => BenchPressExerciseName::OneArmFloorPress,
+            16 => BenchPressExerciseName::WeightedOneArmFloorPress,
+            17 => BenchPressExerciseName::PartialLockout,
+            18 => BenchPressExerciseName::ReverseGripBarbellBenchPress,
+            19 => BenchPressExerciseName::ReverseGripInclineBenchPress,
+            20 => BenchPressExerciseName::SingleArmCableChestPress,
+            21 => BenchPressExerciseName::SingleArmDumbbellBenchPress,
+            22 => BenchPressExerciseName::SmithMachineBenchPress,
+            23 => BenchPressExerciseName::SwissBallDumbbellChestPress,
+            24 => BenchPressExerciseName::TripleStopBarbellBenchPress,
+            25 => BenchPressExerciseName::WideGripBarbellBenchPress,
+            26 => BenchPressExerciseName::AlternatingDumbbellChestPress,
+            n => BenchPressExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum CalfRaiseExerciseName {
     DonkeyCalfRaise,
     SeatedCalfRaise,
@@ -4451,6 +5189,65 @@ impl<N> From<N> for CalfRaiseExerciseName
 }
 
 #[derive(Clone, Debug)]
+pub enum CardioExerciseName {
+    BobAndWeaveCircle,
+    CardioCoreCrawl,
+    DoubleUnder,
+    JumpRope,
+    JumpRopeCrossover,
+    JumpRopeJog,
+    JumpingJacks,
+    SkiMoguls,
+    SplitJacks,
+    SquatJacks,
+    TripleUnder,
+    WeightedBobAndWeaveCircle,
+    WeightedCardioCoreCrawl,
+    WeightedDoubleUnder,
+    WeightedJumpRope,
+    WeightedJumpRopeCrossover,
+    WeightedJumpRopeJog,
+    WeightedJumpingJacks,
+    WeightedSkiMoguls,
+    WeightedSplitJacks,
+    WeightedSquatJacks,
+    WeightedTripleUnder,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for CardioExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> CardioExerciseName {
+        match number.into() {
+            0 => CardioExerciseName::BobAndWeaveCircle,
+            1 => CardioExerciseName::WeightedBobAndWeaveCircle,
+            2 => CardioExerciseName::CardioCoreCrawl,
+            3 => CardioExerciseName::WeightedCardioCoreCrawl,
+            4 => CardioExerciseName::DoubleUnder,
+            5 => CardioExerciseName::WeightedDoubleUnder,
+            6 => CardioExerciseName::JumpRope,
+            7 => CardioExerciseName::WeightedJumpRope,
+            8 => CardioExerciseName::JumpRopeCrossover,
+            9 => CardioExerciseName::WeightedJumpRopeCrossover,
+            10 => CardioExerciseName::JumpRopeJog,
+            11 => CardioExerciseName::WeightedJumpRopeJog,
+            12 => CardioExerciseName::JumpingJacks,
+            13 => CardioExerciseName::WeightedJumpingJacks,
+            14 => CardioExerciseName::SkiMoguls,
+            15 => CardioExerciseName::WeightedSkiMoguls,
+            16 => CardioExerciseName::SplitJacks,
+            17 => CardioExerciseName::WeightedSplitJacks,
+            18 => CardioExerciseName::SquatJacks,
+            19 => CardioExerciseName::WeightedSquatJacks,
+            20 => CardioExerciseName::TripleUnder,
+            21 => CardioExerciseName::WeightedTripleUnder,
+            n => CardioExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum CarryExerciseName {
     BarHolds,
     FarmersWalk,
@@ -4471,6 +5268,67 @@ impl<N> From<N> for CarryExerciseName
             3 => CarryExerciseName::HexDumbbellHold,
             4 => CarryExerciseName::OverheadCarry,
             n => CarryExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum ChopExerciseName {
+    CablePullThrough,
+    CableRotationalLift,
+    CableWoodchop,
+    CrossChopToKnee,
+    DumbbellChop,
+    HalfKneelingRotation,
+    HalfKneelingRotationalChop,
+    HalfKneelingRotationalReverseChop,
+    HalfKneelingStabilityChop,
+    HalfKneelingStabilityReverseChop,
+    KneelingRotationalChop,
+    KneelingRotationalReverseChop,
+    KneelingStabilityChop,
+    KneelingWoodchopper,
+    MedicineBallWoodChops,
+    PowerSquatChops,
+    StandingRotationalChop,
+    StandingSplitRotationalChop,
+    StandingSplitRotationalReverseChop,
+    StandingStabilityReverseChop,
+    WeightedCrossChopToKnee,
+    WeightedHalfKneelingRotation,
+    WeightedPowerSquatChops,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for ChopExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> ChopExerciseName {
+        match number.into() {
+            0 => ChopExerciseName::CablePullThrough,
+            1 => ChopExerciseName::CableRotationalLift,
+            2 => ChopExerciseName::CableWoodchop,
+            3 => ChopExerciseName::CrossChopToKnee,
+            4 => ChopExerciseName::WeightedCrossChopToKnee,
+            5 => ChopExerciseName::DumbbellChop,
+            6 => ChopExerciseName::HalfKneelingRotation,
+            7 => ChopExerciseName::WeightedHalfKneelingRotation,
+            8 => ChopExerciseName::HalfKneelingRotationalChop,
+            9 => ChopExerciseName::HalfKneelingRotationalReverseChop,
+            10 => ChopExerciseName::HalfKneelingStabilityChop,
+            11 => ChopExerciseName::HalfKneelingStabilityReverseChop,
+            12 => ChopExerciseName::KneelingRotationalChop,
+            13 => ChopExerciseName::KneelingRotationalReverseChop,
+            14 => ChopExerciseName::KneelingStabilityChop,
+            15 => ChopExerciseName::KneelingWoodchopper,
+            16 => ChopExerciseName::MedicineBallWoodChops,
+            17 => ChopExerciseName::PowerSquatChops,
+            18 => ChopExerciseName::WeightedPowerSquatChops,
+            19 => ChopExerciseName::StandingRotationalChop,
+            20 => ChopExerciseName::StandingSplitRotationalChop,
+            21 => ChopExerciseName::StandingSplitRotationalReverseChop,
+            22 => ChopExerciseName::StandingStabilityReverseChop,
+            n => ChopExerciseName::UnknownValue(n)
         }
     }
 }
@@ -4925,6 +5783,59 @@ impl<N> From<N> for CurlExerciseName
 }
 
 #[derive(Clone, Debug)]
+pub enum DeadliftExerciseName {
+    BarbellDeadlift,
+    BarbellStraightLegDeadlift,
+    DumbbellDeadlift,
+    DumbbellSingleLegDeadliftToRow,
+    DumbbellStraightLegDeadlift,
+    KettlebellFloorToShelf,
+    OneArmOneLegDeadlift,
+    RackPull,
+    RotationalDumbbellStraightLegDeadlift,
+    SingleArmDeadlift,
+    SingleLegBarbellDeadlift,
+    SingleLegBarbellStraightLegDeadlift,
+    SingleLegDeadliftWithBarbell,
+    SingleLegRdlCircuit,
+    SingleLegRomanianDeadliftWithDumbbell,
+    SumoDeadlift,
+    SumoDeadliftHighPull,
+    TrapBarDeadlift,
+    WideGripBarbellDeadlift,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for DeadliftExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> DeadliftExerciseName {
+        match number.into() {
+            0 => DeadliftExerciseName::BarbellDeadlift,
+            1 => DeadliftExerciseName::BarbellStraightLegDeadlift,
+            2 => DeadliftExerciseName::DumbbellDeadlift,
+            3 => DeadliftExerciseName::DumbbellSingleLegDeadliftToRow,
+            4 => DeadliftExerciseName::DumbbellStraightLegDeadlift,
+            5 => DeadliftExerciseName::KettlebellFloorToShelf,
+            6 => DeadliftExerciseName::OneArmOneLegDeadlift,
+            7 => DeadliftExerciseName::RackPull,
+            8 => DeadliftExerciseName::RotationalDumbbellStraightLegDeadlift,
+            9 => DeadliftExerciseName::SingleArmDeadlift,
+            10 => DeadliftExerciseName::SingleLegBarbellDeadlift,
+            11 => DeadliftExerciseName::SingleLegBarbellStraightLegDeadlift,
+            12 => DeadliftExerciseName::SingleLegDeadliftWithBarbell,
+            13 => DeadliftExerciseName::SingleLegRdlCircuit,
+            14 => DeadliftExerciseName::SingleLegRomanianDeadliftWithDumbbell,
+            15 => DeadliftExerciseName::SumoDeadlift,
+            16 => DeadliftExerciseName::SumoDeadliftHighPull,
+            17 => DeadliftExerciseName::TrapBarDeadlift,
+            18 => DeadliftExerciseName::WideGripBarbellDeadlift,
+            n => DeadliftExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum FlyeExerciseName {
     ArmRotations,
     CableCrossover,
@@ -5158,6 +6069,27 @@ impl<N> From<N> for HipStabilityExerciseName
 }
 
 #[derive(Clone, Debug)]
+pub enum HipSwingExerciseName {
+    SingleArmDumbbellSwing,
+    SingleArmKettlebellSwing,
+    StepOutSwing,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for HipSwingExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> HipSwingExerciseName {
+        match number.into() {
+            0 => HipSwingExerciseName::SingleArmKettlebellSwing,
+            1 => HipSwingExerciseName::SingleArmDumbbellSwing,
+            2 => HipSwingExerciseName::StepOutSwing,
+            n => HipSwingExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum HyperextensionExerciseName {
     BackExtensionWithOppositeArmAndLegReach,
     BaseRotations,
@@ -5253,6 +6185,89 @@ impl<N> From<N> for HyperextensionExerciseName
 }
 
 #[derive(Clone, Debug)]
+pub enum LateralRaiseExerciseName {
+    AlternatingLateralRaiseWithStaticHold,
+    ArmCircles,
+    BarMuscleUp,
+    BentOverLateralRaise,
+    CableDiagonalRaise,
+    CableFrontRaise,
+    CalorieRow,
+    ComboShoulderRaise,
+    DumbbellDiagonalRaise,
+    DumbbellVRaise,
+    FourtyFiveDegreeCableExternalRotation,
+    FrontRaise,
+    LeaningDumbbellLateralRaise,
+    LyingDumbbellRaise,
+    MuscleUp,
+    OneArmCableLateralRaise,
+    OverhandGripRearLateralRaise,
+    PlateRaises,
+    RingDip,
+    RingMuscleUp,
+    RopeClimb,
+    Scaption,
+    SeatedLateralRaise,
+    SeatedRearLateralRaise,
+    ShavingTheHead,
+    SideLyingLateralRaise,
+    StandingLift,
+    SuspendedRow,
+    UnderhandGripRearLateralRaise,
+    WallSlide,
+    WeightedRingDip,
+    WeightedRingMuscleUp,
+    WeightedRopeClimb,
+    WeightedWallSlide,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for LateralRaiseExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> LateralRaiseExerciseName {
+        match number.into() {
+            0 => LateralRaiseExerciseName::FourtyFiveDegreeCableExternalRotation,
+            1 => LateralRaiseExerciseName::AlternatingLateralRaiseWithStaticHold,
+            2 => LateralRaiseExerciseName::BarMuscleUp,
+            3 => LateralRaiseExerciseName::BentOverLateralRaise,
+            4 => LateralRaiseExerciseName::CableDiagonalRaise,
+            5 => LateralRaiseExerciseName::CableFrontRaise,
+            6 => LateralRaiseExerciseName::CalorieRow,
+            7 => LateralRaiseExerciseName::ComboShoulderRaise,
+            8 => LateralRaiseExerciseName::DumbbellDiagonalRaise,
+            9 => LateralRaiseExerciseName::DumbbellVRaise,
+            10 => LateralRaiseExerciseName::FrontRaise,
+            11 => LateralRaiseExerciseName::LeaningDumbbellLateralRaise,
+            12 => LateralRaiseExerciseName::LyingDumbbellRaise,
+            13 => LateralRaiseExerciseName::MuscleUp,
+            14 => LateralRaiseExerciseName::OneArmCableLateralRaise,
+            15 => LateralRaiseExerciseName::OverhandGripRearLateralRaise,
+            16 => LateralRaiseExerciseName::PlateRaises,
+            17 => LateralRaiseExerciseName::RingDip,
+            18 => LateralRaiseExerciseName::WeightedRingDip,
+            19 => LateralRaiseExerciseName::RingMuscleUp,
+            20 => LateralRaiseExerciseName::WeightedRingMuscleUp,
+            21 => LateralRaiseExerciseName::RopeClimb,
+            22 => LateralRaiseExerciseName::WeightedRopeClimb,
+            23 => LateralRaiseExerciseName::Scaption,
+            24 => LateralRaiseExerciseName::SeatedLateralRaise,
+            25 => LateralRaiseExerciseName::SeatedRearLateralRaise,
+            26 => LateralRaiseExerciseName::SideLyingLateralRaise,
+            27 => LateralRaiseExerciseName::StandingLift,
+            28 => LateralRaiseExerciseName::SuspendedRow,
+            29 => LateralRaiseExerciseName::UnderhandGripRearLateralRaise,
+            30 => LateralRaiseExerciseName::WallSlide,
+            31 => LateralRaiseExerciseName::WeightedWallSlide,
+            32 => LateralRaiseExerciseName::ArmCircles,
+            33 => LateralRaiseExerciseName::ShavingTheHead,
+            n => LateralRaiseExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum LegCurlExerciseName {
     GoodMorning,
     LegCurl,
@@ -5287,6 +6302,65 @@ impl<N> From<N> for LegCurlExerciseName
             10 => LegCurlExerciseName::SwissBallHipRaiseAndLegCurl,
             11 => LegCurlExerciseName::ZercherGoodMorning,
             n => LegCurlExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum LegRaiseExerciseName {
+    HangingKneeRaise,
+    HangingLegRaise,
+    HangingSingleLegRaise,
+    KettlebellLegRaises,
+    LateralStepover,
+    LegLoweringDrill,
+    LyingStraightLegRaise,
+    MedicineBallLegDrops,
+    QuadrupedLegRaise,
+    ReverseLegRaise,
+    ReverseLegRaiseOnSwissBall,
+    SingleLegLoweringDrill,
+    WeightedHangingKneeRaise,
+    WeightedHangingLegRaise,
+    WeightedHangingSingleLegRaise,
+    WeightedLateralStepover,
+    WeightedLegLoweringDrill,
+    WeightedLyingStraightLegRaise,
+    WeightedQuadrupedLegRaise,
+    WeightedReverseLegRaise,
+    WeightedReverseLegRaiseOnSwissBall,
+    WeightedSingleLegLoweringDrill,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for LegRaiseExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> LegRaiseExerciseName {
+        match number.into() {
+            0 => LegRaiseExerciseName::HangingKneeRaise,
+            1 => LegRaiseExerciseName::HangingLegRaise,
+            2 => LegRaiseExerciseName::WeightedHangingLegRaise,
+            3 => LegRaiseExerciseName::HangingSingleLegRaise,
+            4 => LegRaiseExerciseName::WeightedHangingSingleLegRaise,
+            5 => LegRaiseExerciseName::KettlebellLegRaises,
+            6 => LegRaiseExerciseName::LegLoweringDrill,
+            7 => LegRaiseExerciseName::WeightedLegLoweringDrill,
+            8 => LegRaiseExerciseName::LyingStraightLegRaise,
+            9 => LegRaiseExerciseName::WeightedLyingStraightLegRaise,
+            10 => LegRaiseExerciseName::MedicineBallLegDrops,
+            11 => LegRaiseExerciseName::QuadrupedLegRaise,
+            12 => LegRaiseExerciseName::WeightedQuadrupedLegRaise,
+            13 => LegRaiseExerciseName::ReverseLegRaise,
+            14 => LegRaiseExerciseName::WeightedReverseLegRaise,
+            15 => LegRaiseExerciseName::ReverseLegRaiseOnSwissBall,
+            16 => LegRaiseExerciseName::WeightedReverseLegRaiseOnSwissBall,
+            17 => LegRaiseExerciseName::SingleLegLoweringDrill,
+            18 => LegRaiseExerciseName::WeightedSingleLegLoweringDrill,
+            19 => LegRaiseExerciseName::WeightedHangingKneeRaise,
+            20 => LegRaiseExerciseName::LateralStepover,
+            21 => LegRaiseExerciseName::WeightedLateralStepover,
+            n => LegRaiseExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5464,6 +6538,63 @@ impl<N> From<N> for LungeExerciseName
             79 => LungeExerciseName::WeightedWalkingLunge,
             80 => LungeExerciseName::WideGripOverheadBarbellSplitSquat,
             n => LungeExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum OlympicLiftExerciseName {
+    BarbellHangPowerClean,
+    BarbellHangPowerSnatch,
+    BarbellHangPull,
+    BarbellHangSquatClean,
+    BarbellHighPull,
+    BarbellPowerClean,
+    BarbellPowerSnatch,
+    BarbellSnatch,
+    BarbellSplitJerk,
+    BarbellSquatClean,
+    Clean,
+    CleanAndJerk,
+    DumbbellClean,
+    DumbbellHangPull,
+    OneHandDumbbellSplitSnatch,
+    PushJerk,
+    SingleArmDumbbellSnatch,
+    SingleArmHangSnatch,
+    SingleArmKettlebellSnatch,
+    SplitJerk,
+    SquatCleanAndJerk,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for OlympicLiftExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> OlympicLiftExerciseName {
+        match number.into() {
+            0 => OlympicLiftExerciseName::BarbellHangPowerClean,
+            1 => OlympicLiftExerciseName::BarbellHangSquatClean,
+            2 => OlympicLiftExerciseName::BarbellPowerClean,
+            3 => OlympicLiftExerciseName::BarbellPowerSnatch,
+            4 => OlympicLiftExerciseName::BarbellSquatClean,
+            5 => OlympicLiftExerciseName::CleanAndJerk,
+            6 => OlympicLiftExerciseName::BarbellHangPowerSnatch,
+            7 => OlympicLiftExerciseName::BarbellHangPull,
+            8 => OlympicLiftExerciseName::BarbellHighPull,
+            9 => OlympicLiftExerciseName::BarbellSnatch,
+            10 => OlympicLiftExerciseName::BarbellSplitJerk,
+            11 => OlympicLiftExerciseName::Clean,
+            12 => OlympicLiftExerciseName::DumbbellClean,
+            13 => OlympicLiftExerciseName::DumbbellHangPull,
+            14 => OlympicLiftExerciseName::OneHandDumbbellSplitSnatch,
+            15 => OlympicLiftExerciseName::PushJerk,
+            16 => OlympicLiftExerciseName::SingleArmDumbbellSnatch,
+            17 => OlympicLiftExerciseName::SingleArmHangSnatch,
+            18 => OlympicLiftExerciseName::SingleArmKettlebellSnatch,
+            19 => OlympicLiftExerciseName::SplitJerk,
+            20 => OlympicLiftExerciseName::SquatCleanAndJerk,
+            n => OlympicLiftExerciseName::UnknownValue(n)
         }
     }
 }
@@ -5754,6 +6885,87 @@ impl<N> From<N> for PlankExerciseName
 }
 
 #[derive(Clone, Debug)]
+pub enum PlyoExerciseName {
+    AlternatingJumpLunge,
+    BarbellJumpSquat,
+    BodyWeightJumpSquat,
+    CrossKneeStrike,
+    DepthJump,
+    DumbbellJumpSquat,
+    DumbbellSplitJump,
+    FrontKneeStrike,
+    HighBoxJump,
+    IsometricExplosiveBodyWeightJumpSquat,
+    LateralLeapAndHop,
+    LateralPlyoSquats,
+    LateralSlide,
+    MedicineBallOverheadThrows,
+    MedicineBallSideThrow,
+    MedicineBallSlam,
+    SideToSideMedicineBallThrows,
+    SideToSideShuffleJump,
+    SquatJumpOntoBox,
+    SquatJumpsInAndOut,
+    WeightedAlternatingJumpLunge,
+    WeightedCrossKneeStrike,
+    WeightedDepthJump,
+    WeightedFrontKneeStrike,
+    WeightedHighBoxJump,
+    WeightedIsometricExplosiveJumpSquat,
+    WeightedJumpSquat,
+    WeightedLateralLeapAndHop,
+    WeightedLateralPlyoSquats,
+    WeightedLateralSlide,
+    WeightedSideToSideShuffleJump,
+    WeightedSquatJumpOntoBox,
+    WeightedSquatJumpsInAndOut,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for PlyoExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> PlyoExerciseName {
+        match number.into() {
+            0 => PlyoExerciseName::AlternatingJumpLunge,
+            1 => PlyoExerciseName::WeightedAlternatingJumpLunge,
+            2 => PlyoExerciseName::BarbellJumpSquat,
+            3 => PlyoExerciseName::BodyWeightJumpSquat,
+            4 => PlyoExerciseName::WeightedJumpSquat,
+            5 => PlyoExerciseName::CrossKneeStrike,
+            6 => PlyoExerciseName::WeightedCrossKneeStrike,
+            7 => PlyoExerciseName::DepthJump,
+            8 => PlyoExerciseName::WeightedDepthJump,
+            9 => PlyoExerciseName::DumbbellJumpSquat,
+            10 => PlyoExerciseName::DumbbellSplitJump,
+            11 => PlyoExerciseName::FrontKneeStrike,
+            12 => PlyoExerciseName::WeightedFrontKneeStrike,
+            13 => PlyoExerciseName::HighBoxJump,
+            14 => PlyoExerciseName::WeightedHighBoxJump,
+            15 => PlyoExerciseName::IsometricExplosiveBodyWeightJumpSquat,
+            16 => PlyoExerciseName::WeightedIsometricExplosiveJumpSquat,
+            17 => PlyoExerciseName::LateralLeapAndHop,
+            18 => PlyoExerciseName::WeightedLateralLeapAndHop,
+            19 => PlyoExerciseName::LateralPlyoSquats,
+            20 => PlyoExerciseName::WeightedLateralPlyoSquats,
+            21 => PlyoExerciseName::LateralSlide,
+            22 => PlyoExerciseName::WeightedLateralSlide,
+            23 => PlyoExerciseName::MedicineBallOverheadThrows,
+            24 => PlyoExerciseName::MedicineBallSideThrow,
+            25 => PlyoExerciseName::MedicineBallSlam,
+            26 => PlyoExerciseName::SideToSideMedicineBallThrows,
+            27 => PlyoExerciseName::SideToSideShuffleJump,
+            28 => PlyoExerciseName::WeightedSideToSideShuffleJump,
+            29 => PlyoExerciseName::SquatJumpOntoBox,
+            30 => PlyoExerciseName::WeightedSquatJumpOntoBox,
+            31 => PlyoExerciseName::SquatJumpsInAndOut,
+            32 => PlyoExerciseName::WeightedSquatJumpsInAndOut,
+            n => PlyoExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum PullUpExerciseName {
     BandAssistedChinUp,
     BandedPullUps,
@@ -5847,6 +7059,179 @@ impl<N> From<N> for PullUpExerciseName
 }
 
 #[derive(Clone, Debug)]
+pub enum PushUpExerciseName {
+    AlternatingHandsMedicineBallPushUp,
+    AlternatingStaggeredPushUp,
+    BosuBallPushUp,
+    ChestPressWithBand,
+    ClappingPushUp,
+    CloseGripMedicineBallPushUp,
+    CloseHandsPushUp,
+    DeclinePushUp,
+    DiamondPushUp,
+    ExplosiveCrossoverPushUp,
+    ExplosivePushUp,
+    FeetElevatedSideToSidePushUp,
+    HandReleasePushUp,
+    HandstandPushUp,
+    InclinePushUp,
+    IsometricExplosivePushUp,
+    JudoPushUp,
+    KneelingPushUp,
+    MedicineBallChestPass,
+    MedicineBallPushUp,
+    OneArmPushUp,
+    ParalletteHandstandPushUp,
+    PilatesPushup,
+    PushUp,
+    PushUpAndRow,
+    PushUpPlus,
+    PushUpWithFeetOnSwissBall,
+    PushUpWithOneHandOnMedicineBall,
+    RingHandstandPushUp,
+    RingPushUp,
+    ShoulderPushUp,
+    SingleArmMedicineBallPushUp,
+    SpidermanPushUp,
+    StackedFeetPushUp,
+    StaggeredHandsPushUp,
+    SuspendedPushUp,
+    SwissBallPushUp,
+    SwissBallPushUpPlus,
+    TPushUp,
+    TripleStopPushUp,
+    WeightedAlternatingHandsMedicineBallPushUp,
+    WeightedAlternatingStaggeredPushUp,
+    WeightedBosuBallPushUp,
+    WeightedClappingPushUp,
+    WeightedCloseGripMedicineBallPushUp,
+    WeightedCloseHandsPushUp,
+    WeightedDeclinePushUp,
+    WeightedDiamondPushUp,
+    WeightedExplosiveCrossoverPushUp,
+    WeightedExplosivePushUp,
+    WeightedFeetElevatedSideToSidePushUp,
+    WeightedHandReleasePushUp,
+    WeightedHandstandPushUp,
+    WeightedInclinePushUp,
+    WeightedIsometricExplosivePushUp,
+    WeightedJudoPushUp,
+    WeightedKneelingPushUp,
+    WeightedMedicineBallPushUp,
+    WeightedOneArmPushUp,
+    WeightedParalletteHandstandPushUp,
+    WeightedPushUp,
+    WeightedPushUpAndRow,
+    WeightedPushUpPlus,
+    WeightedPushUpWithFeetOnSwissBall,
+    WeightedPushUpWithOneHandOnMedicineBall,
+    WeightedRingHandstandPushUp,
+    WeightedRingPushUp,
+    WeightedShoulderPushUp,
+    WeightedSingleArmMedicineBallPushUp,
+    WeightedSpidermanPushUp,
+    WeightedStackedFeetPushUp,
+    WeightedStaggeredHandsPushUp,
+    WeightedSuspendedPushUp,
+    WeightedSwissBallPushUp,
+    WeightedSwissBallPushUpPlus,
+    WeightedTPushUp,
+    WeightedTripleStopPushUp,
+    WeightedWideHandsPushUp,
+    WideHandsPushUp,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for PushUpExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> PushUpExerciseName {
+        match number.into() {
+            0 => PushUpExerciseName::ChestPressWithBand,
+            1 => PushUpExerciseName::AlternatingStaggeredPushUp,
+            2 => PushUpExerciseName::WeightedAlternatingStaggeredPushUp,
+            3 => PushUpExerciseName::AlternatingHandsMedicineBallPushUp,
+            4 => PushUpExerciseName::WeightedAlternatingHandsMedicineBallPushUp,
+            5 => PushUpExerciseName::BosuBallPushUp,
+            6 => PushUpExerciseName::WeightedBosuBallPushUp,
+            7 => PushUpExerciseName::ClappingPushUp,
+            8 => PushUpExerciseName::WeightedClappingPushUp,
+            9 => PushUpExerciseName::CloseGripMedicineBallPushUp,
+            10 => PushUpExerciseName::WeightedCloseGripMedicineBallPushUp,
+            11 => PushUpExerciseName::CloseHandsPushUp,
+            12 => PushUpExerciseName::WeightedCloseHandsPushUp,
+            13 => PushUpExerciseName::DeclinePushUp,
+            14 => PushUpExerciseName::WeightedDeclinePushUp,
+            15 => PushUpExerciseName::DiamondPushUp,
+            16 => PushUpExerciseName::WeightedDiamondPushUp,
+            17 => PushUpExerciseName::ExplosiveCrossoverPushUp,
+            18 => PushUpExerciseName::WeightedExplosiveCrossoverPushUp,
+            19 => PushUpExerciseName::ExplosivePushUp,
+            20 => PushUpExerciseName::WeightedExplosivePushUp,
+            21 => PushUpExerciseName::FeetElevatedSideToSidePushUp,
+            22 => PushUpExerciseName::WeightedFeetElevatedSideToSidePushUp,
+            23 => PushUpExerciseName::HandReleasePushUp,
+            24 => PushUpExerciseName::WeightedHandReleasePushUp,
+            25 => PushUpExerciseName::HandstandPushUp,
+            26 => PushUpExerciseName::WeightedHandstandPushUp,
+            27 => PushUpExerciseName::InclinePushUp,
+            28 => PushUpExerciseName::WeightedInclinePushUp,
+            29 => PushUpExerciseName::IsometricExplosivePushUp,
+            30 => PushUpExerciseName::WeightedIsometricExplosivePushUp,
+            31 => PushUpExerciseName::JudoPushUp,
+            32 => PushUpExerciseName::WeightedJudoPushUp,
+            33 => PushUpExerciseName::KneelingPushUp,
+            34 => PushUpExerciseName::WeightedKneelingPushUp,
+            35 => PushUpExerciseName::MedicineBallChestPass,
+            36 => PushUpExerciseName::MedicineBallPushUp,
+            37 => PushUpExerciseName::WeightedMedicineBallPushUp,
+            38 => PushUpExerciseName::OneArmPushUp,
+            39 => PushUpExerciseName::WeightedOneArmPushUp,
+            40 => PushUpExerciseName::WeightedPushUp,
+            41 => PushUpExerciseName::PushUpAndRow,
+            42 => PushUpExerciseName::WeightedPushUpAndRow,
+            43 => PushUpExerciseName::PushUpPlus,
+            44 => PushUpExerciseName::WeightedPushUpPlus,
+            45 => PushUpExerciseName::PushUpWithFeetOnSwissBall,
+            46 => PushUpExerciseName::WeightedPushUpWithFeetOnSwissBall,
+            47 => PushUpExerciseName::PushUpWithOneHandOnMedicineBall,
+            48 => PushUpExerciseName::WeightedPushUpWithOneHandOnMedicineBall,
+            49 => PushUpExerciseName::ShoulderPushUp,
+            50 => PushUpExerciseName::WeightedShoulderPushUp,
+            51 => PushUpExerciseName::SingleArmMedicineBallPushUp,
+            52 => PushUpExerciseName::WeightedSingleArmMedicineBallPushUp,
+            53 => PushUpExerciseName::SpidermanPushUp,
+            54 => PushUpExerciseName::WeightedSpidermanPushUp,
+            55 => PushUpExerciseName::StackedFeetPushUp,
+            56 => PushUpExerciseName::WeightedStackedFeetPushUp,
+            57 => PushUpExerciseName::StaggeredHandsPushUp,
+            58 => PushUpExerciseName::WeightedStaggeredHandsPushUp,
+            59 => PushUpExerciseName::SuspendedPushUp,
+            60 => PushUpExerciseName::WeightedSuspendedPushUp,
+            61 => PushUpExerciseName::SwissBallPushUp,
+            62 => PushUpExerciseName::WeightedSwissBallPushUp,
+            63 => PushUpExerciseName::SwissBallPushUpPlus,
+            64 => PushUpExerciseName::WeightedSwissBallPushUpPlus,
+            65 => PushUpExerciseName::TPushUp,
+            66 => PushUpExerciseName::WeightedTPushUp,
+            67 => PushUpExerciseName::TripleStopPushUp,
+            68 => PushUpExerciseName::WeightedTripleStopPushUp,
+            69 => PushUpExerciseName::WideHandsPushUp,
+            70 => PushUpExerciseName::WeightedWideHandsPushUp,
+            71 => PushUpExerciseName::ParalletteHandstandPushUp,
+            72 => PushUpExerciseName::WeightedParalletteHandstandPushUp,
+            73 => PushUpExerciseName::RingHandstandPushUp,
+            74 => PushUpExerciseName::WeightedRingHandstandPushUp,
+            75 => PushUpExerciseName::RingPushUp,
+            76 => PushUpExerciseName::WeightedRingPushUp,
+            77 => PushUpExerciseName::PushUp,
+            78 => PushUpExerciseName::PilatesPushup,
+            n => PushUpExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum RowExerciseName {
     BarbellStraightLegDeadliftToRow,
     CableRowStanding,
@@ -5930,6 +7315,69 @@ impl<N> From<N> for RowExerciseName
 }
 
 #[derive(Clone, Debug)]
+pub enum ShoulderPressExerciseName {
+    AlternatingDumbbellShoulderPress,
+    ArnoldPress,
+    BarbellFrontSquatToPushPress,
+    BarbellPushPress,
+    BarbellShoulderPress,
+    DeadCurlPress,
+    DumbbellAlternatingShoulderPressAndTwist,
+    DumbbellHammerCurlToLungeToPress,
+    DumbbellPushPress,
+    FloorInvertedShoulderPress,
+    InvertedShoulderPress,
+    OneArmPushPress,
+    OverheadBarbellPress,
+    OverheadDumbbellPress,
+    SeatedBarbellShoulderPress,
+    SeatedDumbbellShoulderPress,
+    SingleArmDumbbellShoulderPress,
+    SingleArmStepUpAndPress,
+    SmithMachineOverheadPress,
+    SplitStanceHammerCurlToPress,
+    SwissBallDumbbellShoulderPress,
+    WeightPlateFrontRaise,
+    WeightedFloorInvertedShoulderPress,
+    WeightedInvertedShoulderPress,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for ShoulderPressExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> ShoulderPressExerciseName {
+        match number.into() {
+            0 => ShoulderPressExerciseName::AlternatingDumbbellShoulderPress,
+            1 => ShoulderPressExerciseName::ArnoldPress,
+            2 => ShoulderPressExerciseName::BarbellFrontSquatToPushPress,
+            3 => ShoulderPressExerciseName::BarbellPushPress,
+            4 => ShoulderPressExerciseName::BarbellShoulderPress,
+            5 => ShoulderPressExerciseName::DeadCurlPress,
+            6 => ShoulderPressExerciseName::DumbbellAlternatingShoulderPressAndTwist,
+            7 => ShoulderPressExerciseName::DumbbellHammerCurlToLungeToPress,
+            8 => ShoulderPressExerciseName::DumbbellPushPress,
+            9 => ShoulderPressExerciseName::FloorInvertedShoulderPress,
+            10 => ShoulderPressExerciseName::WeightedFloorInvertedShoulderPress,
+            11 => ShoulderPressExerciseName::InvertedShoulderPress,
+            12 => ShoulderPressExerciseName::WeightedInvertedShoulderPress,
+            13 => ShoulderPressExerciseName::OneArmPushPress,
+            14 => ShoulderPressExerciseName::OverheadBarbellPress,
+            15 => ShoulderPressExerciseName::OverheadDumbbellPress,
+            16 => ShoulderPressExerciseName::SeatedBarbellShoulderPress,
+            17 => ShoulderPressExerciseName::SeatedDumbbellShoulderPress,
+            18 => ShoulderPressExerciseName::SingleArmDumbbellShoulderPress,
+            19 => ShoulderPressExerciseName::SingleArmStepUpAndPress,
+            20 => ShoulderPressExerciseName::SmithMachineOverheadPress,
+            21 => ShoulderPressExerciseName::SplitStanceHammerCurlToPress,
+            22 => ShoulderPressExerciseName::SwissBallDumbbellShoulderPress,
+            23 => ShoulderPressExerciseName::WeightPlateFrontRaise,
+            n => ShoulderPressExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum ShoulderStabilityExerciseName {
     BandExternalRotation,
     BandInternalRotation,
@@ -6006,6 +7454,55 @@ impl<N> From<N> for ShoulderStabilityExerciseName
             31 => ShoulderStabilityExerciseName::SwissBallYRaise,
             32 => ShoulderStabilityExerciseName::WeightedSwissBallYRaise,
             n => ShoulderStabilityExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum ShrugExerciseName {
+    BarbellJumpShrug,
+    BarbellShrug,
+    BarbellUprightRow,
+    BehindTheBackSmithMachineShrug,
+    DumbbellJumpShrug,
+    DumbbellShrug,
+    DumbbellUprightRow,
+    InclineDumbbellShrug,
+    OverheadBarbellShrug,
+    OverheadDumbbellShrug,
+    ScaptionAndShrug,
+    ScapularRetraction,
+    SerratusChairShrug,
+    SerratusShrug,
+    WeightedSerratusChairShrug,
+    WeightedSerratusShrug,
+    WideGripJumpShrug,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for ShrugExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> ShrugExerciseName {
+        match number.into() {
+            0 => ShrugExerciseName::BarbellJumpShrug,
+            1 => ShrugExerciseName::BarbellShrug,
+            2 => ShrugExerciseName::BarbellUprightRow,
+            3 => ShrugExerciseName::BehindTheBackSmithMachineShrug,
+            4 => ShrugExerciseName::DumbbellJumpShrug,
+            5 => ShrugExerciseName::DumbbellShrug,
+            6 => ShrugExerciseName::DumbbellUprightRow,
+            7 => ShrugExerciseName::InclineDumbbellShrug,
+            8 => ShrugExerciseName::OverheadBarbellShrug,
+            9 => ShrugExerciseName::OverheadDumbbellShrug,
+            10 => ShrugExerciseName::ScaptionAndShrug,
+            11 => ShrugExerciseName::ScapularRetraction,
+            12 => ShrugExerciseName::SerratusChairShrug,
+            13 => ShrugExerciseName::WeightedSerratusChairShrug,
+            14 => ShrugExerciseName::SerratusShrug,
+            15 => ShrugExerciseName::WeightedSerratusShrug,
+            16 => ShrugExerciseName::WideGripJumpShrug,
+            n => ShrugExerciseName::UnknownValue(n)
         }
     }
 }
@@ -6102,6 +7599,205 @@ impl<N> From<N> for SitUpExerciseName
 }
 
 #[derive(Clone, Debug)]
+pub enum SquatExerciseName {
+    BackSquatWithBodyBar,
+    BackSquats,
+    BalancingSquat,
+    BarbellBackSquat,
+    BarbellBoxSquat,
+    BarbellFrontSquat,
+    BarbellHackSquat,
+    BarbellHangSquatSnatch,
+    BarbellLateralStepUp,
+    BarbellQuarterSquat,
+    BarbellSiffSquat,
+    BarbellSquatSnatch,
+    BarbellSquatWithHeelsRaised,
+    BarbellStepUp,
+    BarbellStepover,
+    BenchSquatWithRotationalChop,
+    BodyWeightWallSquat,
+    BoxStepSquat,
+    BracedSquat,
+    CrossedArmBarbellFrontSquat,
+    CrossoverDumbbellStepUp,
+    DumbbellFrontSquat,
+    DumbbellSplitSquat,
+    DumbbellSquat,
+    DumbbellSquatClean,
+    DumbbellStepUp,
+    DumbbellStepover,
+    ElevatedSingleLegSquat,
+    FigureFourSquats,
+    GobletSquat,
+    KbsOverhead,
+    KettlebellSquat,
+    KettlebellSwingOverhead,
+    KettlebellSwingWithFlipToSquat,
+    LateralDumbbellStepUp,
+    LegPress,
+    OneLeggedSquat,
+    OverheadDumbbellSquat,
+    OverheadSquat,
+    PartialSingleLegSquat,
+    PilatesPlieSquatsParallelTurnedOutFlatAndHeels,
+    PistolSquat,
+    PlieSlides,
+    PlieSquat,
+    PrisonerSquat,
+    ReleveStraightLegAndKneeBentWithOneLegVariation,
+    SingleLegBenchGetUp,
+    SingleLegBenchSquat,
+    SingleLegSquatOnSwissBall,
+    Squat,
+    SquatAndSideKick,
+    SquatJumpsInNOut,
+    SquatsWithBand,
+    StaggeredSquat,
+    StepUp,
+    SuitcaseSquats,
+    SumoSquat,
+    SumoSquatSlideIn,
+    SumoSquatToHighPull,
+    SumoSquatToStand,
+    SumoSquatWithRotation,
+    SwissBallBodyWeightWallSquat,
+    Thrusters,
+    UnevenSquat,
+    WaistSlimmingSquat,
+    WallBall,
+    WeightedBackSquats,
+    WeightedBalancingSquat,
+    WeightedBenchSquatWithRotationalChop,
+    WeightedBoxStepSquat,
+    WeightedElevatedSingleLegSquat,
+    WeightedFigureFourSquats,
+    WeightedPartialSingleLegSquat,
+    WeightedPistolSquat,
+    WeightedPlieSlides,
+    WeightedPlieSquat,
+    WeightedPrisonerSquat,
+    WeightedSingleLegBenchGetUp,
+    WeightedSingleLegBenchSquat,
+    WeightedSingleLegSquatOnSwissBall,
+    WeightedSquat,
+    WeightedStaggeredSquat,
+    WeightedStepUp,
+    WeightedSumoSquatSlideIn,
+    WeightedSumoSquatToStand,
+    WeightedSumoSquatWithRotation,
+    WeightedSwissBallWallSquat,
+    WeightedUnevenSquat,
+    WeightedWallSquat,
+    WideStanceBarbellSquat,
+    WideStanceGobletSquat,
+    ZercherSquat,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for SquatExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> SquatExerciseName {
+        match number.into() {
+            0 => SquatExerciseName::LegPress,
+            1 => SquatExerciseName::BackSquatWithBodyBar,
+            2 => SquatExerciseName::BackSquats,
+            3 => SquatExerciseName::WeightedBackSquats,
+            4 => SquatExerciseName::BalancingSquat,
+            5 => SquatExerciseName::WeightedBalancingSquat,
+            6 => SquatExerciseName::BarbellBackSquat,
+            7 => SquatExerciseName::BarbellBoxSquat,
+            8 => SquatExerciseName::BarbellFrontSquat,
+            9 => SquatExerciseName::BarbellHackSquat,
+            10 => SquatExerciseName::BarbellHangSquatSnatch,
+            11 => SquatExerciseName::BarbellLateralStepUp,
+            12 => SquatExerciseName::BarbellQuarterSquat,
+            13 => SquatExerciseName::BarbellSiffSquat,
+            14 => SquatExerciseName::BarbellSquatSnatch,
+            15 => SquatExerciseName::BarbellSquatWithHeelsRaised,
+            16 => SquatExerciseName::BarbellStepover,
+            17 => SquatExerciseName::BarbellStepUp,
+            18 => SquatExerciseName::BenchSquatWithRotationalChop,
+            19 => SquatExerciseName::WeightedBenchSquatWithRotationalChop,
+            20 => SquatExerciseName::BodyWeightWallSquat,
+            21 => SquatExerciseName::WeightedWallSquat,
+            22 => SquatExerciseName::BoxStepSquat,
+            23 => SquatExerciseName::WeightedBoxStepSquat,
+            24 => SquatExerciseName::BracedSquat,
+            25 => SquatExerciseName::CrossedArmBarbellFrontSquat,
+            26 => SquatExerciseName::CrossoverDumbbellStepUp,
+            27 => SquatExerciseName::DumbbellFrontSquat,
+            28 => SquatExerciseName::DumbbellSplitSquat,
+            29 => SquatExerciseName::DumbbellSquat,
+            30 => SquatExerciseName::DumbbellSquatClean,
+            31 => SquatExerciseName::DumbbellStepover,
+            32 => SquatExerciseName::DumbbellStepUp,
+            33 => SquatExerciseName::ElevatedSingleLegSquat,
+            34 => SquatExerciseName::WeightedElevatedSingleLegSquat,
+            35 => SquatExerciseName::FigureFourSquats,
+            36 => SquatExerciseName::WeightedFigureFourSquats,
+            37 => SquatExerciseName::GobletSquat,
+            38 => SquatExerciseName::KettlebellSquat,
+            39 => SquatExerciseName::KettlebellSwingOverhead,
+            40 => SquatExerciseName::KettlebellSwingWithFlipToSquat,
+            41 => SquatExerciseName::LateralDumbbellStepUp,
+            42 => SquatExerciseName::OneLeggedSquat,
+            43 => SquatExerciseName::OverheadDumbbellSquat,
+            44 => SquatExerciseName::OverheadSquat,
+            45 => SquatExerciseName::PartialSingleLegSquat,
+            46 => SquatExerciseName::WeightedPartialSingleLegSquat,
+            47 => SquatExerciseName::PistolSquat,
+            48 => SquatExerciseName::WeightedPistolSquat,
+            49 => SquatExerciseName::PlieSlides,
+            50 => SquatExerciseName::WeightedPlieSlides,
+            51 => SquatExerciseName::PlieSquat,
+            52 => SquatExerciseName::WeightedPlieSquat,
+            53 => SquatExerciseName::PrisonerSquat,
+            54 => SquatExerciseName::WeightedPrisonerSquat,
+            55 => SquatExerciseName::SingleLegBenchGetUp,
+            56 => SquatExerciseName::WeightedSingleLegBenchGetUp,
+            57 => SquatExerciseName::SingleLegBenchSquat,
+            58 => SquatExerciseName::WeightedSingleLegBenchSquat,
+            59 => SquatExerciseName::SingleLegSquatOnSwissBall,
+            60 => SquatExerciseName::WeightedSingleLegSquatOnSwissBall,
+            61 => SquatExerciseName::Squat,
+            62 => SquatExerciseName::WeightedSquat,
+            63 => SquatExerciseName::SquatsWithBand,
+            64 => SquatExerciseName::StaggeredSquat,
+            65 => SquatExerciseName::WeightedStaggeredSquat,
+            66 => SquatExerciseName::StepUp,
+            67 => SquatExerciseName::WeightedStepUp,
+            68 => SquatExerciseName::SuitcaseSquats,
+            69 => SquatExerciseName::SumoSquat,
+            70 => SquatExerciseName::SumoSquatSlideIn,
+            71 => SquatExerciseName::WeightedSumoSquatSlideIn,
+            72 => SquatExerciseName::SumoSquatToHighPull,
+            73 => SquatExerciseName::SumoSquatToStand,
+            74 => SquatExerciseName::WeightedSumoSquatToStand,
+            75 => SquatExerciseName::SumoSquatWithRotation,
+            76 => SquatExerciseName::WeightedSumoSquatWithRotation,
+            77 => SquatExerciseName::SwissBallBodyWeightWallSquat,
+            78 => SquatExerciseName::WeightedSwissBallWallSquat,
+            79 => SquatExerciseName::Thrusters,
+            80 => SquatExerciseName::UnevenSquat,
+            81 => SquatExerciseName::WeightedUnevenSquat,
+            82 => SquatExerciseName::WaistSlimmingSquat,
+            83 => SquatExerciseName::WallBall,
+            84 => SquatExerciseName::WideStanceBarbellSquat,
+            85 => SquatExerciseName::WideStanceGobletSquat,
+            86 => SquatExerciseName::ZercherSquat,
+            87 => SquatExerciseName::KbsOverhead,
+            88 => SquatExerciseName::SquatAndSideKick,
+            89 => SquatExerciseName::SquatJumpsInNOut,
+            90 => SquatExerciseName::PilatesPlieSquatsParallelTurnedOutFlatAndHeels,
+            91 => SquatExerciseName::ReleveStraightLegAndKneeBentWithOneLegVariation,
+            n => SquatExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum TotalBodyExerciseName {
     Burpee,
     BurpeeBoxJump,
@@ -6138,6 +7834,103 @@ impl<N> From<N> for TotalBodyExerciseName
             11 => TotalBodyExerciseName::StandingTRotationBalance,
             12 => TotalBodyExerciseName::WeightedStandingTRotationBalance,
             n => TotalBodyExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum TricepsExtensionExerciseName {
+    BenchDip,
+    BodyWeightDip,
+    CableKickback,
+    CableLyingTricepsExtension,
+    CableOverheadTricepsExtension,
+    DumbbellKickback,
+    DumbbellLyingTricepsExtension,
+    EzBarOverheadTricepsExtension,
+    InclineDip,
+    InclineEzBarLyingTricepsExtension,
+    LyingDumbbellPulloverToExtension,
+    LyingEzBarTricepsExtension,
+    LyingTricepsExtensionToCloseGripBenchPress,
+    OverheadDumbbellTricepsExtension,
+    RecliningTricepsPress,
+    ReverseGripPressdown,
+    ReverseGripTricepsPressdown,
+    RopePressdown,
+    SeatedBarbellOverheadTricepsExtension,
+    SeatedDumbbellOverheadTricepsExtension,
+    SeatedEzBarOverheadTricepsExtension,
+    SeatedSingleArmOverheadDumbbellExtension,
+    SingleArmDumbbellOverheadTricepsExtension,
+    SingleDumbbellSeatedOverheadTricepsExtension,
+    SingleLegBenchDipAndKick,
+    SingleLegDip,
+    StaticLyingTricepsExtension,
+    SuspendedDip,
+    SwissBallDumbbellLyingTricepsExtension,
+    SwissBallEzBarLyingTricepsExtension,
+    SwissBallEzBarOverheadTricepsExtension,
+    TabletopDip,
+    TricepsExtensionOnFloor,
+    TricepsPressdown,
+    WeightedBenchDip,
+    WeightedDip,
+    WeightedInclineDip,
+    WeightedSingleLegBenchDipAndKick,
+    WeightedSingleLegDip,
+    WeightedSuspendedDip,
+    WeightedTabletopDip,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for TricepsExtensionExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> TricepsExtensionExerciseName {
+        match number.into() {
+            0 => TricepsExtensionExerciseName::BenchDip,
+            1 => TricepsExtensionExerciseName::WeightedBenchDip,
+            2 => TricepsExtensionExerciseName::BodyWeightDip,
+            3 => TricepsExtensionExerciseName::CableKickback,
+            4 => TricepsExtensionExerciseName::CableLyingTricepsExtension,
+            5 => TricepsExtensionExerciseName::CableOverheadTricepsExtension,
+            6 => TricepsExtensionExerciseName::DumbbellKickback,
+            7 => TricepsExtensionExerciseName::DumbbellLyingTricepsExtension,
+            8 => TricepsExtensionExerciseName::EzBarOverheadTricepsExtension,
+            9 => TricepsExtensionExerciseName::InclineDip,
+            10 => TricepsExtensionExerciseName::WeightedInclineDip,
+            11 => TricepsExtensionExerciseName::InclineEzBarLyingTricepsExtension,
+            12 => TricepsExtensionExerciseName::LyingDumbbellPulloverToExtension,
+            13 => TricepsExtensionExerciseName::LyingEzBarTricepsExtension,
+            14 => TricepsExtensionExerciseName::LyingTricepsExtensionToCloseGripBenchPress,
+            15 => TricepsExtensionExerciseName::OverheadDumbbellTricepsExtension,
+            16 => TricepsExtensionExerciseName::RecliningTricepsPress,
+            17 => TricepsExtensionExerciseName::ReverseGripPressdown,
+            18 => TricepsExtensionExerciseName::ReverseGripTricepsPressdown,
+            19 => TricepsExtensionExerciseName::RopePressdown,
+            20 => TricepsExtensionExerciseName::SeatedBarbellOverheadTricepsExtension,
+            21 => TricepsExtensionExerciseName::SeatedDumbbellOverheadTricepsExtension,
+            22 => TricepsExtensionExerciseName::SeatedEzBarOverheadTricepsExtension,
+            23 => TricepsExtensionExerciseName::SeatedSingleArmOverheadDumbbellExtension,
+            24 => TricepsExtensionExerciseName::SingleArmDumbbellOverheadTricepsExtension,
+            25 => TricepsExtensionExerciseName::SingleDumbbellSeatedOverheadTricepsExtension,
+            26 => TricepsExtensionExerciseName::SingleLegBenchDipAndKick,
+            27 => TricepsExtensionExerciseName::WeightedSingleLegBenchDipAndKick,
+            28 => TricepsExtensionExerciseName::SingleLegDip,
+            29 => TricepsExtensionExerciseName::WeightedSingleLegDip,
+            30 => TricepsExtensionExerciseName::StaticLyingTricepsExtension,
+            31 => TricepsExtensionExerciseName::SuspendedDip,
+            32 => TricepsExtensionExerciseName::WeightedSuspendedDip,
+            33 => TricepsExtensionExerciseName::SwissBallDumbbellLyingTricepsExtension,
+            34 => TricepsExtensionExerciseName::SwissBallEzBarLyingTricepsExtension,
+            35 => TricepsExtensionExerciseName::SwissBallEzBarOverheadTricepsExtension,
+            36 => TricepsExtensionExerciseName::TabletopDip,
+            37 => TricepsExtensionExerciseName::WeightedTabletopDip,
+            38 => TricepsExtensionExerciseName::TricepsExtensionOnFloor,
+            39 => TricepsExtensionExerciseName::TricepsPressdown,
+            40 => TricepsExtensionExerciseName::WeightedDip,
+            n => TricepsExtensionExerciseName::UnknownValue(n)
         }
     }
 }
@@ -6220,6 +8013,29 @@ impl<N> From<N> for WarmUpExerciseName
 }
 
 #[derive(Clone, Debug)]
+pub enum RunExerciseName {
+    Jog,
+    Run,
+    Sprint,
+    Walk,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for RunExerciseName
+    where N: Into<u64>
+{
+    fn from(number: N) -> RunExerciseName {
+        match number.into() {
+            0 => RunExerciseName::Run,
+            1 => RunExerciseName::Walk,
+            2 => RunExerciseName::Jog,
+            3 => RunExerciseName::Sprint,
+            n => RunExerciseName::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum WaterType {
     Custom,
     En13319,
@@ -6238,6 +8054,23 @@ impl<N> From<N> for WaterType
             2 => WaterType::En13319,
             3 => WaterType::Custom,
             n => WaterType::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum TissueModelType {
+    Zhl16C,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for TissueModelType
+    where N: Into<u64>
+{
+    fn from(number: N) -> TissueModelType {
+        match number.into() {
+            0 => TissueModelType::Zhl16C,
+            n => TissueModelType::UnknownValue(n)
         }
     }
 }
@@ -6264,6 +8097,25 @@ impl<N> From<N> for DiveGasStatus
 }
 
 #[derive(Clone, Debug)]
+pub enum DiveAlarmType {
+    Depth,
+    Time,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for DiveAlarmType
+    where N: Into<u64>
+{
+    fn from(number: N) -> DiveAlarmType {
+        match number.into() {
+            0 => DiveAlarmType::Depth,
+            1 => DiveAlarmType::Time,
+            n => DiveAlarmType::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum DiveBacklightMode {
     AlwaysOn,
     AtDepth,
@@ -6278,6 +8130,25 @@ impl<N> From<N> for DiveBacklightMode
             0 => DiveBacklightMode::AtDepth,
             1 => DiveBacklightMode::AlwaysOn,
             n => DiveBacklightMode::UnknownValue(n)
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum FaveroProduct {
+    AssiomaDuo,
+    AssiomaUno,
+    UnknownValue(u64),
+}
+
+impl<N> From<N> for FaveroProduct
+    where N: Into<u64>
+{
+    fn from(number: N) -> FaveroProduct {
+        match number.into() {
+            10 => FaveroProduct::AssiomaUno,
+            12 => FaveroProduct::AssiomaDuo,
+            n => FaveroProduct::UnknownValue(n)
         }
     }
 }

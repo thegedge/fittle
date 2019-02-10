@@ -4,7 +4,7 @@ use nom::{le_u8, be_u16, le_u16, le_u32};
 
 use crate::{
     fields::FieldDefinition,
-    messages::MessageType,
+    enums::MesgNum,
 };
 
 #[derive(Debug)]
@@ -61,7 +61,7 @@ impl RecordHeader {
 #[derive(Clone, Debug)]
 struct DataDefinition {
     architecture: u8,
-    global_message: MessageType,
+    message_type: MesgNum,
     fields: Vec<FieldDefinition>,
 }
 
@@ -122,7 +122,7 @@ fn data_definition<'i>(input: &'i [u8]) -> nom::IResult<&'i [u8], DataDefinition
         remaining,
         DataDefinition {
             architecture,
-            global_message: MessageType::from(global_message_number),
+            message_type: MesgNum::from(global_message_number),
             fields
         }
     ))
@@ -163,6 +163,8 @@ fn file<'i>(input: &'i [u8]) -> nom::IResult<&'i [u8], ()> {
         } else {
             match local_types[local_message_type as usize] {
                 Some(ref data_definition) => {
+                    println!("Message: {:?}", data_definition.message_type);
+
                     remaining = record_header.0;
                     for field in data_definition.fields.iter() {
                         let field_content = if data_definition.architecture == BIG_ENDIANNESS {
