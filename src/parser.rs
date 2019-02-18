@@ -1,6 +1,16 @@
-use std::result;
+use std::{
+    result,
+    io::{
+        Cursor,
+        Read,
+    },
+};
 
-use nom::{le_u8, be_u16, le_u16, le_u32};
+use byteorder::{
+    BigEndian,
+    LittleEndian,
+    ReadBytesExt,
+};
 
 use crate::{
     fields::FieldDefinition,
@@ -12,7 +22,10 @@ pub enum ParserError {
     FailedToParse,
 }
 
-pub type Result = result::Result<(), ParserError>;
+pub type Result<T> = result::Result<T, ParserError>;
+
+const HEADER_TYPE_NORMAL: u8 = 0;
+//const HEADER_TYPE_COMPRESSED: u8 = 1;
 
 //const MESSAGE_TYPE_DATA: u8 = 0;
 const MESSAGE_TYPE_DEFINITION: u8 = 1;
@@ -56,6 +69,13 @@ impl RecordHeader {
             _ => false,
         }
     }
+
+    fn local_message_type(&self) -> u8 {
+        match self {
+            RecordHeader::Normal(ref h) => h.local_message_type,
+            RecordHeader::Compressed(ref h) => h.local_message_type,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -65,137 +85,132 @@ struct DataDefinition {
     fields: Vec<FieldDefinition>,
 }
 
-named!(
-    normal_header<(&[u8], usize), RecordHeader>,
-    do_parse!(
-        _header_type: tag_bits!(u8, 1, 0)
-        >> message_type: take_bits!(u8, 1)
-        >> message_type_specific: take_bits!(u8, 1)
-        >> _reserved: take_bits!(u8, 1)
-        >> local_message_type: take_bits!(u8, 4)
-        >> (RecordHeader::Normal(NormalHeader { message_type, message_type_specific, local_message_type }))
-    )
-);
-
-named!(
-    compressed_header<(&[u8], usize), RecordHeader>,
-    do_parse!(
-        _header_type: tag_bits!(u8, 1, 1)
-        >> local_message_type: take_bits!(u8, 2)
-        >> offset: take_bits!(u8, 5)
-        >> (RecordHeader::Compressed(CompressedHeader { local_message_type, offset }))
-    )
-);
-
-named!(
-    record_header<&[u8], RecordHeader>,
-    bits!(alt!(normal_header | compressed_header))
-);
-
-named_args!(
-    fields(num_fields: usize)<&[u8], Vec<FieldDefinition>>,
-    many_m_n!(
-        num_fields,
-        num_fields,
-        do_parse!(
-            number: le_u8
-            >> size: map!(le_u8, |b| b as usize)
-            >> base_type: map!(le_u8, |b| b & 0x0F) // just take the bits for the base type number
-            >> (FieldDefinition::new(number, size, base_type))
-        )
-    )
-);
-
-fn data_definition<'i>(input: &'i [u8]) -> nom::IResult<&'i [u8], DataDefinition> {
-    let _reserved = input[0];
-    let architecture = input[1];
-    let (_, global_message_number) = if architecture == BIG_ENDIANNESS {
-        be_u16(&input[2..])?
-    } else {
-        le_u16(&input[2..])?
-    };
-
-    let num_fields = input[4] as usize;
-    let (remaining, fields) = fields(&input[5..], num_fields)?;
-
-    Ok((
-        remaining,
-        DataDefinition {
-            architecture,
-            message_type: MesgNum::from(global_message_number),
-            fields
-        }
-    ))
+struct Parser<Reader: ReadBytesExt> {
+    reader: Reader,
 }
 
-named!(
-    file_header<&[u8], FileHeader>,
-    do_parse!(
-        size: le_u8
-        >> protocol_version: le_u8
-        >> profile_version: le_u16
-        >> data_size: map!(le_u32, |b| b as usize)
-        >> data_type: count_fixed!(u8, le_u8, 4)
-        >> crc: le_u16
-        >> (FileHeader { size, protocol_version, profile_version, data_size, data_type, crc })
-    )
-);
+fn read_bits(value: &mut u8, n: u8) -> u8 {
+    let mask = ((1 << n) as u8 - 1).rotate_right(n as u32);
+    let ret = (*value & mask) >> (8 - n);
+    //println!("{:#010b}", value);
+    //println!("{:#010b} {} {}", mask, n, ret);
+    *value <<= n;
+    ret
+}
 
-fn file<'i>(input: &'i [u8]) -> nom::IResult<&'i [u8], ()> {
-    let mut local_types = vec![None; 255];
+pub fn parse(bytes: &[u8]) -> Result<()> {
+    let reader = Cursor::new(bytes);
+    Parser { reader }.parse()
+}
 
-    let (mut remaining, file_header) = file_header(input)?;
-    let end_size = remaining.len() - file_header.data_size;
-    while remaining.len() > end_size {
-        let record_header = record_header(remaining)?;
+impl<Reader> Parser<Reader> where Reader: Read {
+    fn record_header(&mut self, mut header_data: u8) -> Result<RecordHeader> {
+        let data = &mut header_data;
+        let header_type = read_bits(data, 1);
+        if header_type == HEADER_TYPE_NORMAL {
+            let message_type = read_bits(data, 1);
+            let message_type_specific = read_bits(data, 1);
+            let _reserved = read_bits(data, 1);
+            let local_message_type = read_bits(data, 4);
 
-        let local_message_type = match record_header.1 {
-            RecordHeader::Normal(ref h) => h.local_message_type,
-            RecordHeader::Compressed(ref h) => h.local_message_type,
-        };
-
-        // TODO compressed offsets
-
-        if record_header.1.is_definition() {
-            let data_definition = data_definition(record_header.0)?;
-            local_types[local_message_type as usize] = Some(data_definition.1);
-            remaining = data_definition.0
+            Ok(RecordHeader::Normal(NormalHeader { message_type, message_type_specific, local_message_type }))
         } else {
-            match local_types[local_message_type as usize] {
-                Some(ref data_definition) => {
-                    println!("Message: {:?}", data_definition.message_type);
+            let local_message_type = read_bits(data, 2);
+            let offset = read_bits(data, 5);
 
-                    remaining = record_header.0;
-                    for field in data_definition.fields.iter() {
-                        let field_content = if data_definition.architecture == BIG_ENDIANNESS {
-                            field.content_from_bytes::<byteorder::BE>(remaining)
-                        } else {
-                            field.content_from_bytes::<byteorder::LE>(remaining)
-                        }.unwrap();
-
-                        println!("\t{:?} = {:?}", field, field_content.1);
-                        remaining = field_content.0;
-                    }
-                },
-                None => panic!("local message type {} not yet defined", local_message_type),
-            }
+            Ok(RecordHeader::Compressed(CompressedHeader { local_message_type, offset }))
         }
     }
 
-    // TODO CRC verification
+    fn fields(&mut self, num_fields: usize) -> Result<Vec<FieldDefinition>> {
+        (0..num_fields).map(|_| {
+            let number = self.reader.read_u8()?;
+            let size = self.reader.read_u8()? as usize;
+            let base_type = self.reader.read_u8()? & 0x0F; // just take the bits for the base type number
 
-    remaining = &remaining[2..];
+            Ok(FieldDefinition::new(number, size, base_type))
+        }).collect()
+    }
 
-    Ok((remaining, ()))
+    fn data_definition(&mut self) -> Result<DataDefinition> {
+        let _reserved = self.reader.read_u8()?;
+
+        let architecture = self.reader.read_u8()?;
+        let global_message_number = if architecture == BIG_ENDIANNESS {
+            self.reader.read_u16::<BigEndian>()?
+        } else {
+            self.reader.read_u16::<LittleEndian>()?
+        };
+
+        let num_fields = self.reader.read_u8()? as usize;
+        let fields = self.fields(num_fields)?;
+
+        Ok(DataDefinition {
+            architecture,
+            message_type: MesgNum::from(global_message_number),
+            fields
+        })
+    }
+
+    fn file_header(&mut self) -> Result<FileHeader> {
+        let size = self.reader.read_u8()?;
+        let protocol_version = self.reader.read_u8()?;
+        let profile_version = self.reader.read_u16::<LittleEndian>()?;
+        let data_size = self.reader.read_u32::<LittleEndian>()? as usize;
+        let data_type = [
+            self.reader.read_u8()?,
+            self.reader.read_u8()?,
+            self.reader.read_u8()?,
+            self.reader.read_u8()?,
+        ];
+        let crc = self.reader.read_u16::<LittleEndian>()?;
+
+        Ok(FileHeader { size, protocol_version, profile_version, data_size, data_type, crc })
+    }
+
+    fn parse<'i>(&mut self) -> Result<()> {
+        let mut local_types = vec![None; 255];
+
+        let _file_header = self.file_header()?;
+        loop {
+            let record_header_data = self.reader.read_u8()?;
+            let record_header = self.record_header(record_header_data)?;
+            let local_message_type = record_header.local_message_type();
+            println!("{:?}", record_header);
+
+            // TODO compressed offsets
+
+            if record_header.is_definition() {
+                let data_definition = self.data_definition()?;
+                local_types[local_message_type as usize] = Some(data_definition);
+            } else {
+                match local_types[local_message_type as usize] {
+                    Some(ref data_definition) => {
+                        println!("Message: {:?}", data_definition.message_type);
+
+                        for field in data_definition.fields.iter() {
+                            let field_content = if data_definition.architecture == BIG_ENDIANNESS {
+                                field.content_from::<BigEndian, Reader>(&mut self.reader)
+                            } else {
+                                field.content_from::<LittleEndian, Reader>(&mut self.reader)
+                            }.unwrap();
+
+                            println!("\t{:?} = {:?}", field, field_content);
+                        }
+                    },
+                    None => panic!("local message type {} not yet defined", local_message_type),
+                }
+            }
+        }
+
+        // TODO CRC verification
+
+        Ok(())
+    }
 }
 
-pub fn parse(bytes: &[u8]) -> Result {
-    println!("{:?}", file(bytes));
-    Ok(())
-}
-
-impl std::convert::From<nom::Err<(&[u8], usize)>> for ParserError {
-    fn from(_: nom::Err<(&[u8], usize)>) -> Self {
+impl std::convert::From<std::io::Error> for ParserError {
+    fn from(_: std::io::Error) -> Self {
         ParserError::FailedToParse
     }
 }

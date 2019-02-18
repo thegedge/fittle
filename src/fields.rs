@@ -1,5 +1,7 @@
-use std::io::{Cursor, Read};
-use byteorder::ReadBytesExt;
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt,
+};
 
 #[derive(Debug)]
 pub enum FieldContent {
@@ -20,7 +22,6 @@ pub enum FieldContent {
     SignedInt64(i64),
     UnsignedInt64(u64),
     UnsignedInt64z(u64),
-    Invalid,
 }
 
 #[derive(Clone, Debug)]
@@ -39,47 +40,45 @@ impl FieldDefinition {
         }
     }
 
-    pub fn content_from_bytes<'i, Order: byteorder::ByteOrder>(&self, bytes: &'i [u8])
-        -> Result<(&'i [u8], Vec<FieldContent>), std::io::Error>
+    pub fn content_from<'i, Order, Reader>(&self, reader: &mut Reader)
+        -> Result<(Vec<FieldContent>), std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
     {
-        let mut cursor = Cursor::new(bytes);
-        let data = (0..self.value_count()).map({ |_|
-            match self.base_type {
-                0 => Ok(FieldContent::Enum(cursor.read_u8()?)),
-                1 => Ok(FieldContent::SignedInt8(cursor.read_i8()?)),
-                2 => Ok(FieldContent::UnsignedInt8(cursor.read_u8()?)),
-                3 => Ok(FieldContent::SignedInt16(cursor.read_i16::<Order>()?)),
-                4 => Ok(FieldContent::UnsignedInt16(cursor.read_u16::<Order>()?)),
-                5 => Ok(FieldContent::SignedInt32(cursor.read_i32::<Order>()?)),
-                6 => Ok(FieldContent::UnsignedInt32(cursor.read_u32::<Order>()?)),
+        (0..self.value_count()).map({ |_|
+            Ok(match self.base_type {
+                0 => FieldContent::Enum(reader.read_u8()?),
+                1 => FieldContent::SignedInt8(reader.read_i8()?),
+                2 => FieldContent::UnsignedInt8(reader.read_u8()?),
+                3 => FieldContent::SignedInt16(reader.read_i16::<Order>()?),
+                4 => FieldContent::UnsignedInt16(reader.read_u16::<Order>()?),
+                5 => FieldContent::SignedInt32(reader.read_i32::<Order>()?),
+                6 => FieldContent::UnsignedInt32(reader.read_u32::<Order>()?),
                 7 => {
                     let mut data = vec![0; self.size];
-                    cursor.read_exact(&mut data)?;
+                    reader.read_exact(&mut data)?;
 
                     let mut iter = data.splitn(2, |b| *b == 0);
                     let string = String::from_utf8_lossy(iter.next().expect("should have at least one item"));
-                    Ok(FieldContent::String(string.into_owned()))
+                    FieldContent::String(string.into_owned())
                 },
-                8 => Ok(FieldContent::Float32(cursor.read_f32::<Order>()?)),
-                9 => Ok(FieldContent::Float64(cursor.read_f64::<Order>()?)),
-                10 => Ok(FieldContent::UnsignedInt8z(cursor.read_u8()?)),
-                11 => Ok(FieldContent::UnsignedInt16z(cursor.read_u16::<Order>()?)),
-                12 => Ok(FieldContent::UnsignedInt32z(cursor.read_u32::<Order>()?)),
+                8 => FieldContent::Float32(reader.read_f32::<Order>()?),
+                9 => FieldContent::Float64(reader.read_f64::<Order>()?),
+                10 => FieldContent::UnsignedInt8z(reader.read_u8()?),
+                11 => FieldContent::UnsignedInt16z(reader.read_u16::<Order>()?),
+                12 => FieldContent::UnsignedInt32z(reader.read_u32::<Order>()?),
                 13 => {
                     let mut data = Vec::with_capacity(self.size);
-                    cursor.read_exact(&mut data)?;
-                    Ok(FieldContent::ByteArray(data))
+                    reader.read_exact(&mut data)?;
+                    FieldContent::ByteArray(data)
                 },
-                14 => Ok(FieldContent::SignedInt64(cursor.read_i64::<Order>()?)),
-                15 => Ok(FieldContent::UnsignedInt64(cursor.read_u64::<Order>()?)),
-                16 => Ok(FieldContent::UnsignedInt64z(cursor.read_u64::<Order>()?)),
+                14 => FieldContent::SignedInt64(reader.read_i64::<Order>()?),
+                15 => FieldContent::UnsignedInt64(reader.read_u64::<Order>()?),
+                16 => FieldContent::UnsignedInt64z(reader.read_u64::<Order>()?),
                 _ => panic!("impossible base type: {}", self.base_type),
-            }
-        }).map({ |content: Result<_, std::io::Error>|
-            content.unwrap_or(FieldContent::Invalid)
-        }).collect();
-
-        Ok((&bytes[self.size..], data))
+            })
+        }).collect()
     }
 
     pub fn base_size(&self) -> usize {
