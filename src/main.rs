@@ -1,6 +1,5 @@
 extern crate byteorder;
 
-mod data_types;
 mod enums;
 mod fields;
 mod messages;

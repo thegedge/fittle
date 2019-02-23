@@ -4,6 +4,12 @@ use byteorder::{
 };
 
 #[derive(Debug)]
+pub enum Field {
+    One(FieldContent),
+    Many(Vec<FieldContent>),
+}
+
+#[derive(Debug)]
 pub enum FieldContent {
     Enum(u8),
     SignedInt8(i8),
@@ -41,44 +47,59 @@ impl FieldDefinition {
     }
 
     pub fn content_from<'i, Order, Reader>(&self, reader: &mut Reader)
-        -> Result<(Vec<FieldContent>), std::io::Error>
+        -> Result<Field, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
-        (0..self.value_count()).map({ |_|
-            Ok(match self.base_type {
-                0 => FieldContent::Enum(reader.read_u8()?),
-                1 => FieldContent::SignedInt8(reader.read_i8()?),
-                2 => FieldContent::UnsignedInt8(reader.read_u8()?),
-                3 => FieldContent::SignedInt16(reader.read_i16::<Order>()?),
-                4 => FieldContent::UnsignedInt16(reader.read_u16::<Order>()?),
-                5 => FieldContent::SignedInt32(reader.read_i32::<Order>()?),
-                6 => FieldContent::UnsignedInt32(reader.read_u32::<Order>()?),
-                7 => {
-                    let mut data = vec![0; self.size];
-                    reader.read_exact(&mut data)?;
+        Ok(if self.value_count() == 1 {
+            Field::One(self.read_one::<Order, Reader>(reader)?)
+        } else {
+            Field::Many(
+                (0..self.value_count())
+                    .map({ |_| self.read_one::<Order, Reader>(reader) })
+                    .collect::<Result<Vec<_>, _>>()?
+            )
+        })
+    }
 
-                    let mut iter = data.splitn(2, |b| *b == 0);
-                    let string = String::from_utf8_lossy(iter.next().expect("should have at least one item"));
-                    FieldContent::String(string.into_owned())
-                },
-                8 => FieldContent::Float32(reader.read_f32::<Order>()?),
-                9 => FieldContent::Float64(reader.read_f64::<Order>()?),
-                10 => FieldContent::UnsignedInt8z(reader.read_u8()?),
-                11 => FieldContent::UnsignedInt16z(reader.read_u16::<Order>()?),
-                12 => FieldContent::UnsignedInt32z(reader.read_u32::<Order>()?),
-                13 => {
-                    let mut data = vec![0; self.size];
-                    reader.read_exact(&mut data)?;
-                    FieldContent::ByteArray(data)
-                },
-                14 => FieldContent::SignedInt64(reader.read_i64::<Order>()?),
-                15 => FieldContent::UnsignedInt64(reader.read_u64::<Order>()?),
-                16 => FieldContent::UnsignedInt64z(reader.read_u64::<Order>()?),
-                _ => panic!("impossible base type: {}", self.base_type),
-            })
-        }).collect()
+    pub fn read_one<'i, Order, Reader>(&self, reader: &mut Reader)
+        -> Result<FieldContent, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
+        Ok(match self.base_type {
+            0 => FieldContent::Enum(reader.read_u8()?),
+            1 => FieldContent::SignedInt8(reader.read_i8()?),
+            2 => FieldContent::UnsignedInt8(reader.read_u8()?),
+            3 => FieldContent::SignedInt16(reader.read_i16::<Order>()?),
+            4 => FieldContent::UnsignedInt16(reader.read_u16::<Order>()?),
+            5 => FieldContent::SignedInt32(reader.read_i32::<Order>()?),
+            6 => FieldContent::UnsignedInt32(reader.read_u32::<Order>()?),
+            7 => {
+                let mut data = vec![0; self.size];
+                reader.read_exact(&mut data)?;
+
+                let mut iter = data.splitn(2, |b| *b == 0);
+                let string = String::from_utf8_lossy(iter.next().expect("should have at least one item"));
+                FieldContent::String(string.into_owned())
+            },
+            8 => FieldContent::Float32(reader.read_f32::<Order>()?),
+            9 => FieldContent::Float64(reader.read_f64::<Order>()?),
+            10 => FieldContent::UnsignedInt8z(reader.read_u8()?),
+            11 => FieldContent::UnsignedInt16z(reader.read_u16::<Order>()?),
+            12 => FieldContent::UnsignedInt32z(reader.read_u32::<Order>()?),
+            13 => {
+                let mut data = vec![0; self.size];
+                reader.read_exact(&mut data)?;
+                FieldContent::ByteArray(data)
+            },
+            14 => FieldContent::SignedInt64(reader.read_i64::<Order>()?),
+            15 => FieldContent::UnsignedInt64(reader.read_u64::<Order>()?),
+            16 => FieldContent::UnsignedInt64z(reader.read_u64::<Order>()?),
+            _ => panic!("impossible base type: {}", self.base_type),
+        })
     }
 
     pub fn base_size(&self) -> usize {
