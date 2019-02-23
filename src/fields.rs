@@ -69,7 +69,7 @@ impl FieldDefinition {
                 11 => FieldContent::UnsignedInt16z(reader.read_u16::<Order>()?),
                 12 => FieldContent::UnsignedInt32z(reader.read_u32::<Order>()?),
                 13 => {
-                    let mut data = Vec::with_capacity(self.size);
+                    let mut data = vec![0; self.size];
                     reader.read_exact(&mut data)?;
                     FieldContent::ByteArray(data)
                 },

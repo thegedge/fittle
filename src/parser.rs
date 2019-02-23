@@ -3,6 +3,8 @@ use std::{
     io::{
         Cursor,
         Read,
+        Seek,
+        SeekFrom,
     },
 };
 
@@ -92,8 +94,6 @@ struct Parser<Reader: ReadBytesExt> {
 fn read_bits(value: &mut u8, n: u8) -> u8 {
     let mask = ((1 << n) as u8 - 1).rotate_right(n as u32);
     let ret = (*value & mask) >> (8 - n);
-    //println!("{:#010b}", value);
-    //println!("{:#010b} {} {}", mask, n, ret);
     *value <<= n;
     ret
 }
@@ -103,7 +103,7 @@ pub fn parse(bytes: &[u8]) -> Result<()> {
     Parser { reader }.parse()
 }
 
-impl<Reader> Parser<Reader> where Reader: Read {
+impl<Reader> Parser<Reader> where Reader: Read + Seek {
     fn record_header(&mut self, mut header_data: u8) -> Result<RecordHeader> {
         let data = &mut header_data;
         let header_type = read_bits(data, 1);
@@ -171,8 +171,9 @@ impl<Reader> Parser<Reader> where Reader: Read {
     fn parse<'i>(&mut self) -> Result<()> {
         let mut local_types = vec![None; 255];
 
-        let _file_header = self.file_header()?;
-        loop {
+        let file_header = self.file_header()?;
+        let end_position = self.reader.seek(SeekFrom::Current(0))? + file_header.data_size as u64;
+        while self.reader.seek(SeekFrom::Current(0))? < end_position {
             let record_header_data = self.reader.read_u8()?;
             let record_header = self.record_header(record_header_data)?;
             let local_message_type = record_header.local_message_type();
