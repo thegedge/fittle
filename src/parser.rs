@@ -15,7 +15,10 @@ use byteorder::{
 };
 
 use crate::{
-    fields::FieldDefinition,
+    fields::{
+        FieldContent,
+        FieldDefinition,
+    },
     enums::MesgNum,
 };
 
@@ -147,7 +150,7 @@ impl<Reader> Parser<Reader> where Reader: Read + Seek {
 
         Ok(DataDefinition {
             architecture,
-            message_type: MesgNum::from(global_message_number),
+            message_type: MesgNum::from(FieldContent::UnsignedInt16(global_message_number)),
             fields
         })
     }
@@ -190,13 +193,13 @@ impl<Reader> Parser<Reader> where Reader: Read + Seek {
                         println!("Message: {:?}", data_definition.message_type);
 
                         for field in data_definition.fields.iter() {
-                            let field_content = if data_definition.architecture == BIG_ENDIANNESS {
+                            let (_, field_content) = if data_definition.architecture == BIG_ENDIANNESS {
                                 field.content_from::<BigEndian, Reader>(&mut self.reader)
                             } else {
                                 field.content_from::<LittleEndian, Reader>(&mut self.reader)
                             }.unwrap();
 
-                            println!("\t{:?} = {:?}", field, field_content);
+                            println!("\t{:?}", field_content);
                         }
                     },
                     None => panic!("local message type {} not yet defined", local_message_type),

@@ -9,25 +9,20 @@ pub enum Field {
     Many(Vec<FieldContent>),
 }
 
-#[derive(Debug)]
-pub enum FieldContent {
-    Enum(u8),
-    SignedInt8(i8),
-    UnsignedInt8(u8),
-    SignedInt16(i16),
-    UnsignedInt16(u16),
-    SignedInt32(i32),
-    UnsignedInt32(u32),
-    String(String),
-    Float32(f32),
-    Float64(f64),
-    UnsignedInt8z(u8),
-    UnsignedInt16z(u16),
-    UnsignedInt32z(u32),
-    ByteArray(Vec<u8>),
-    SignedInt64(i64),
-    UnsignedInt64(u64),
-    UnsignedInt64z(u64),
+impl Field {
+    pub fn one(self) -> Option<FieldContent> {
+        match self {
+            Field::One(v) => Some(v),
+            _ => None
+        }
+    }
+
+    pub fn many(self) -> Option<Vec<FieldContent>> {
+        match self {
+            Field::Many(v) => Some(v),
+            _ => None
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -47,18 +42,21 @@ impl FieldDefinition {
     }
 
     pub fn content_from<'i, Order, Reader>(&self, reader: &mut Reader)
-        -> Result<Field, std::io::Error>
+        -> Result<(u8, Field), std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         Ok(if self.value_count() == 1 {
-            Field::One(self.read_one::<Order, Reader>(reader)?)
+            (self.number, Field::One(self.read_one::<Order, Reader>(reader)?))
         } else {
-            Field::Many(
-                (0..self.value_count())
-                    .map({ |_| self.read_one::<Order, Reader>(reader) })
-                    .collect::<Result<Vec<_>, _>>()?
+            (
+                self.number,
+                Field::Many(
+                    (0..self.value_count())
+                        .map({ |_| self.read_one::<Order, Reader>(reader) })
+                        .collect::<Result<Vec<_>, _>>()?
+                )
             )
         })
     }
@@ -133,3 +131,68 @@ impl FieldDefinition {
         }
     }
 }
+
+#[derive(Debug)]
+pub enum FieldContent {
+    Enum(u8),
+    SignedInt8(i8),
+    UnsignedInt8(u8),
+    SignedInt16(i16),
+    UnsignedInt16(u16),
+    SignedInt32(i32),
+    UnsignedInt32(u32),
+    String(String),
+    Float32(f32),
+    Float64(f64),
+    UnsignedInt8z(u8),
+    UnsignedInt16z(u16),
+    UnsignedInt32z(u32),
+    ByteArray(Vec<u8>),
+    SignedInt64(i64),
+    UnsignedInt64(u64),
+    UnsignedInt64z(u64),
+}
+
+macro_rules! into_impl {
+    ( $into_type:ty, $( $enums:tt )|+ ) => {
+        into_impl!($into_type, $($enums)|+, |v| <$into_type>::from(v));
+    };
+
+    ( $into_type:ty, $( $enums:tt )|+, $conversion:expr ) => {
+        impl From<FieldContent> for $into_type {
+            fn from(fc: FieldContent) -> Self {
+                ($conversion)(match fc {
+                    $(
+                        FieldContent::$enums(v) => v,
+                    )*
+                    v => panic!("cannot convert {:?} into {}", v, stringify!($type)),
+                }) 
+            }
+        }
+
+        impl From<Field> for $into_type {
+            fn from(f: Field) -> Self {
+                ($conversion)(match f {
+                    $(
+                        Field::One(FieldContent::$enums(v)) => v,
+                    )*
+                    v => panic!("cannot convert {:?} into {}", v, stringify!($type)),
+                })
+            }
+        }
+    };
+}
+
+into_impl!(bool, UnsignedInt8, |v| v != 0);
+into_impl!(u8, Enum | UnsignedInt8 | UnsignedInt8z);
+into_impl!(u16, UnsignedInt16 | UnsignedInt16z);
+into_impl!(u32, UnsignedInt32 | UnsignedInt32z);
+into_impl!(u64, UnsignedInt64 | UnsignedInt64z);
+into_impl!(i8, SignedInt8);
+into_impl!(i16, SignedInt16);
+into_impl!(i32, SignedInt32);
+into_impl!(i64, SignedInt64);
+into_impl!(f32, Float32);
+into_impl!(f64, Float64);
+into_impl!(String, String);
+into_impl!(Vec<u8>, ByteArray);

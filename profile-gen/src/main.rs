@@ -42,7 +42,7 @@ impl From<std::option::NoneError> for Error {
 const OUTPUT_DIR: &'static str = env!("OUTPUT_DIR");
 
 const TYPES_SHEET_TYPE_NAME_COLUMN: usize = 0;
-// const TYPES_SHEET_BASE_TYPE_COLUMN: usize = 1;
+ const TYPES_SHEET_BASE_TYPE_COLUMN: usize = 1;
 const TYPES_SHEET_VALUE_NAME_COLUMN: usize = 2;
 const TYPES_SHEET_VALUE_COLUMN: usize = 3;
 const TYPES_SHEET_COMMENT_COLUMN: usize = 4;
@@ -51,15 +51,15 @@ const MESSAGES_SHEET_MESSAGE_NAME_COLUMN: usize = 0;
 const MESSAGES_SHEET_FIELD_NUMBER_COLUMN: usize = 1;
 const MESSAGES_SHEET_FIELD_NAME_COLUMN: usize = 2;
 const MESSAGES_SHEET_FIELD_TYPE_COLUMN: usize = 3;
-//const MESSAGES_SHEET_ARRAY_COLUMN: usize = 4;
-const MESSAGES_SHEET_COMPONENTS_COLUMN: usize = 5;
-const MESSAGES_SHEET_SCALE_COLUMN: usize = 6;
-const MESSAGES_SHEET_OFFSET_COLUMN: usize = 7;
-const MESSAGES_SHEET_UNITS_COLUMN: usize = 8;
-const MESSAGES_SHEET_BITS_COLUMN: usize = 9;
-const MESSAGES_SHEET_ACCUMULATE_COLUMN: usize = 10;
-const MESSAGES_SHEET_REF_FIELD_NAME_COLUMN: usize = 11;
-const MESSAGES_SHEET_REF_FIELD_VALUE_COLUMN: usize = 12;
+const MESSAGES_SHEET_ARRAY_COLUMN: usize = 4;
+//const MESSAGES_SHEET_COMPONENTS_COLUMN: usize = 5;
+//const MESSAGES_SHEET_SCALE_COLUMN: usize = 6;
+//const MESSAGES_SHEET_OFFSET_COLUMN: usize = 7;
+//const MESSAGES_SHEET_UNITS_COLUMN: usize = 8;
+//const MESSAGES_SHEET_BITS_COLUMN: usize = 9;
+//const MESSAGES_SHEET_ACCUMULATE_COLUMN: usize = 10;
+//const MESSAGES_SHEET_REF_FIELD_NAME_COLUMN: usize = 11;
+//const MESSAGES_SHEET_REF_FIELD_VALUE_COLUMN: usize = 12;
 const MESSAGES_SHEET_COMMENT_COLUMN: usize = 13;
 
 fn main() -> Result<(), Error> {
@@ -67,16 +67,13 @@ fn main() -> Result<(), Error> {
         workbook: open_workbook(env!("FIT_PROFILE_PATH")).expect("cannot open fit profile xlsx"),
         enums_stream: File::create(format!("{}/enums.rs", OUTPUT_DIR)).expect("cannot create enums.rs"),
         messages_stream: File::create(format!("{}/messages.rs", OUTPUT_DIR)).expect("cannot create messages.rs"),
-        data_types_stream: File::create(format!("{}/data_types.rs", OUTPUT_DIR)).expect("cannot create data_types.rs"),
     };
 
     code_gen.enums_stream.write(b"// DO NOT EDIT -- generated code\n\n")?;
     code_gen.messages_stream.write(b"// DO NOT EDIT -- generated code\n\n")?;
-    code_gen.data_types_stream.write(b"// DO NOT EDIT -- generated code\n\n")?;
 
     code_gen.generate_types()?;
     code_gen.generate_fields()?;
-    code_gen.generate_data_types()?;
 
     Ok(())
 }
@@ -86,12 +83,13 @@ struct CodeGen<D: Seek + Read, F: Write> {
 
     enums_stream: F,
     messages_stream: F,
-    data_types_stream: F,
 }
 
 impl <D: Seek + Read, F: Write> CodeGen<D, F> {
     fn generate_types(&mut self) -> Result<(), Error> {
         let range = self.workbook.worksheet_range("Types")??;
+
+        self.enums_stream.write(b"use crate::fields::FieldContent;\n\n")?;
 
         // Skip the header row
         let mut iter = range.rows().skip(1).peekable();
@@ -100,6 +98,12 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                 DataType::Empty => continue,
                 DataType::String(v) => v,
                 value => panic!("Unexpected value in type name column: {}", value),
+            };
+
+            let base_type = match &row[TYPES_SHEET_BASE_TYPE_COLUMN] {
+                DataType::Empty => continue,
+                DataType::String(v) => v,
+                value => panic!("Unexpected value in base type column: {}", value),
             };
 
             let mut values = Vec::new();
@@ -159,7 +163,7 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                 "language_bits_2" => (),
                 "language_bits_3" => (),
                 "language_bits_4" => (),
-                v => write_enum(&mut self.enums_stream, &to_pascal_case(v), values)?,
+                v => write_enum(&mut self.enums_stream, &to_pascal_case(v), base_type, values)?,
             }
         }
 
@@ -170,6 +174,7 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
         let range = self.workbook.worksheet_range("Messages")??;
 
         self.messages_stream.write(b"use crate::enums;\n\n")?;
+        self.messages_stream.write(b"use crate::fields::Field;\n\n")?;
 
         // Skip the header row
         let mut iter = range.rows().skip(1);
@@ -199,7 +204,7 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
 
                 let field_name = match &field_data[MESSAGES_SHEET_FIELD_NAME_COLUMN] {
                     DataType::Empty => break,
-                    DataType::String(v) => v,
+                    DataType::String(v) => if v == "type" { "type_" } else { v },
                     v => panic!("unexpected type in message field name column: {:?}", v),
                 };
 
@@ -220,21 +225,85 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                     v => panic!("unexpected type in message field number column: {:?}", v),
                 };
 
-                values.push((to_pascal_case(&field_name), field_type, field_number));
+                let is_array = match &field_data[MESSAGES_SHEET_ARRAY_COLUMN] {
+                    DataType::Empty => false,
+                    DataType::String(_) => true,
+                    v => panic!("unexpected type in message array column: {:?}", v),
+                };
+
+                values.push((field_name, field_type, field_number, is_array));
             }
 
+            self.messages_stream.write(b"#[derive(Debug, Default)]\n")?;
             self.messages_stream.write_fmt(format_args!("pub struct {0} {{\n", message_name))?;
-            for (field_name, field_type, _number) in values {
-                self.messages_stream.write_fmt(format_args!("    {0}: {1},\n", field_name, rust_type(&field_type)))?;
+            for (field_name, field_type, _number, is_array) in &values {
+                let rust_type = rust_type(&field_type);
+                let rust_field_type = if *is_array {
+                    format!("Vec<{0}>", rust_type)
+                } else {
+                    rust_type
+                };
+
+                self.messages_stream.write_fmt(format_args!("    {0}: Option<{1}>,\n", field_name, rust_field_type))?;
             };
             self.messages_stream.write(b"}\n\n")?;
-        }
 
+            self.messages_stream.write_fmt(format_args!("impl From<Vec<(u8, Field)>> for {0} {{\n", message_name))?;
+            self.messages_stream.write(b"    fn from(fields: Vec<(u8, Field)>) -> Self {\n" )?;
+            self.messages_stream.write(b"        let mut msg: Self = Default::default();\n")?;
+            self.messages_stream.write(b"        for (number, field) in fields {\n")?;
+            self.messages_stream.write(b"            match number {\n")?;
+            for (field_name, field_type, number, is_array) in &values {
+                let rust_type = rust_type(&field_type);
+
+                // TODO avoid having to branch on is_array here
+                if *is_array {
+                    self.messages_stream.write_fmt(format_args!(
+                        "                {0} => msg.{1} = field.many().map(|vec| vec.into_iter().map(<{2}>::from).collect()),\n",
+                        number,
+                        field_name,
+                        rust_type
+                    ))?;
+                } else {
+                    self.messages_stream.write_fmt(format_args!(
+                        "                {0} => msg.{1} = field.one().map(<{2}>::from),\n",
+                        number,
+                        field_name,
+                        rust_type
+                    ))?;
+                }
+            }
+            self.messages_stream.write(b"                v => panic!(\"unknown field number: {}\", v)\n")?;
+            self.messages_stream.write(b"            };\n")?;
+            self.messages_stream.write(b"        }\n")?;
+            self.messages_stream.write(b"        msg\n")?;
+            self.messages_stream.write(b"    }\n")?;
+            self.messages_stream.write(b"}\n\n")?;
+        }
         Ok(())
     }
+}
 
-    fn generate_data_types(&mut self) -> Result<(), Error> {
-        Ok(())
+fn field_content_type(field_type: &str) -> &str {
+    match field_type {
+        "enum" => "Enum",
+        "sint8" => "SignedInt8",
+        "uint8" => "UnsignedInt8",
+        "sint16" => "SignedInt16",
+        "uint16" => "UnsignedInt16",
+        "sint32" => "SignedInt32",
+        "uint32" => "UnsignedInt32",
+        "string" => "String",
+        "float32" => "Float32",
+        "float64" => "Float64",
+        "uint8z" => "UnsignedInt8z",
+        "uint16z" => "UnsignedInt16z",
+        "uint32z" => "UnsignedInt32z",
+        "byte" => "ByteArray",
+        "sint64" => "SignedInt64",
+        "uint64" => "UnsignedInt64",
+        "uint64z" => "UnsignedInt64z",
+        _ => panic!("unknown field content type: {}", field_type),
     }
 }
 
@@ -279,10 +348,14 @@ fn message_name(name: &str) -> Option<&str> {
     }
 }
 
-fn write_enum<W>(stream: &mut W, enum_name: &str, mut entries: Vec<(String, u64)>) -> Result<(), Error>
+fn write_enum<W>(stream: &mut W, type_name: &str, sheet_type: &str, mut entries: Vec<(String, u64)>)
+    -> Result<(), Error>
     where
         W: Write,
 {
+    let enum_name = to_pascal_case(type_name);
+    let field_content_type = field_content_type(sheet_type);
+
     // Write the message enum (sorted by name)
     entries.sort();
 
@@ -297,15 +370,22 @@ fn write_enum<W>(stream: &mut W, enum_name: &str, mut entries: Vec<(String, u64)
     // Write function to map the message number (sorted by value) to the message enum type
     entries.sort_by_key(|(_, v)| *v);
 
-    stream.write_fmt(format_args!("impl<N> From<N> for {}\n", enum_name))?;
-    stream.write_fmt(format_args!("    where N: Into<u64>\n"))?;
-    stream.write_fmt(format_args!("{{\n"))?;
-    stream.write_fmt(format_args!("    fn from(number: N) -> {} {{\n", enum_name))?;
-    stream.write(b"        match number.into() {\n")?;
+    stream.write_fmt(format_args!("impl From<FieldContent> for {0} {{\n", enum_name))?;
+    stream.write(b"    fn from(field: FieldContent) -> Self {\n" )?;
+    stream.write_fmt(format_args!("        if let FieldContent::{0}(enum_value) = field {{\n", field_content_type))?;
+    stream.write(b"            match enum_value {\n")?;
     for (message_name, value) in entries {
-        stream.write_fmt(format_args!("            {0} => {2}::{1},\n", value, message_name, enum_name))?;
+        stream.write_fmt(format_args!(
+            "                {0} => {2}::{1},\n",
+            value,
+            message_name,
+            enum_name
+        ))?;
     }
-    stream.write_fmt(format_args!("            n => {0}::UnknownValue(n)\n", enum_name))?;
+    stream.write_fmt(format_args!("                n => {0}::UnknownValue(n as u64),\n", enum_name))?;
+    stream.write(b"            }\n")?;
+    stream.write(b"        } else {\n")?;
+    stream.write_fmt(format_args!("            panic!(\"can't convert {{:?}} to {0}\", field);\n", enum_name))?;
     stream.write(b"        }\n")?;
     stream.write(b"    }\n")?;
     stream.write(b"}\n\n")?;
