@@ -2087,7 +2087,7 @@ pub enum Manufacturer {
     FaveroElectronics,
     Feedbacksports,
     Fitcare,
-    FourIIII,
+    FourIIIIs,
     Fullspeedahead,
     Garmin,
     GarminFr405Antfs,
@@ -2264,7 +2264,7 @@ impl From<FieldContent> for Manufacturer {
                 48 => Manufacturer::Pioneer,
                 49 => Manufacturer::Spantec,
                 50 => Manufacturer::Metalogics,
-                51 => Manufacturer::FourIIII,
+                51 => Manufacturer::FourIIIIs,
                 52 => Manufacturer::SeikoEpson,
                 53 => Manufacturer::SeikoEpsonOem,
                 54 => Manufacturer::IforPowell,
@@ -6446,7 +6446,7 @@ pub enum LateralRaiseExerciseName {
     ComboShoulderRaise,
     DumbbellDiagonalRaise,
     DumbbellVRaise,
-    FourtyFiveDegreeCableExternalRotation,
+    FortyFiveDegreeCableExternalRotation,
     FrontRaise,
     LeaningDumbbellLateralRaise,
     LyingDumbbellRaise,
@@ -6477,7 +6477,7 @@ impl From<FieldContent> for LateralRaiseExerciseName {
     fn from(field: FieldContent) -> Self {
         if let FieldContent::UnsignedInt16(enum_value) = field {
             match enum_value {
-                0 => LateralRaiseExerciseName::FourtyFiveDegreeCableExternalRotation,
+                0 => LateralRaiseExerciseName::FortyFiveDegreeCableExternalRotation,
                 1 => LateralRaiseExerciseName::AlternatingLateralRaiseWithStaticHold,
                 2 => LateralRaiseExerciseName::BarMuscleUp,
                 3 => LateralRaiseExerciseName::BentOverLateralRaise,
@@ -6869,7 +6869,7 @@ pub enum PlankExerciseName {
     ElevatedFeetPlank,
     ElevatorAbs,
     ExtendedPlank,
-    FourtyFiveDegreePlank,
+    FortyFiveDegreePlank,
     FullPlankPasseTwist,
     InchingElbowPlank,
     InchwormToSidePlank,
@@ -7003,7 +7003,7 @@ impl From<FieldContent> for PlankExerciseName {
     fn from(field: FieldContent) -> Self {
         if let FieldContent::UnsignedInt16(enum_value) = field {
             match enum_value {
-                0 => PlankExerciseName::FourtyFiveDegreePlank,
+                0 => PlankExerciseName::FortyFiveDegreePlank,
                 1 => PlankExerciseName::Weighted45DegreePlank,
                 2 => PlankExerciseName::NinetyDegreePlank,
                 3 => PlankExerciseName::Weighted90DegreeStaticHold,
