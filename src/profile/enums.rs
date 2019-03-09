@@ -1,6 +1,6 @@
 // DO NOT EDIT -- generated code
 
-use crate::fields::{Field, FieldContent};
+use crate::fields::FieldContent;
 
 #[derive(Clone, Debug)]
 pub enum File {

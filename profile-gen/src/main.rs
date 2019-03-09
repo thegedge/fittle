@@ -1,5 +1,6 @@
 #![feature(try_trait)]
 
+use std::collections::BTreeSet;
 use std::convert::From;
 use std::fs::File;
 
@@ -39,10 +40,10 @@ impl From<std::option::NoneError> for Error {
     fn from(err: std::option::NoneError) -> Self { Error { wrapped: format!("{:?}", err) } }
 }
 
-const OUTPUT_DIR: &'static str = env!("OUTPUT_DIR");
+const OUTPUT_DIR: &'static str = "src/profile";
 
 const TYPES_SHEET_TYPE_NAME_COLUMN: usize = 0;
- const TYPES_SHEET_BASE_TYPE_COLUMN: usize = 1;
+const TYPES_SHEET_BASE_TYPE_COLUMN: usize = 1;
 const TYPES_SHEET_VALUE_NAME_COLUMN: usize = 2;
 const TYPES_SHEET_VALUE_COLUMN: usize = 3;
 const TYPES_SHEET_COMMENT_COLUMN: usize = 4;
@@ -62,15 +63,17 @@ const MESSAGES_SHEET_ARRAY_COLUMN: usize = 4;
 //const MESSAGES_SHEET_REF_FIELD_VALUE_COLUMN: usize = 12;
 const MESSAGES_SHEET_COMMENT_COLUMN: usize = 13;
 
+const GENERATED_FILE_COMMENT: &[u8] = b"// DO NOT EDIT -- generated code\n\n";
+
 fn main() -> Result<(), Error> {
     let mut code_gen = CodeGen {
         workbook: open_workbook(env!("FIT_PROFILE_PATH")).expect("cannot open fit profile xlsx"),
         enums_stream: File::create(format!("{}/enums.rs", OUTPUT_DIR)).expect("cannot create enums.rs"),
-        messages_stream: File::create(format!("{}/messages.rs", OUTPUT_DIR)).expect("cannot create messages.rs"),
+        messages_stream: File::create(format!("{}/messages/mod.rs", OUTPUT_DIR)).expect("cannot create messages/mod.rs"),
     };
 
-    code_gen.enums_stream.write(b"// DO NOT EDIT -- generated code\n\n")?;
-    code_gen.messages_stream.write(b"// DO NOT EDIT -- generated code\n\n")?;
+    code_gen.enums_stream.write(GENERATED_FILE_COMMENT)?;
+    code_gen.messages_stream.write(GENERATED_FILE_COMMENT)?;
 
     code_gen.generate_types()?;
     code_gen.generate_fields()?;
@@ -172,16 +175,16 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
 
     fn generate_fields(&mut self) -> Result<(), Error> {
         let range = self.workbook.worksheet_range("Messages")??;
+        let mut message_names = BTreeSet::new();
 
-        self.messages_stream.write(b"use crate::enums;\n\n")?;
-        self.messages_stream.write(b"use crate::fields::Field;\n\n")?;
+        // First write a module per message
 
-        // Skip the header row
+        // Skip the header row in the spreadsheet
         let mut iter = range.rows().skip(1);
         while let Some(row) = iter.next() {
             let message_name = match &row[MESSAGES_SHEET_MESSAGE_NAME_COLUMN] {
                 DataType::Empty => continue,
-                DataType::String(v) => to_pascal_case(v),
+                DataType::String(v) => v,
                 value => panic!("Unexpected value in message name column: {}", value),
             };
 
@@ -234,8 +237,16 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                 values.push((field_name, field_type, field_number, is_array));
             }
 
-            self.messages_stream.write(b"#[derive(Debug, Default)]\n")?;
-            self.messages_stream.write_fmt(format_args!("pub struct {0} {{\n", message_name))?;
+            let mut message_stream = File::create(format!("{}/messages/{}.rs", OUTPUT_DIR, message_name))?;
+            let message_struct_name = to_pascal_case(message_name);
+
+            message_stream.write(GENERATED_FILE_COMMENT)?;
+            message_stream.write(b"#[allow(unused_imports)]\n")?;
+            message_stream.write(b"use crate::profile::enums;\n")?;
+            message_stream.write(b"use crate::fields::Field;\n")?;
+            message_stream.write(b"\n")?;
+            message_stream.write(b"#[derive(Debug, Default)]\n")?;
+            message_stream.write_fmt(format_args!("pub struct {0} {{\n", message_struct_name))?;
             for (field_name, field_type, _number, is_array) in &values {
                 let rust_type = rust_type(&field_type);
                 let rust_field_type = if *is_array {
@@ -244,28 +255,28 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                     rust_type
                 };
 
-                self.messages_stream.write_fmt(format_args!("    {0}: Option<{1}>,\n", field_name, rust_field_type))?;
+                message_stream.write_fmt(format_args!("    {0}: Option<{1}>,\n", field_name, rust_field_type))?;
             };
-            self.messages_stream.write(b"}\n\n")?;
+            message_stream.write(b"}\n\n")?;
 
-            self.messages_stream.write_fmt(format_args!("impl From<Vec<(u8, Field)>> for {0} {{\n", message_name))?;
-            self.messages_stream.write(b"    fn from(fields: Vec<(u8, Field)>) -> Self {\n" )?;
-            self.messages_stream.write(b"        let mut msg: Self = Default::default();\n")?;
-            self.messages_stream.write(b"        for (number, field) in fields {\n")?;
-            self.messages_stream.write(b"            match number {\n")?;
+            message_stream.write_fmt(format_args!("impl From<Vec<(u8, Field)>> for {0} {{\n", message_struct_name))?;
+            message_stream.write(b"    fn from(fields: Vec<(u8, Field)>) -> Self {\n" )?;
+            message_stream.write(b"        let mut msg: Self = Default::default();\n")?;
+            message_stream.write(b"        for (number, field) in fields {\n")?;
+            message_stream.write(b"            match number {\n")?;
             for (field_name, field_type, number, is_array) in &values {
                 let rust_type = rust_type(&field_type);
 
                 // TODO avoid having to branch on is_array here
                 if *is_array {
-                    self.messages_stream.write_fmt(format_args!(
+                    message_stream.write_fmt(format_args!(
                         "                {0} => msg.{1} = field.many().map(|vec| vec.into_iter().map(<{2}>::from).collect()),\n",
                         number,
                         field_name,
                         rust_type
                     ))?;
                 } else {
-                    self.messages_stream.write_fmt(format_args!(
+                    message_stream.write_fmt(format_args!(
                         "                {0} => msg.{1} = field.one().map(<{2}>::from),\n",
                         number,
                         field_name,
@@ -273,13 +284,32 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                     ))?;
                 }
             }
-            self.messages_stream.write(b"                v => panic!(\"unknown field number: {}\", v)\n")?;
-            self.messages_stream.write(b"            };\n")?;
-            self.messages_stream.write(b"        }\n")?;
-            self.messages_stream.write(b"        msg\n")?;
-            self.messages_stream.write(b"    }\n")?;
-            self.messages_stream.write(b"}\n\n")?;
+            message_stream.write(b"                v => panic!(\"unknown field number: {}\", v)\n")?;
+            message_stream.write(b"            };\n")?;
+            message_stream.write(b"        }\n")?;
+            message_stream.write(b"        msg\n")?;
+            message_stream.write(b"    }\n")?;
+            message_stream.write(b"}\n\n")?;
+
+            message_names.insert((message_name, message_struct_name));
         }
+
+        // Write the module file itself, exposing the individual messages through an enum
+        for (message_name, _message_struct_name) in message_names.iter() {
+          self.messages_stream.write_fmt(format_args!("mod {0};\n", message_name))?;
+        }
+
+        for (message_name, message_struct_name) in message_names.iter() {
+          self.messages_stream.write_fmt(format_args!("use self::{0}::{1};\n", message_name, message_struct_name))?;
+        }
+
+        self.messages_stream.write(b"#[derive(Debug)]\n")?;
+        self.messages_stream.write(b"pub enum Message {\n")?;
+        for (_message_name, message_struct_name) in message_names.iter() {
+          self.messages_stream.write_fmt(format_args!("    {0}({0}),\n", message_struct_name))?;
+        }
+        self.messages_stream.write(b"}\n\n")?;
+
         Ok(())
     }
 }

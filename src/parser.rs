@@ -19,7 +19,7 @@ use crate::{
         FieldContent,
         FieldDefinition,
     },
-    enums::MesgNum,
+    profile::enums::MesgNum,
 };
 
 #[derive(Debug)]

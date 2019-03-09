@@ -1,8 +1,7 @@
 extern crate byteorder;
 
-mod enums;
+mod profile;
 mod fields;
-mod messages;
 mod parser;
 
 use std::io::prelude::*;
