@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Capabilities {
@@ -10,17 +12,23 @@ pub struct Capabilities {
     connectivity_supported: Option<enums::ConnectivityCapabilities>,
 }
 
-impl From<Vec<(u8, Field)>> for Capabilities {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Capabilities {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                21 => msg.workouts_supported = field.one().map(<enums::WorkoutCapabilities>::from),
-                23 => msg.connectivity_supported = field.one().map(<enums::ConnectivityCapabilities>::from),
-                v => panic!("unknown field number: {}", v)
+                21 => msg.workouts_supported = content.one().map(<enums::WorkoutCapabilities>::from),
+                23 => msg.connectivity_supported = content.one().map(<enums::ConnectivityCapabilities>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

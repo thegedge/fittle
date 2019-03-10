@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct SegmentFile {
@@ -17,24 +19,30 @@ pub struct SegmentFile {
     default_race_leader: Option<u8>,
 }
 
-impl From<Vec<(u8, Field)>> for SegmentFile {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl SegmentFile {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                1 => msg.file_uuid = field.one().map(<String>::from),
-                3 => msg.enabled = field.one().map(<bool>::from),
-                4 => msg.user_profile_primary_key = field.one().map(<u32>::from),
-                7 => msg.leader_type = field.many().map(|vec| vec.into_iter().map(<enums::SegmentLeaderboardType>::from).collect()),
-                8 => msg.leader_group_primary_key = field.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                9 => msg.leader_activity_id = field.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                10 => msg.leader_activity_id_string = field.many().map(|vec| vec.into_iter().map(<String>::from).collect()),
-                11 => msg.default_race_leader = field.one().map(<u8>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                1 => msg.file_uuid = content.one().map(<String>::from),
+                3 => msg.enabled = content.one().map(<bool>::from),
+                4 => msg.user_profile_primary_key = content.one().map(<u32>::from),
+                7 => msg.leader_type = content.many().map(|vec| vec.into_iter().map(<enums::SegmentLeaderboardType>::from).collect()),
+                8 => msg.leader_group_primary_key = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
+                9 => msg.leader_activity_id = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
+                10 => msg.leader_activity_id_string = content.many().map(|vec| vec.into_iter().map(<String>::from).collect()),
+                11 => msg.default_race_leader = content.one().map(<u8>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

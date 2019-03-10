@@ -2,7 +2,7 @@
 
 use crate::fields::FieldContent;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum File {
     Activity,
     ActivitySummary,
@@ -55,7 +55,7 @@ impl From<FieldContent> for File {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum MesgNum {
     AccelerometerData,
     Activity,
@@ -244,7 +244,7 @@ impl From<FieldContent> for MesgNum {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Checksum {
     Clear,
     Ok,
@@ -265,7 +265,7 @@ impl From<FieldContent> for Checksum {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum FileFlags {
     Erase,
     Read,
@@ -288,7 +288,7 @@ impl From<FieldContent> for FileFlags {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum MesgCount {
     MaxPerFile,
     MaxPerFileType,
@@ -311,7 +311,7 @@ impl From<FieldContent> for MesgCount {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DateTime {
     Min,
     UnknownValue(u64),
@@ -330,7 +330,7 @@ impl From<FieldContent> for DateTime {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LocalDateTime {
     Min,
     UnknownValue(u64),
@@ -349,7 +349,7 @@ impl From<FieldContent> for LocalDateTime {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum MessageIndex {
     Mask,
     Reserved,
@@ -372,7 +372,7 @@ impl From<FieldContent> for MessageIndex {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DeviceIndex {
     Creator,
     UnknownValue(u64),
@@ -391,7 +391,7 @@ impl From<FieldContent> for DeviceIndex {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Gender {
     Female,
     Male,
@@ -412,7 +412,7 @@ impl From<FieldContent> for Gender {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Language {
     Arabic,
     BrazilianPortuguese,
@@ -507,7 +507,7 @@ impl From<FieldContent> for Language {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum TimeZone {
     Adelaide,
     Alberta,
@@ -736,7 +736,7 @@ impl From<FieldContent> for TimeZone {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DisplayMeasure {
     Metric,
     Nautical,
@@ -759,7 +759,7 @@ impl From<FieldContent> for DisplayMeasure {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DisplayHeart {
     Bpm,
     Max,
@@ -782,7 +782,7 @@ impl From<FieldContent> for DisplayHeart {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DisplayPower {
     PercentFtp,
     Watts,
@@ -803,7 +803,7 @@ impl From<FieldContent> for DisplayPower {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DisplayPosition {
     AustrianGrid,
     BorneoRso,
@@ -904,7 +904,7 @@ impl From<FieldContent> for DisplayPosition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Switch {
     Auto,
     Off,
@@ -927,7 +927,7 @@ impl From<FieldContent> for Switch {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Sport {
     All,
     AlpineSkiing,
@@ -1044,7 +1044,7 @@ impl From<FieldContent> for Sport {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SubSport {
     All,
     ApneaDiving,
@@ -1183,7 +1183,7 @@ impl From<FieldContent> for SubSport {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SportEvent {
     Fitness,
     Geocaching,
@@ -1218,7 +1218,7 @@ impl From<FieldContent> for SportEvent {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Activity {
     AutoMultiSport,
     Manual,
@@ -1239,7 +1239,7 @@ impl From<FieldContent> for Activity {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Intensity {
     Active,
     Cooldown,
@@ -1264,7 +1264,7 @@ impl From<FieldContent> for Intensity {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SessionTrigger {
     ActivityEnd,
     AutoMultiSport,
@@ -1289,7 +1289,7 @@ impl From<FieldContent> for SessionTrigger {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AutolapTrigger {
     Distance,
     Off,
@@ -1320,7 +1320,7 @@ impl From<FieldContent> for AutolapTrigger {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LapTrigger {
     Distance,
     FitnessEquipment,
@@ -1355,7 +1355,7 @@ impl From<FieldContent> for LapTrigger {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum TimeMode {
     Hour12,
     Hour12WithSeconds,
@@ -1384,7 +1384,7 @@ impl From<FieldContent> for TimeMode {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BacklightMode {
     AutoBrightness,
     KeyAndMessages,
@@ -1415,7 +1415,7 @@ impl From<FieldContent> for BacklightMode {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DateMode {
     DayMonth,
     MonthDay,
@@ -1436,7 +1436,7 @@ impl From<FieldContent> for DateMode {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BacklightTimeout {
     Infinite,
     UnknownValue(u64),
@@ -1455,7 +1455,7 @@ impl From<FieldContent> for BacklightTimeout {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Event {
     Activity,
     Battery,
@@ -1544,7 +1544,7 @@ impl From<FieldContent> for Event {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum EventType {
     BeginDepreciated,
     ConsecutiveDepreciated,
@@ -1581,7 +1581,7 @@ impl From<FieldContent> for EventType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum TimerTrigger {
     Auto,
     FitnessEquipment,
@@ -1604,7 +1604,7 @@ impl From<FieldContent> for TimerTrigger {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum FitnessEquipmentState {
     InUse,
     Paused,
@@ -1629,7 +1629,7 @@ impl From<FieldContent> for FitnessEquipmentState {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Tone {
     Off,
     Tone,
@@ -1654,7 +1654,7 @@ impl From<FieldContent> for Tone {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Autoscroll {
     Fast,
     Medium,
@@ -1679,7 +1679,7 @@ impl From<FieldContent> for Autoscroll {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ActivityClass {
     Athlete,
     Level,
@@ -1702,7 +1702,7 @@ impl From<FieldContent> for ActivityClass {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum HrZoneCalc {
     Custom,
     PercentHrr,
@@ -1725,7 +1725,7 @@ impl From<FieldContent> for HrZoneCalc {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum PwrZoneCalc {
     Custom,
     PercentFtp,
@@ -1746,7 +1746,7 @@ impl From<FieldContent> for PwrZoneCalc {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WktStepDuration {
     Calories,
     Distance,
@@ -1823,7 +1823,7 @@ impl From<FieldContent> for WktStepDuration {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WktStepTarget {
     Cadence,
     Grade,
@@ -1868,7 +1868,7 @@ impl From<FieldContent> for WktStepTarget {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Goal {
     ActiveMinutes,
     Ascent,
@@ -1899,7 +1899,7 @@ impl From<FieldContent> for Goal {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum GoalRecurrence {
     Custom,
     Daily,
@@ -1928,7 +1928,7 @@ impl From<FieldContent> for GoalRecurrence {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum GoalSource {
     Auto,
     Community,
@@ -1951,7 +1951,7 @@ impl From<FieldContent> for GoalSource {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Schedule {
     Course,
     Workout,
@@ -1972,7 +1972,7 @@ impl From<FieldContent> for Schedule {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CoursePoint {
     Danger,
     FirstAid,
@@ -2041,7 +2041,7 @@ impl From<FieldContent> for CoursePoint {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Manufacturer {
     AAndD,
     AceSensor,
@@ -2388,7 +2388,7 @@ impl From<FieldContent> for Manufacturer {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum GarminProduct {
     Alf04,
     Amx,
@@ -2719,7 +2719,7 @@ impl From<FieldContent> for GarminProduct {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AntplusDeviceType {
     Antfs,
     BikeAero,
@@ -2784,7 +2784,7 @@ impl From<FieldContent> for AntplusDeviceType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AntNetwork {
     Antfs,
     Antplus,
@@ -2809,7 +2809,7 @@ impl From<FieldContent> for AntNetwork {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WorkoutCapabilities {
     Cadence,
     Custom,
@@ -2854,7 +2854,7 @@ impl From<FieldContent> for WorkoutCapabilities {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BatteryStatus {
     Charging,
     Critical,
@@ -2885,7 +2885,7 @@ impl From<FieldContent> for BatteryStatus {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum HrType {
     Irregular,
     Normal,
@@ -2906,7 +2906,7 @@ impl From<FieldContent> for HrType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CourseCapabilities {
     Bikeway,
     Cadence,
@@ -2945,7 +2945,7 @@ impl From<FieldContent> for CourseCapabilities {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Weight {
     Calculating,
     UnknownValue(u64),
@@ -2964,7 +2964,7 @@ impl From<FieldContent> for Weight {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WorkoutHr {
     BpmOffset,
     UnknownValue(u64),
@@ -2983,7 +2983,7 @@ impl From<FieldContent> for WorkoutHr {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WorkoutPower {
     WattsOffset,
     UnknownValue(u64),
@@ -3002,7 +3002,7 @@ impl From<FieldContent> for WorkoutPower {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BpStatus {
     ErrorDataOutOfRange,
     ErrorIncompleteData,
@@ -3029,7 +3029,7 @@ impl From<FieldContent> for BpStatus {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum UserLocalId {
     LocalMax,
     LocalMin,
@@ -3058,7 +3058,7 @@ impl From<FieldContent> for UserLocalId {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SwimStroke {
     Backstroke,
     Breaststroke,
@@ -3089,7 +3089,7 @@ impl From<FieldContent> for SwimStroke {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ActivityType {
     All,
     Cycling,
@@ -3124,7 +3124,7 @@ impl From<FieldContent> for ActivityType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ActivitySubtype {
     All,
     Cyclocross,
@@ -3181,7 +3181,7 @@ impl From<FieldContent> for ActivitySubtype {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ActivityLevel {
     High,
     Low,
@@ -3204,7 +3204,7 @@ impl From<FieldContent> for ActivityLevel {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Side {
     Left,
     Right,
@@ -3225,7 +3225,7 @@ impl From<FieldContent> for Side {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LeftRightBalance {
     Mask,
     Right,
@@ -3246,7 +3246,7 @@ impl From<FieldContent> for LeftRightBalance {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LeftRightBalance100 {
     Mask,
     Right,
@@ -3267,7 +3267,7 @@ impl From<FieldContent> for LeftRightBalance100 {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LengthType {
     Active,
     Idle,
@@ -3288,7 +3288,7 @@ impl From<FieldContent> for LengthType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DayOfWeek {
     Friday,
     Monday,
@@ -3319,7 +3319,7 @@ impl From<FieldContent> for DayOfWeek {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ConnectivityCapabilities {
     ActivityUpload,
     Ant,
@@ -3400,7 +3400,7 @@ impl From<FieldContent> for ConnectivityCapabilities {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WeatherReport {
     Current,
     DailyForecast,
@@ -3423,7 +3423,7 @@ impl From<FieldContent> for WeatherReport {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WeatherStatus {
     Clear,
     Cloudy,
@@ -3482,7 +3482,7 @@ impl From<FieldContent> for WeatherStatus {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WeatherSeverity {
     Advisory,
     Statement,
@@ -3509,7 +3509,7 @@ impl From<FieldContent> for WeatherSeverity {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WeatherSevereType {
     AirQuality,
     AirStagnation,
@@ -3696,7 +3696,7 @@ impl From<FieldContent> for WeatherSevereType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum TimeIntoDay {
     UnknownValue(u64),
 }
@@ -3713,7 +3713,7 @@ impl From<FieldContent> for TimeIntoDay {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LocaltimeIntoDay {
     UnknownValue(u64),
 }
@@ -3730,7 +3730,7 @@ impl From<FieldContent> for LocaltimeIntoDay {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum StrokeType {
     Backhand,
     Forehand,
@@ -3759,7 +3759,7 @@ impl From<FieldContent> for StrokeType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BodyLocation {
     LeftAbdomen,
     LeftArm,
@@ -3856,7 +3856,7 @@ impl From<FieldContent> for BodyLocation {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SegmentLapStatus {
     End,
     Fail,
@@ -3877,7 +3877,7 @@ impl From<FieldContent> for SegmentLapStatus {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SegmentLeaderboardType {
     Challenger,
     ClubLeader,
@@ -3916,7 +3916,7 @@ impl From<FieldContent> for SegmentLeaderboardType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SegmentDeleteStatus {
     DeleteAll,
     DeleteOne,
@@ -3939,7 +3939,7 @@ impl From<FieldContent> for SegmentDeleteStatus {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SegmentSelectionType {
     Starred,
     Suggested,
@@ -3960,7 +3960,7 @@ impl From<FieldContent> for SegmentSelectionType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SourceType {
     Ant,
     Antplus,
@@ -3989,7 +3989,7 @@ impl From<FieldContent> for SourceType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LocalDeviceType {
     UnknownValue(u64),
 }
@@ -4006,7 +4006,7 @@ impl From<FieldContent> for LocalDeviceType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DisplayOrientation {
     Auto,
     Landscape,
@@ -4033,7 +4033,7 @@ impl From<FieldContent> for DisplayOrientation {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WorkoutEquipment {
     None,
     SwimFins,
@@ -4062,7 +4062,7 @@ impl From<FieldContent> for WorkoutEquipment {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WatchfaceMode {
     Analog,
     ConnectIq,
@@ -4087,7 +4087,7 @@ impl From<FieldContent> for WatchfaceMode {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DigitalWatchfaceLayout {
     Bold,
     Modern,
@@ -4110,7 +4110,7 @@ impl From<FieldContent> for DigitalWatchfaceLayout {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AnalogWatchfaceLayout {
     Minimal,
     Modern,
@@ -4133,7 +4133,7 @@ impl From<FieldContent> for AnalogWatchfaceLayout {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum RiderPositionType {
     Seated,
     Standing,
@@ -4158,7 +4158,7 @@ impl From<FieldContent> for RiderPositionType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum PowerPhaseType {
     PowerPhaseArcLength,
     PowerPhaseCenter,
@@ -4183,7 +4183,7 @@ impl From<FieldContent> for PowerPhaseType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CameraEventType {
     PhotoTaken,
     VideoEnd,
@@ -4226,7 +4226,7 @@ impl From<FieldContent> for CameraEventType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SensorType {
     Accelerometer,
     Barometer,
@@ -4251,7 +4251,7 @@ impl From<FieldContent> for SensorType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BikeLightNetworkConfigType {
     Auto,
     HighVisibility,
@@ -4276,7 +4276,7 @@ impl From<FieldContent> for BikeLightNetworkConfigType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CommTimeoutType {
     ConnectionLost,
     ConnectionTimeout,
@@ -4301,7 +4301,7 @@ impl From<FieldContent> for CommTimeoutType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CameraOrientationType {
     CameraOrientation0,
     CameraOrientation180,
@@ -4326,7 +4326,7 @@ impl From<FieldContent> for CameraOrientationType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AttitudeStage {
     Aligning,
     Degraded,
@@ -4351,7 +4351,7 @@ impl From<FieldContent> for AttitudeStage {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AttitudeValidity {
     GpsInvalid,
     HwFail,
@@ -4394,7 +4394,7 @@ impl From<FieldContent> for AttitudeValidity {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AutoSyncFrequency {
     Frequent,
     Never,
@@ -4421,7 +4421,7 @@ impl From<FieldContent> for AutoSyncFrequency {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ExdLayout {
     FullQuarterSplit,
     FullScreen,
@@ -4454,7 +4454,7 @@ impl From<FieldContent> for ExdLayout {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ExdDisplayType {
     Balance,
     Bar,
@@ -4493,7 +4493,7 @@ impl From<FieldContent> for ExdDisplayType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ExdDataUnits {
     Bpm,
     Bradians,
@@ -4610,7 +4610,7 @@ impl From<FieldContent> for ExdDataUnits {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ExdQualifiers {
     Average,
     AverageLap,
@@ -4715,7 +4715,7 @@ impl From<FieldContent> for ExdQualifiers {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ExdDescriptors {
     AmbientPressure,
     AnaerobicTrainingEffect,
@@ -4926,7 +4926,7 @@ impl From<FieldContent> for ExdDescriptors {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AutoActivityDetect {
     Cycling,
     Elliptical,
@@ -4957,7 +4957,7 @@ impl From<FieldContent> for AutoActivityDetect {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SupportedExdScreenLayouts {
     FullQuarterSplit,
     FullScreen,
@@ -4990,7 +4990,7 @@ impl From<FieldContent> for SupportedExdScreenLayouts {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum FitBaseType {
     Byte,
     Enum,
@@ -5041,7 +5041,7 @@ impl From<FieldContent> for FitBaseType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum TurnType {
     ArrivingIdx,
     ArrivingLeftIdx,
@@ -5134,7 +5134,7 @@ impl From<FieldContent> for TurnType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BikeLightBeamAngleMode {
     Auto,
     Manual,
@@ -5155,7 +5155,7 @@ impl From<FieldContent> for BikeLightBeamAngleMode {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum FitBaseUnit {
     Kilogram,
     Other,
@@ -5178,7 +5178,7 @@ impl From<FieldContent> for FitBaseUnit {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SetType {
     Active,
     Rest,
@@ -5199,7 +5199,7 @@ impl From<FieldContent> for SetType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ExerciseCategory {
     BenchPress,
     CalfRaise,
@@ -5284,7 +5284,7 @@ impl From<FieldContent> for ExerciseCategory {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum BenchPressExerciseName {
     AlternatingDumbbellChestPress,
     AlternatingDumbbellChestPressOnSwissBall,
@@ -5355,7 +5355,7 @@ impl From<FieldContent> for BenchPressExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CalfRaiseExerciseName {
     DonkeyCalfRaise,
     SeatedCalfRaise,
@@ -5414,7 +5414,7 @@ impl From<FieldContent> for CalfRaiseExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CardioExerciseName {
     BobAndWeaveCircle,
     CardioCoreCrawl,
@@ -5475,7 +5475,7 @@ impl From<FieldContent> for CardioExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CarryExerciseName {
     BarHolds,
     FarmersWalk,
@@ -5502,7 +5502,7 @@ impl From<FieldContent> for CarryExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ChopExerciseName {
     CablePullThrough,
     CableRotationalLift,
@@ -5565,7 +5565,7 @@ impl From<FieldContent> for ChopExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CoreExerciseName {
     AbdominalLegRotations,
     AbsJabs,
@@ -5728,7 +5728,7 @@ impl From<FieldContent> for CoreExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CrunchExerciseName {
     BicycleCrunch,
     CableCrunch,
@@ -5915,7 +5915,7 @@ impl From<FieldContent> for CrunchExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CurlExerciseName {
     AlternatingDumbbellBicepsCurl,
     AlternatingDumbbellBicepsCurlOnSwissBall,
@@ -6020,7 +6020,7 @@ impl From<FieldContent> for CurlExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DeadliftExerciseName {
     BarbellDeadlift,
     BarbellStraightLegDeadlift,
@@ -6075,7 +6075,7 @@ impl From<FieldContent> for DeadliftExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum FlyeExerciseName {
     ArmRotations,
     CableCrossover,
@@ -6112,7 +6112,7 @@ impl From<FieldContent> for FlyeExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum HipRaiseExerciseName {
     BarbellHipThrustOnFloor,
     BarbellHipThrustWithBench,
@@ -6229,7 +6229,7 @@ impl From<FieldContent> for HipRaiseExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum HipStabilityExerciseName {
     BandSideLyingLegRaise,
     DeadBug,
@@ -6314,7 +6314,7 @@ impl From<FieldContent> for HipStabilityExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum HipSwingExerciseName {
     SingleArmDumbbellSwing,
     SingleArmKettlebellSwing,
@@ -6337,7 +6337,7 @@ impl From<FieldContent> for HipSwingExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum HyperextensionExerciseName {
     BackExtensionWithOppositeArmAndLegReach,
     BaseRotations,
@@ -6434,7 +6434,7 @@ impl From<FieldContent> for HyperextensionExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LateralRaiseExerciseName {
     AlternatingLateralRaiseWithStaticHold,
     ArmCircles,
@@ -6519,7 +6519,7 @@ impl From<FieldContent> for LateralRaiseExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LegCurlExerciseName {
     GoodMorning,
     LegCurl,
@@ -6560,7 +6560,7 @@ impl From<FieldContent> for LegCurlExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LegRaiseExerciseName {
     HangingKneeRaise,
     HangingLegRaise,
@@ -6621,7 +6621,7 @@ impl From<FieldContent> for LegRaiseExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum LungeExerciseName {
     AlternatingBarbellForwardLunge,
     AlternatingDumbbellLungeWithReach,
@@ -6800,7 +6800,7 @@ impl From<FieldContent> for LungeExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum OlympicLiftExerciseName {
     BarbellHangPowerClean,
     BarbellHangPowerSnatch,
@@ -6859,7 +6859,7 @@ impl From<FieldContent> for OlympicLiftExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum PlankExerciseName {
     BearCrawl,
     BridgeOneLegBridge,
@@ -7146,7 +7146,7 @@ impl From<FieldContent> for PlankExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum PlyoExerciseName {
     AlternatingJumpLunge,
     BarbellJumpSquat,
@@ -7229,7 +7229,7 @@ impl From<FieldContent> for PlyoExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum PullUpExerciseName {
     BandAssistedChinUp,
     BandedPullUps,
@@ -7324,7 +7324,7 @@ impl From<FieldContent> for PullUpExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum PushUpExerciseName {
     AlternatingHandsMedicineBallPushUp,
     AlternatingStaggeredPushUp,
@@ -7499,7 +7499,7 @@ impl From<FieldContent> for PushUpExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum RowExerciseName {
     BarbellStraightLegDeadliftToRow,
     CableRowStanding,
@@ -7584,7 +7584,7 @@ impl From<FieldContent> for RowExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ShoulderPressExerciseName {
     AlternatingDumbbellShoulderPress,
     ArnoldPress,
@@ -7649,7 +7649,7 @@ impl From<FieldContent> for ShoulderPressExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ShoulderStabilityExerciseName {
     BandExternalRotation,
     BandInternalRotation,
@@ -7732,7 +7732,7 @@ impl From<FieldContent> for ShoulderStabilityExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ShrugExerciseName {
     BarbellJumpShrug,
     BarbellShrug,
@@ -7783,7 +7783,7 @@ impl From<FieldContent> for ShrugExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SitUpExerciseName {
     AlternatingSitUp,
     BentKneeVUp,
@@ -7876,7 +7876,7 @@ impl From<FieldContent> for SitUpExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SquatExerciseName {
     BackSquatWithBodyBar,
     BackSquats,
@@ -8077,7 +8077,7 @@ impl From<FieldContent> for SquatExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum TotalBodyExerciseName {
     Burpee,
     BurpeeBoxJump,
@@ -8120,7 +8120,7 @@ impl From<FieldContent> for TotalBodyExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum TricepsExtensionExerciseName {
     BenchDip,
     BodyWeightDip,
@@ -8219,7 +8219,7 @@ impl From<FieldContent> for TricepsExtensionExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WarmUpExerciseName {
     AnkleCircles,
     AnkleDorsiflexionWithBand,
@@ -8298,7 +8298,7 @@ impl From<FieldContent> for WarmUpExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum RunExerciseName {
     Jog,
     Run,
@@ -8323,7 +8323,7 @@ impl From<FieldContent> for RunExerciseName {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WaterType {
     Custom,
     En13319,
@@ -8348,7 +8348,7 @@ impl From<FieldContent> for WaterType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum TissueModelType {
     Zhl16C,
     UnknownValue(u64),
@@ -8367,7 +8367,7 @@ impl From<FieldContent> for TissueModelType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DiveGasStatus {
     BackupOnly,
     Disabled,
@@ -8390,7 +8390,7 @@ impl From<FieldContent> for DiveGasStatus {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DiveAlarmType {
     Depth,
     Time,
@@ -8411,7 +8411,7 @@ impl From<FieldContent> for DiveAlarmType {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum DiveBacklightMode {
     AlwaysOn,
     AtDepth,
@@ -8432,7 +8432,7 @@ impl From<FieldContent> for DiveBacklightMode {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum FaveroProduct {
     AssiomaDuo,
     AssiomaUno,

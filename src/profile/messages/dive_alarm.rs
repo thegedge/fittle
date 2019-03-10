@@ -7,15 +7,17 @@ use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
-pub struct HrmProfile {
+pub struct DiveAlarm {
     message_index: Option<enums::MessageIndex>,
+    depth: Option<u32>,
+    time: Option<i32>,
     enabled: Option<bool>,
-    hrm_ant_id: Option<u16>,
-    log_hrv: Option<bool>,
-    hrm_ant_id_trans_type: Option<u8>,
+    alarm_type: Option<enums::DiveAlarmType>,
+    sound: Option<enums::Tone>,
+    dive_types: Option<Vec<enums::SubSport>>,
 }
 
-impl HrmProfile {
+impl DiveAlarm {
     pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
@@ -27,10 +29,12 @@ impl HrmProfile {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
-                0 => msg.enabled = content.one().map(<bool>::from),
-                1 => msg.hrm_ant_id = content.one().map(<u16>::from),
-                2 => msg.log_hrv = content.one().map(<bool>::from),
-                3 => msg.hrm_ant_id_trans_type = content.one().map(<u8>::from),
+                0 => msg.depth = content.one().map(<u32>::from),
+                1 => msg.time = content.one().map(<i32>::from),
+                2 => msg.enabled = content.one().map(<bool>::from),
+                3 => msg.alarm_type = content.one().map(<enums::DiveAlarmType>::from),
+                4 => msg.sound = content.one().map(<enums::Tone>::from),
+                5 => msg.dive_types = content.many().map(|vec| vec.into_iter().map(<enums::SubSport>::from).collect()),
                 _ => (),
             };
         }

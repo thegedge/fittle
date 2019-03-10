@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct MonitoringInfo {
@@ -14,21 +16,27 @@ pub struct MonitoringInfo {
     resting_metabolic_rate: Option<u16>,
 }
 
-impl From<Vec<(u8, Field)>> for MonitoringInfo {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl MonitoringInfo {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.local_timestamp = field.one().map(<enums::LocalDateTime>::from),
-                1 => msg.activity_type = field.many().map(|vec| vec.into_iter().map(<enums::ActivityType>::from).collect()),
-                3 => msg.cycles_to_distance = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                4 => msg.cycles_to_calories = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                5 => msg.resting_metabolic_rate = field.one().map(<u16>::from),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.local_timestamp = content.one().map(<enums::LocalDateTime>::from),
+                1 => msg.activity_type = content.many().map(|vec| vec.into_iter().map(<enums::ActivityType>::from).collect()),
+                3 => msg.cycles_to_distance = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                4 => msg.cycles_to_calories = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                5 => msg.resting_metabolic_rate = content.one().map(<u16>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

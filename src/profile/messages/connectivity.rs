@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Connectivity {
@@ -21,28 +23,34 @@ pub struct Connectivity {
     grouptrack_enabled: Option<bool>,
 }
 
-impl From<Vec<(u8, Field)>> for Connectivity {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Connectivity {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.bluetooth_enabled = field.one().map(<bool>::from),
-                1 => msg.bluetooth_le_enabled = field.one().map(<bool>::from),
-                2 => msg.ant_enabled = field.one().map(<bool>::from),
-                3 => msg.name = field.one().map(<String>::from),
-                4 => msg.live_tracking_enabled = field.one().map(<bool>::from),
-                5 => msg.weather_conditions_enabled = field.one().map(<bool>::from),
-                6 => msg.weather_alerts_enabled = field.one().map(<bool>::from),
-                7 => msg.auto_activity_upload_enabled = field.one().map(<bool>::from),
-                8 => msg.course_download_enabled = field.one().map(<bool>::from),
-                9 => msg.workout_download_enabled = field.one().map(<bool>::from),
-                10 => msg.gps_ephemeris_download_enabled = field.one().map(<bool>::from),
-                11 => msg.incident_detection_enabled = field.one().map(<bool>::from),
-                12 => msg.grouptrack_enabled = field.one().map(<bool>::from),
-                v => panic!("unknown field number: {}", v)
+                0 => msg.bluetooth_enabled = content.one().map(<bool>::from),
+                1 => msg.bluetooth_le_enabled = content.one().map(<bool>::from),
+                2 => msg.ant_enabled = content.one().map(<bool>::from),
+                3 => msg.name = content.one().map(<String>::from),
+                4 => msg.live_tracking_enabled = content.one().map(<bool>::from),
+                5 => msg.weather_conditions_enabled = content.one().map(<bool>::from),
+                6 => msg.weather_alerts_enabled = content.one().map(<bool>::from),
+                7 => msg.auto_activity_upload_enabled = content.one().map(<bool>::from),
+                8 => msg.course_download_enabled = content.one().map(<bool>::from),
+                9 => msg.workout_download_enabled = content.one().map(<bool>::from),
+                10 => msg.gps_ephemeris_download_enabled = content.one().map(<bool>::from),
+                11 => msg.incident_detection_enabled = content.one().map(<bool>::from),
+                12 => msg.grouptrack_enabled = content.one().map(<bool>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

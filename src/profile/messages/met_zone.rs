@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct MetZone {
@@ -12,19 +14,25 @@ pub struct MetZone {
     fat_calories: Option<u8>,
 }
 
-impl From<Vec<(u8, Field)>> for MetZone {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl MetZone {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                1 => msg.high_bpm = field.one().map(<u8>::from),
-                2 => msg.calories = field.one().map(<u16>::from),
-                3 => msg.fat_calories = field.one().map(<u8>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                1 => msg.high_bpm = content.one().map(<u8>::from),
+                2 => msg.calories = content.one().map(<u16>::from),
+                3 => msg.fat_calories = content.one().map(<u8>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

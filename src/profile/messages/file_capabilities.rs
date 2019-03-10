@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct FileCapabilities {
@@ -14,21 +16,27 @@ pub struct FileCapabilities {
     max_size: Option<u32>,
 }
 
-impl From<Vec<(u8, Field)>> for FileCapabilities {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl FileCapabilities {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                0 => msg.type_ = field.one().map(<enums::File>::from),
-                1 => msg.flags = field.one().map(<enums::FileFlags>::from),
-                2 => msg.directory = field.one().map(<String>::from),
-                3 => msg.max_count = field.one().map(<u16>::from),
-                4 => msg.max_size = field.one().map(<u32>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                0 => msg.type_ = content.one().map(<enums::File>::from),
+                1 => msg.flags = content.one().map(<enums::FileFlags>::from),
+                2 => msg.directory = content.one().map(<String>::from),
+                3 => msg.max_count = content.one().map(<u16>::from),
+                4 => msg.max_size = content.one().map(<u32>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

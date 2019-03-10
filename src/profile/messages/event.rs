@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Event {
@@ -21,28 +23,34 @@ pub struct Event {
     device_index: Option<enums::DeviceIndex>,
 }
 
-impl From<Vec<(u8, Field)>> for Event {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Event {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.event = field.one().map(<enums::Event>::from),
-                1 => msg.event_type = field.one().map(<enums::EventType>::from),
-                2 => msg.data16 = field.one().map(<u16>::from),
-                3 => msg.data = field.one().map(<u32>::from),
-                4 => msg.event_group = field.one().map(<u8>::from),
-                7 => msg.score = field.one().map(<u16>::from),
-                8 => msg.opponent_score = field.one().map(<u16>::from),
-                9 => msg.front_gear_num = field.one().map(<u8>::from),
-                10 => msg.front_gear = field.one().map(<u8>::from),
-                11 => msg.rear_gear_num = field.one().map(<u8>::from),
-                12 => msg.rear_gear = field.one().map(<u8>::from),
-                13 => msg.device_index = field.one().map(<enums::DeviceIndex>::from),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.event = content.one().map(<enums::Event>::from),
+                1 => msg.event_type = content.one().map(<enums::EventType>::from),
+                2 => msg.data16 = content.one().map(<u16>::from),
+                3 => msg.data = content.one().map(<u32>::from),
+                4 => msg.event_group = content.one().map(<u8>::from),
+                7 => msg.score = content.one().map(<u16>::from),
+                8 => msg.opponent_score = content.one().map(<u16>::from),
+                9 => msg.front_gear_num = content.one().map(<u8>::from),
+                10 => msg.front_gear = content.one().map(<u8>::from),
+                11 => msg.rear_gear_num = content.one().map(<u8>::from),
+                12 => msg.rear_gear = content.one().map(<u8>::from),
+                13 => msg.device_index = content.one().map(<enums::DeviceIndex>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

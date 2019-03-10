@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct BarometerData {
@@ -12,19 +14,25 @@ pub struct BarometerData {
     baro_pres: Option<Vec<u32>>,
 }
 
-impl From<Vec<(u8, Field)>> for BarometerData {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl BarometerData {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.timestamp_ms = field.one().map(<u16>::from),
-                1 => msg.sample_time_offset = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                2 => msg.baro_pres = field.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.timestamp_ms = content.one().map(<u16>::from),
+                1 => msg.sample_time_offset = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                2 => msg.baro_pres = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

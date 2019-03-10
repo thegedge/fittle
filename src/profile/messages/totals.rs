@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Totals {
@@ -18,25 +20,31 @@ pub struct Totals {
     sport_index: Option<u8>,
 }
 
-impl From<Vec<(u8, Field)>> for Totals {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Totals {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.timer_time = field.one().map(<u32>::from),
-                1 => msg.distance = field.one().map(<u32>::from),
-                2 => msg.calories = field.one().map(<u32>::from),
-                3 => msg.sport = field.one().map(<enums::Sport>::from),
-                4 => msg.elapsed_time = field.one().map(<u32>::from),
-                5 => msg.sessions = field.one().map(<u16>::from),
-                6 => msg.active_time = field.one().map(<u32>::from),
-                9 => msg.sport_index = field.one().map(<u8>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.timer_time = content.one().map(<u32>::from),
+                1 => msg.distance = content.one().map(<u32>::from),
+                2 => msg.calories = content.one().map(<u32>::from),
+                3 => msg.sport = content.one().map(<enums::Sport>::from),
+                4 => msg.elapsed_time = content.one().map(<u32>::from),
+                5 => msg.sessions = content.one().map(<u16>::from),
+                6 => msg.active_time = content.one().map(<u32>::from),
+                9 => msg.sport_index = content.one().map(<u8>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

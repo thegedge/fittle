@@ -19,7 +19,10 @@ use crate::{
         FieldContent,
         FieldDefinition,
     },
-    profile::enums::MesgNum,
+    profile::{
+        enums::MesgNum,
+        messages::Message,
+    },
 };
 
 #[derive(Debug)]
@@ -180,7 +183,6 @@ impl<Reader> Parser<Reader> where Reader: Read + Seek {
             let record_header_data = self.reader.read_u8()?;
             let record_header = self.record_header(record_header_data)?;
             let local_message_type = record_header.local_message_type();
-            println!("{:?}", record_header);
 
             // TODO compressed offsets
 
@@ -190,17 +192,21 @@ impl<Reader> Parser<Reader> where Reader: Read + Seek {
             } else {
                 match local_types[local_message_type as usize] {
                     Some(ref data_definition) => {
-                        println!("Message: {:?}", data_definition.message_type);
+                        let msg = if data_definition.architecture == BIG_ENDIANNESS {
+                            Message::read::<BigEndian, Reader>(
+                                &mut self.reader,
+                                data_definition.message_type,
+                                &data_definition.fields,
+                            )
+                        } else {
+                            Message::read::<LittleEndian, Reader>(
+                                &mut self.reader,
+                                data_definition.message_type,
+                                &data_definition.fields,
+                            )
+                        };
 
-                        for field in data_definition.fields.iter() {
-                            let (_, field_content) = if data_definition.architecture == BIG_ENDIANNESS {
-                                field.content_from::<BigEndian, Reader>(&mut self.reader)
-                            } else {
-                                field.content_from::<LittleEndian, Reader>(&mut self.reader)
-                            }.unwrap();
-
-                            println!("\t{:?}", field_content);
-                        }
+                        println!("Message: {:?}", msg);
                     },
                     None => panic!("local message type {} not yet defined", local_message_type),
                 }

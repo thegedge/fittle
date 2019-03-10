@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct AviationAttitude {
@@ -20,27 +22,33 @@ pub struct AviationAttitude {
     validity: Option<Vec<enums::AttitudeValidity>>,
 }
 
-impl From<Vec<(u8, Field)>> for AviationAttitude {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl AviationAttitude {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.timestamp_ms = field.one().map(<u16>::from),
-                1 => msg.system_time = field.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                2 => msg.pitch = field.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                3 => msg.roll = field.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                4 => msg.accel_lateral = field.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                5 => msg.accel_normal = field.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                6 => msg.turn_rate = field.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                7 => msg.stage = field.many().map(|vec| vec.into_iter().map(<enums::AttitudeStage>::from).collect()),
-                8 => msg.attitude_stage_complete = field.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                9 => msg.track = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                10 => msg.validity = field.many().map(|vec| vec.into_iter().map(<enums::AttitudeValidity>::from).collect()),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.timestamp_ms = content.one().map(<u16>::from),
+                1 => msg.system_time = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
+                2 => msg.pitch = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
+                3 => msg.roll = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
+                4 => msg.accel_lateral = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
+                5 => msg.accel_normal = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
+                6 => msg.turn_rate = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
+                7 => msg.stage = content.many().map(|vec| vec.into_iter().map(<enums::AttitudeStage>::from).collect()),
+                8 => msg.attitude_stage_complete = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                9 => msg.track = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                10 => msg.validity = content.many().map(|vec| vec.into_iter().map(<enums::AttitudeValidity>::from).collect()),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

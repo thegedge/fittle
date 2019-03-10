@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct WeatherConditions {
@@ -24,31 +26,37 @@ pub struct WeatherConditions {
     low_temperature: Option<i8>,
 }
 
-impl From<Vec<(u8, Field)>> for WeatherConditions {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl WeatherConditions {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.weather_report = field.one().map(<enums::WeatherReport>::from),
-                1 => msg.temperature = field.one().map(<i8>::from),
-                2 => msg.condition = field.one().map(<enums::WeatherStatus>::from),
-                3 => msg.wind_direction = field.one().map(<u16>::from),
-                4 => msg.wind_speed = field.one().map(<u16>::from),
-                5 => msg.precipitation_probability = field.one().map(<u8>::from),
-                6 => msg.temperature_feels_like = field.one().map(<i8>::from),
-                7 => msg.relative_humidity = field.one().map(<u8>::from),
-                8 => msg.location = field.one().map(<String>::from),
-                9 => msg.observed_at_time = field.one().map(<enums::DateTime>::from),
-                10 => msg.observed_location_lat = field.one().map(<i32>::from),
-                11 => msg.observed_location_long = field.one().map(<i32>::from),
-                12 => msg.day_of_week = field.one().map(<enums::DayOfWeek>::from),
-                13 => msg.high_temperature = field.one().map(<i8>::from),
-                14 => msg.low_temperature = field.one().map(<i8>::from),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.weather_report = content.one().map(<enums::WeatherReport>::from),
+                1 => msg.temperature = content.one().map(<i8>::from),
+                2 => msg.condition = content.one().map(<enums::WeatherStatus>::from),
+                3 => msg.wind_direction = content.one().map(<u16>::from),
+                4 => msg.wind_speed = content.one().map(<u16>::from),
+                5 => msg.precipitation_probability = content.one().map(<u8>::from),
+                6 => msg.temperature_feels_like = content.one().map(<i8>::from),
+                7 => msg.relative_humidity = content.one().map(<u8>::from),
+                8 => msg.location = content.one().map(<String>::from),
+                9 => msg.observed_at_time = content.one().map(<enums::DateTime>::from),
+                10 => msg.observed_location_lat = content.one().map(<i32>::from),
+                11 => msg.observed_location_long = content.one().map(<i32>::from),
+                12 => msg.day_of_week = content.one().map(<enums::DayOfWeek>::from),
+                13 => msg.high_temperature = content.one().map(<i8>::from),
+                14 => msg.low_temperature = content.one().map(<i8>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

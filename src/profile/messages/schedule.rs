@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Schedule {
@@ -15,22 +17,28 @@ pub struct Schedule {
     scheduled_time: Option<enums::LocalDateTime>,
 }
 
-impl From<Vec<(u8, Field)>> for Schedule {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Schedule {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.manufacturer = field.one().map(<enums::Manufacturer>::from),
-                1 => msg.product = field.one().map(<u16>::from),
-                2 => msg.serial_number = field.one().map(<u32>::from),
-                3 => msg.time_created = field.one().map(<enums::DateTime>::from),
-                4 => msg.completed = field.one().map(<bool>::from),
-                5 => msg.type_ = field.one().map(<enums::Schedule>::from),
-                6 => msg.scheduled_time = field.one().map(<enums::LocalDateTime>::from),
-                v => panic!("unknown field number: {}", v)
+                0 => msg.manufacturer = content.one().map(<enums::Manufacturer>::from),
+                1 => msg.product = content.one().map(<u16>::from),
+                2 => msg.serial_number = content.one().map(<u32>::from),
+                3 => msg.time_created = content.one().map(<enums::DateTime>::from),
+                4 => msg.completed = content.one().map(<bool>::from),
+                5 => msg.type_ = content.one().map(<enums::Schedule>::from),
+                6 => msg.scheduled_time = content.one().map(<enums::LocalDateTime>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Length {
@@ -26,33 +28,39 @@ pub struct Length {
     zone_count: Option<Vec<u16>>,
 }
 
-impl From<Vec<(u8, Field)>> for Length {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Length {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.event = field.one().map(<enums::Event>::from),
-                1 => msg.event_type = field.one().map(<enums::EventType>::from),
-                2 => msg.start_time = field.one().map(<enums::DateTime>::from),
-                3 => msg.total_elapsed_time = field.one().map(<u32>::from),
-                4 => msg.total_timer_time = field.one().map(<u32>::from),
-                5 => msg.total_strokes = field.one().map(<u16>::from),
-                6 => msg.avg_speed = field.one().map(<u16>::from),
-                7 => msg.swim_stroke = field.one().map(<enums::SwimStroke>::from),
-                9 => msg.avg_swimming_cadence = field.one().map(<u8>::from),
-                10 => msg.event_group = field.one().map(<u8>::from),
-                11 => msg.total_calories = field.one().map(<u16>::from),
-                12 => msg.length_type = field.one().map(<enums::LengthType>::from),
-                18 => msg.player_score = field.one().map(<u16>::from),
-                19 => msg.opponent_score = field.one().map(<u16>::from),
-                20 => msg.stroke_count = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                21 => msg.zone_count = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.event = content.one().map(<enums::Event>::from),
+                1 => msg.event_type = content.one().map(<enums::EventType>::from),
+                2 => msg.start_time = content.one().map(<enums::DateTime>::from),
+                3 => msg.total_elapsed_time = content.one().map(<u32>::from),
+                4 => msg.total_timer_time = content.one().map(<u32>::from),
+                5 => msg.total_strokes = content.one().map(<u16>::from),
+                6 => msg.avg_speed = content.one().map(<u16>::from),
+                7 => msg.swim_stroke = content.one().map(<enums::SwimStroke>::from),
+                9 => msg.avg_swimming_cadence = content.one().map(<u8>::from),
+                10 => msg.event_group = content.one().map(<u8>::from),
+                11 => msg.total_calories = content.one().map(<u16>::from),
+                12 => msg.length_type = content.one().map(<enums::LengthType>::from),
+                18 => msg.player_score = content.one().map(<u16>::from),
+                19 => msg.opponent_score = content.one().map(<u16>::from),
+                20 => msg.stroke_count = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                21 => msg.zone_count = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

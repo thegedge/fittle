@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct SegmentLeaderboardEntry {
@@ -15,22 +17,28 @@ pub struct SegmentLeaderboardEntry {
     activity_id_string: Option<String>,
 }
 
-impl From<Vec<(u8, Field)>> for SegmentLeaderboardEntry {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl SegmentLeaderboardEntry {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                0 => msg.name = field.one().map(<String>::from),
-                1 => msg.type_ = field.one().map(<enums::SegmentLeaderboardType>::from),
-                2 => msg.group_primary_key = field.one().map(<u32>::from),
-                3 => msg.activity_id = field.one().map(<u32>::from),
-                4 => msg.segment_time = field.one().map(<u32>::from),
-                5 => msg.activity_id_string = field.one().map(<String>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                0 => msg.name = content.one().map(<String>::from),
+                1 => msg.type_ = content.one().map(<enums::SegmentLeaderboardType>::from),
+                2 => msg.group_primary_key = content.one().map(<u32>::from),
+                3 => msg.activity_id = content.one().map(<u32>::from),
+                4 => msg.segment_time = content.one().map(<u32>::from),
+                5 => msg.activity_id_string = content.one().map(<String>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

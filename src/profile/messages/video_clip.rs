@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct VideoClip {
@@ -15,22 +17,28 @@ pub struct VideoClip {
     clip_end: Option<u32>,
 }
 
-impl From<Vec<(u8, Field)>> for VideoClip {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl VideoClip {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.clip_number = field.one().map(<u16>::from),
-                1 => msg.start_timestamp = field.one().map(<enums::DateTime>::from),
-                2 => msg.start_timestamp_ms = field.one().map(<u16>::from),
-                3 => msg.end_timestamp = field.one().map(<enums::DateTime>::from),
-                4 => msg.end_timestamp_ms = field.one().map(<u16>::from),
-                6 => msg.clip_start = field.one().map(<u32>::from),
-                7 => msg.clip_end = field.one().map(<u32>::from),
-                v => panic!("unknown field number: {}", v)
+                0 => msg.clip_number = content.one().map(<u16>::from),
+                1 => msg.start_timestamp = content.one().map(<enums::DateTime>::from),
+                2 => msg.start_timestamp_ms = content.one().map(<u16>::from),
+                3 => msg.end_timestamp = content.one().map(<enums::DateTime>::from),
+                4 => msg.end_timestamp_ms = content.one().map(<u16>::from),
+                6 => msg.clip_start = content.one().map(<u32>::from),
+                7 => msg.clip_end = content.one().map(<u32>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

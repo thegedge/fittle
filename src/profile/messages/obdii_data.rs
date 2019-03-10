@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct ObdiiData {
@@ -17,24 +19,30 @@ pub struct ObdiiData {
     start_timestamp_ms: Option<u16>,
 }
 
-impl From<Vec<(u8, Field)>> for ObdiiData {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl ObdiiData {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.timestamp_ms = field.one().map(<u16>::from),
-                1 => msg.time_offset = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                2 => msg.pid = field.one().map(<u8>::from),
-                3 => msg.raw_data = field.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                4 => msg.pid_data_size = field.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                5 => msg.system_time = field.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                6 => msg.start_timestamp = field.one().map(<enums::DateTime>::from),
-                7 => msg.start_timestamp_ms = field.one().map(<u16>::from),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.timestamp_ms = content.one().map(<u16>::from),
+                1 => msg.time_offset = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                2 => msg.pid = content.one().map(<u8>::from),
+                3 => msg.raw_data = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                4 => msg.pid_data_size = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                5 => msg.system_time = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
+                6 => msg.start_timestamp = content.one().map(<enums::DateTime>::from),
+                7 => msg.start_timestamp_ms = content.one().map(<u16>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct OneDSensorCalibration {
@@ -14,21 +16,27 @@ pub struct OneDSensorCalibration {
     offset_cal: Option<i32>,
 }
 
-impl From<Vec<(u8, Field)>> for OneDSensorCalibration {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl OneDSensorCalibration {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.sensor_type = field.one().map(<enums::SensorType>::from),
-                1 => msg.calibration_factor = field.one().map(<u32>::from),
-                2 => msg.calibration_divisor = field.one().map(<u32>::from),
-                3 => msg.level_shift = field.one().map(<u32>::from),
-                4 => msg.offset_cal = field.one().map(<i32>::from),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.sensor_type = content.one().map(<enums::SensorType>::from),
+                1 => msg.calibration_factor = content.one().map(<u32>::from),
+                2 => msg.calibration_divisor = content.one().map(<u32>::from),
+                3 => msg.level_shift = content.one().map(<u32>::from),
+                4 => msg.offset_cal = content.one().map(<i32>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

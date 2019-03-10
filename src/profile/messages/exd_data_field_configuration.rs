@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct ExdDataFieldConfiguration {
@@ -14,21 +16,27 @@ pub struct ExdDataFieldConfiguration {
     title: Option<Vec<String>>,
 }
 
-impl From<Vec<(u8, Field)>> for ExdDataFieldConfiguration {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl ExdDataFieldConfiguration {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.screen_index = field.one().map(<u8>::from),
-                1 => msg.concept_field = field.one().map(<u8>::from),
-                2 => msg.field_id = field.one().map(<u8>::from),
-                3 => msg.concept_count = field.one().map(<u8>::from),
-                4 => msg.display_type = field.one().map(<enums::ExdDisplayType>::from),
-                5 => msg.title = field.many().map(|vec| vec.into_iter().map(<String>::from).collect()),
-                v => panic!("unknown field number: {}", v)
+                0 => msg.screen_index = content.one().map(<u8>::from),
+                1 => msg.concept_field = content.one().map(<u8>::from),
+                2 => msg.field_id = content.one().map(<u8>::from),
+                3 => msg.concept_count = content.one().map(<u8>::from),
+                4 => msg.display_type = content.one().map(<enums::ExdDisplayType>::from),
+                5 => msg.title = content.many().map(|vec| vec.into_iter().map(<String>::from).collect()),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

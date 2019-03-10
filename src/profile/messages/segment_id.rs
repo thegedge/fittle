@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct SegmentId {
@@ -17,24 +19,30 @@ pub struct SegmentId {
     selection_type: Option<enums::SegmentSelectionType>,
 }
 
-impl From<Vec<(u8, Field)>> for SegmentId {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl SegmentId {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.name = field.one().map(<String>::from),
-                1 => msg.uuid = field.one().map(<String>::from),
-                2 => msg.sport = field.one().map(<enums::Sport>::from),
-                3 => msg.enabled = field.one().map(<bool>::from),
-                4 => msg.user_profile_primary_key = field.one().map(<u32>::from),
-                5 => msg.device_id = field.one().map(<u32>::from),
-                6 => msg.default_race_leader = field.one().map(<u8>::from),
-                7 => msg.delete_status = field.one().map(<enums::SegmentDeleteStatus>::from),
-                8 => msg.selection_type = field.one().map(<enums::SegmentSelectionType>::from),
-                v => panic!("unknown field number: {}", v)
+                0 => msg.name = content.one().map(<String>::from),
+                1 => msg.uuid = content.one().map(<String>::from),
+                2 => msg.sport = content.one().map(<enums::Sport>::from),
+                3 => msg.enabled = content.one().map(<bool>::from),
+                4 => msg.user_profile_primary_key = content.one().map(<u32>::from),
+                5 => msg.device_id = content.one().map(<u32>::from),
+                6 => msg.default_race_leader = content.one().map(<u8>::from),
+                7 => msg.delete_status = content.one().map(<enums::SegmentDeleteStatus>::from),
+                8 => msg.selection_type = content.one().map(<enums::SegmentSelectionType>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Video {
@@ -11,18 +13,24 @@ pub struct Video {
     duration: Option<u32>,
 }
 
-impl From<Vec<(u8, Field)>> for Video {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Video {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.url = field.one().map(<String>::from),
-                1 => msg.hosting_provider = field.one().map(<String>::from),
-                2 => msg.duration = field.one().map(<u32>::from),
-                v => panic!("unknown field number: {}", v)
+                0 => msg.url = content.one().map(<String>::from),
+                1 => msg.hosting_provider = content.one().map(<String>::from),
+                2 => msg.duration = content.one().map(<u32>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

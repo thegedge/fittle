@@ -1,24 +1,32 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Hrv {
     time: Option<Vec<u16>>,
 }
 
-impl From<Vec<(u8, Field)>> for Hrv {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Hrv {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.time = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                v => panic!("unknown field number: {}", v)
+                0 => msg.time = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

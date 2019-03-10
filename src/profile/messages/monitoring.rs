@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Monitoring {
@@ -37,44 +39,50 @@ pub struct Monitoring {
     vigorous_activity_minutes: Option<u16>,
 }
 
-impl From<Vec<(u8, Field)>> for Monitoring {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Monitoring {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.device_index = field.one().map(<enums::DeviceIndex>::from),
-                1 => msg.calories = field.one().map(<u16>::from),
-                2 => msg.distance = field.one().map(<u32>::from),
-                3 => msg.cycles = field.one().map(<u32>::from),
-                4 => msg.active_time = field.one().map(<u32>::from),
-                5 => msg.activity_type = field.one().map(<enums::ActivityType>::from),
-                6 => msg.activity_subtype = field.one().map(<enums::ActivitySubtype>::from),
-                7 => msg.activity_level = field.one().map(<enums::ActivityLevel>::from),
-                8 => msg.distance_16 = field.one().map(<u16>::from),
-                9 => msg.cycles_16 = field.one().map(<u16>::from),
-                10 => msg.active_time_16 = field.one().map(<u16>::from),
-                11 => msg.local_timestamp = field.one().map(<enums::LocalDateTime>::from),
-                12 => msg.temperature = field.one().map(<i16>::from),
-                14 => msg.temperature_min = field.one().map(<i16>::from),
-                15 => msg.temperature_max = field.one().map(<i16>::from),
-                16 => msg.activity_time = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                19 => msg.active_calories = field.one().map(<u16>::from),
-                24 => msg.current_activity_type_intensity = field.one().map(<u8>::from),
-                25 => msg.timestamp_min_8 = field.one().map(<u8>::from),
-                26 => msg.timestamp_16 = field.one().map(<u16>::from),
-                27 => msg.heart_rate = field.one().map(<u8>::from),
-                28 => msg.intensity = field.one().map(<u8>::from),
-                29 => msg.duration_min = field.one().map(<u16>::from),
-                30 => msg.duration = field.one().map(<u32>::from),
-                31 => msg.ascent = field.one().map(<u32>::from),
-                32 => msg.descent = field.one().map(<u32>::from),
-                33 => msg.moderate_activity_minutes = field.one().map(<u16>::from),
-                34 => msg.vigorous_activity_minutes = field.one().map(<u16>::from),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.device_index = content.one().map(<enums::DeviceIndex>::from),
+                1 => msg.calories = content.one().map(<u16>::from),
+                2 => msg.distance = content.one().map(<u32>::from),
+                3 => msg.cycles = content.one().map(<u32>::from),
+                4 => msg.active_time = content.one().map(<u32>::from),
+                5 => msg.activity_type = content.one().map(<enums::ActivityType>::from),
+                6 => msg.activity_subtype = content.one().map(<enums::ActivitySubtype>::from),
+                7 => msg.activity_level = content.one().map(<enums::ActivityLevel>::from),
+                8 => msg.distance_16 = content.one().map(<u16>::from),
+                9 => msg.cycles_16 = content.one().map(<u16>::from),
+                10 => msg.active_time_16 = content.one().map(<u16>::from),
+                11 => msg.local_timestamp = content.one().map(<enums::LocalDateTime>::from),
+                12 => msg.temperature = content.one().map(<i16>::from),
+                14 => msg.temperature_min = content.one().map(<i16>::from),
+                15 => msg.temperature_max = content.one().map(<i16>::from),
+                16 => msg.activity_time = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                19 => msg.active_calories = content.one().map(<u16>::from),
+                24 => msg.current_activity_type_intensity = content.one().map(<u8>::from),
+                25 => msg.timestamp_min_8 = content.one().map(<u8>::from),
+                26 => msg.timestamp_16 = content.one().map(<u16>::from),
+                27 => msg.heart_rate = content.one().map(<u8>::from),
+                28 => msg.intensity = content.one().map(<u8>::from),
+                29 => msg.duration_min = content.one().map(<u16>::from),
+                30 => msg.duration = content.one().map(<u32>::from),
+                31 => msg.ascent = content.one().map(<u32>::from),
+                32 => msg.descent = content.one().map(<u32>::from),
+                33 => msg.moderate_activity_minutes = content.one().map(<u16>::from),
+                34 => msg.vigorous_activity_minutes = content.one().map(<u16>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

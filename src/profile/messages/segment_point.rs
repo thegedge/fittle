@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct SegmentPoint {
@@ -14,21 +16,27 @@ pub struct SegmentPoint {
     leader_time: Option<Vec<u32>>,
 }
 
-impl From<Vec<(u8, Field)>> for SegmentPoint {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl SegmentPoint {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                1 => msg.position_lat = field.one().map(<i32>::from),
-                2 => msg.position_long = field.one().map(<i32>::from),
-                3 => msg.distance = field.one().map(<u32>::from),
-                4 => msg.altitude = field.one().map(<u16>::from),
-                5 => msg.leader_time = field.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                1 => msg.position_lat = content.one().map(<i32>::from),
+                2 => msg.position_long = content.one().map(<i32>::from),
+                3 => msg.distance = content.one().map(<u32>::from),
+                4 => msg.altitude = content.one().map(<u16>::from),
+                5 => msg.leader_time = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct CoursePoint {
@@ -16,23 +18,29 @@ pub struct CoursePoint {
     favorite: Option<bool>,
 }
 
-impl From<Vec<(u8, Field)>> for CoursePoint {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl CoursePoint {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                1 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                2 => msg.position_lat = field.one().map(<i32>::from),
-                3 => msg.position_long = field.one().map(<i32>::from),
-                4 => msg.distance = field.one().map(<u32>::from),
-                5 => msg.type_ = field.one().map(<enums::CoursePoint>::from),
-                6 => msg.name = field.one().map(<String>::from),
-                8 => msg.favorite = field.one().map(<bool>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                1 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                2 => msg.position_lat = content.one().map(<i32>::from),
+                3 => msg.position_long = content.one().map(<i32>::from),
+                4 => msg.distance = content.one().map(<u32>::from),
+                5 => msg.type_ = content.one().map(<enums::CoursePoint>::from),
+                6 => msg.name = content.one().map(<String>::from),
+                8 => msg.favorite = content.one().map(<bool>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

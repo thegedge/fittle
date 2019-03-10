@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct WorkoutSession {
@@ -15,22 +17,28 @@ pub struct WorkoutSession {
     pool_length_unit: Option<enums::DisplayMeasure>,
 }
 
-impl From<Vec<(u8, Field)>> for WorkoutSession {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl WorkoutSession {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                0 => msg.sport = field.one().map(<enums::Sport>::from),
-                1 => msg.sub_sport = field.one().map(<enums::SubSport>::from),
-                2 => msg.num_valid_steps = field.one().map(<u16>::from),
-                3 => msg.first_step_index = field.one().map(<u16>::from),
-                4 => msg.pool_length = field.one().map(<u16>::from),
-                5 => msg.pool_length_unit = field.one().map(<enums::DisplayMeasure>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                0 => msg.sport = content.one().map(<enums::Sport>::from),
+                1 => msg.sub_sport = content.one().map(<enums::SubSport>::from),
+                2 => msg.num_valid_steps = content.one().map(<u16>::from),
+                3 => msg.first_step_index = content.one().map(<u16>::from),
+                4 => msg.pool_length = content.one().map(<u16>::from),
+                5 => msg.pool_length_unit = content.one().map(<enums::DisplayMeasure>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

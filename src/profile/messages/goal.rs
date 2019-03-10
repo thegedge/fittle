@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Goal {
@@ -21,28 +23,34 @@ pub struct Goal {
     source: Option<enums::GoalSource>,
 }
 
-impl From<Vec<(u8, Field)>> for Goal {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Goal {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                0 => msg.sport = field.one().map(<enums::Sport>::from),
-                1 => msg.sub_sport = field.one().map(<enums::SubSport>::from),
-                2 => msg.start_date = field.one().map(<enums::DateTime>::from),
-                3 => msg.end_date = field.one().map(<enums::DateTime>::from),
-                4 => msg.type_ = field.one().map(<enums::Goal>::from),
-                5 => msg.value = field.one().map(<u32>::from),
-                6 => msg.repeat = field.one().map(<bool>::from),
-                7 => msg.target_value = field.one().map(<u32>::from),
-                8 => msg.recurrence = field.one().map(<enums::GoalRecurrence>::from),
-                9 => msg.recurrence_value = field.one().map(<u16>::from),
-                10 => msg.enabled = field.one().map(<bool>::from),
-                11 => msg.source = field.one().map(<enums::GoalSource>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                0 => msg.sport = content.one().map(<enums::Sport>::from),
+                1 => msg.sub_sport = content.one().map(<enums::SubSport>::from),
+                2 => msg.start_date = content.one().map(<enums::DateTime>::from),
+                3 => msg.end_date = content.one().map(<enums::DateTime>::from),
+                4 => msg.type_ = content.one().map(<enums::Goal>::from),
+                5 => msg.value = content.one().map(<u32>::from),
+                6 => msg.repeat = content.one().map(<bool>::from),
+                7 => msg.target_value = content.one().map(<u32>::from),
+                8 => msg.recurrence = content.one().map(<enums::GoalRecurrence>::from),
+                9 => msg.recurrence_value = content.one().map(<u16>::from),
+                10 => msg.enabled = content.one().map(<bool>::from),
+                11 => msg.source = content.one().map(<enums::GoalSource>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

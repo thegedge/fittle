@@ -177,10 +177,10 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
         let range = self.workbook.worksheet_range("Messages")??;
         let mut message_names = BTreeSet::new();
 
-        // First write a module per message
+        // TODO some orintln statements here that should be errors that we propagate
 
         // Skip the header row in the spreadsheet
-        let mut iter = range.rows().skip(1);
+        let mut iter = range.rows().skip(1).peekable();
         while let Some(row) = iter.next() {
             let message_name = match &row[MESSAGES_SHEET_MESSAGE_NAME_COLUMN] {
                 DataType::Empty => continue,
@@ -188,11 +188,20 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                 value => panic!("Unexpected value in message name column: {}", value),
             };
 
+            // We use a peekable iterator because sometimes there's no empty line between messages
+            // in the spreadsheet
             let mut values = Vec::new();
-            while let Some(field_data) = iter.next() {
-                if field_data[MESSAGES_SHEET_FIELD_NAME_COLUMN].is_empty() {
-                    break
+            loop {
+                if let Some(field_data) = iter.peek() {
+                    if field_data[MESSAGES_SHEET_FIELD_NAME_COLUMN].is_empty() {
+                        break
+                    }
                 }
+
+                let field_data = match iter.next() {
+                    Some(d) => d,
+                    None => break,
+                };
 
                 match &field_data[MESSAGES_SHEET_COMMENT_COLUMN] {
                     DataType::String(v) => {
@@ -241,9 +250,11 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
             let message_struct_name = to_pascal_case(message_name);
 
             message_stream.write(GENERATED_FILE_COMMENT)?;
+            message_stream.write(b"use byteorder::{ByteOrder, ReadBytesExt};\n")?;
+            message_stream.write(b"\n")?;
             message_stream.write(b"#[allow(unused_imports)]\n")?;
             message_stream.write(b"use crate::profile::enums;\n")?;
-            message_stream.write(b"use crate::fields::Field;\n")?;
+            message_stream.write(b"use crate::fields::FieldDefinition;\n")?;
             message_stream.write(b"\n")?;
             message_stream.write(b"#[derive(Debug, Default)]\n")?;
             message_stream.write_fmt(format_args!("pub struct {0} {{\n", message_struct_name))?;
@@ -259,10 +270,16 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
             };
             message_stream.write(b"}\n\n")?;
 
-            message_stream.write_fmt(format_args!("impl From<Vec<(u8, Field)>> for {0} {{\n", message_struct_name))?;
-            message_stream.write(b"    fn from(fields: Vec<(u8, Field)>) -> Self {\n" )?;
+            message_stream.write_fmt(format_args!("impl {0} {{\n", message_struct_name))?;
+            message_stream.write(b"    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)\n")?;
+            message_stream.write(b"        -> Result<Self, std::io::Error>\n")?;
+            message_stream.write(b"        where\n")?;
+            message_stream.write(b"            Order: ByteOrder,\n")?;
+            message_stream.write(b"            Reader: ReadBytesExt,\n")?;
+            message_stream.write(b"    {\n")?;
             message_stream.write(b"        let mut msg: Self = Default::default();\n")?;
-            message_stream.write(b"        for (number, field) in fields {\n")?;
+            message_stream.write(b"        for field in fields {\n")?;
+            message_stream.write(b"            let (number, content) = field.content_from::<Order, Reader>(reader)?;\n")?;
             message_stream.write(b"            match number {\n")?;
             for (field_name, field_type, number, is_array) in &values {
                 let rust_type = rust_type(&field_type);
@@ -270,45 +287,96 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                 // TODO avoid having to branch on is_array here
                 if *is_array {
                     message_stream.write_fmt(format_args!(
-                        "                {0} => msg.{1} = field.many().map(|vec| vec.into_iter().map(<{2}>::from).collect()),\n",
+                        "                {0} => msg.{1} = content.many().map(|vec| vec.into_iter().map(<{2}>::from).collect()),\n",
                         number,
                         field_name,
                         rust_type
                     ))?;
                 } else {
                     message_stream.write_fmt(format_args!(
-                        "                {0} => msg.{1} = field.one().map(<{2}>::from),\n",
+                        "                {0} => msg.{1} = content.one().map(<{2}>::from),\n",
                         number,
                         field_name,
                         rust_type
                     ))?;
                 }
             }
-            message_stream.write(b"                v => panic!(\"unknown field number: {}\", v)\n")?;
+            // TODO figure out a way to relay this to the caller without bombarding stdout
+            //message_stream.write_fmt(format_args!(
+            //    "                v => println!(\"unknown field number for {0}: {{0}}\", v)\n",
+            //    message_struct_name,
+            //))?;
+            message_stream.write(b"                _ => (),\n")?;
+
             message_stream.write(b"            };\n")?;
             message_stream.write(b"        }\n")?;
-            message_stream.write(b"        msg\n")?;
+            message_stream.write(b"        Ok(msg)\n")?;
             message_stream.write(b"    }\n")?;
             message_stream.write(b"}\n\n")?;
 
             message_names.insert((message_name, message_struct_name));
         }
 
-        // Write the module file itself, exposing the individual messages through an enum
+        // Write the module file itself, exposing the individual messages through an enum and a
+        // method to read everything from a Cursor.
+        // 
+        self.messages_stream.write(b"use byteorder::{ByteOrder, ReadBytesExt};\n")?;
+        self.messages_stream.write(b"use crate::profile::enums::MesgNum;\n")?;
+        self.messages_stream.write(b"use crate::fields::FieldDefinition;\n")?;
+
         for (message_name, _message_struct_name) in message_names.iter() {
           self.messages_stream.write_fmt(format_args!("mod {0};\n", message_name))?;
         }
 
+        self.messages_stream.write(b"\n")?;
         for (message_name, message_struct_name) in message_names.iter() {
           self.messages_stream.write_fmt(format_args!("use self::{0}::{1};\n", message_name, message_struct_name))?;
         }
 
+        self.messages_stream.write(b"\n")?;
         self.messages_stream.write(b"#[derive(Debug)]\n")?;
         self.messages_stream.write(b"pub enum Message {\n")?;
         for (_message_name, message_struct_name) in message_names.iter() {
           self.messages_stream.write_fmt(format_args!("    {0}({0}),\n", message_struct_name))?;
         }
         self.messages_stream.write(b"}\n\n")?;
+
+        // TODO this match statement works for now, but I'd like others to be able to extend this
+        //      library with their own implementations for custom fields/messages. May require a
+        //      big refactor down the road...
+
+        // Read a Message from a cursor
+        self.messages_stream.write(b"impl Message {\n")?;
+        self.messages_stream.write(b"    pub fn read<'i, Order, Reader>(reader: &mut Reader, msg: MesgNum, fields: &Vec<FieldDefinition>)\n")?;
+        self.messages_stream.write(b"        -> Result<Message, String>\n")?;
+        self.messages_stream.write(b"        where\n")?;
+        self.messages_stream.write(b"            Order: ByteOrder,\n")?;
+        self.messages_stream.write(b"            Reader: ReadBytesExt,\n")?;
+        self.messages_stream.write(b"    {\n")?;
+        self.messages_stream.write(b"        match msg {\n")?;
+
+        for (message_name, message_struct_name) in message_names.iter() {
+            self.messages_stream.write_fmt(format_args!(r#"
+            MesgNum::{1} =>
+                {0}::{1}::from_fields::<Order, Reader>(reader, fields)
+                    .map(|m| Message::{1}(m))
+                    .map_err(|_e| "could not read {1}".to_owned()),
+"#,
+                message_name,
+                message_struct_name,
+            ))?;
+        }
+
+        self.messages_stream.write(b"            m => {\n")?;
+        self.messages_stream.write(b"                fields.iter()\n")?;
+        self.messages_stream.write(b"                    .map(|f| f.content_from::<Order, Reader>(reader))\n")?;
+        self.messages_stream.write(b"                    .collect::<Result<Vec<_>, _>>()\n")?;
+        self.messages_stream.write(b"                    .map_err(|e| e.to_string())?;\n")?;
+        self.messages_stream.write(b"                Err(format!(\"unknown message: {:?}\", m))\n")?;
+        self.messages_stream.write(b"            },\n")?;
+        self.messages_stream.write(b"        }\n")?;
+        self.messages_stream.write(b"    }\n")?;
+        self.messages_stream.write(b"}\n")?;
 
         Ok(())
     }
@@ -389,7 +457,7 @@ fn write_enum<W>(stream: &mut W, type_name: &str, sheet_type: &str, mut entries:
     // Write the message enum (sorted by name)
     entries.sort();
 
-    stream.write(b"#[derive(Clone, Debug)]\n")?;
+    stream.write(b"#[derive(Clone, Copy, Debug)]\n")?;
     stream.write_fmt(format_args!("pub enum {} {{\n", enum_name))?;
     for (message_name, _) in &entries {
         stream.write_fmt(format_args!("    {0},\n", message_name))?;

@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct AntChannelId {
@@ -13,20 +15,26 @@ pub struct AntChannelId {
     device_index: Option<enums::DeviceIndex>,
 }
 
-impl From<Vec<(u8, Field)>> for AntChannelId {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl AntChannelId {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.channel_number = field.one().map(<u8>::from),
-                1 => msg.device_type = field.one().map(<u8>::from),
-                2 => msg.device_number = field.one().map(<u16>::from),
-                3 => msg.transmission_type = field.one().map(<u8>::from),
-                4 => msg.device_index = field.one().map(<enums::DeviceIndex>::from),
-                v => panic!("unknown field number: {}", v)
+                0 => msg.channel_number = content.one().map(<u8>::from),
+                1 => msg.device_type = content.one().map(<u8>::from),
+                2 => msg.device_number = content.one().map(<u16>::from),
+                3 => msg.transmission_type = content.one().map(<u8>::from),
+                4 => msg.device_index = content.one().map(<enums::DeviceIndex>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

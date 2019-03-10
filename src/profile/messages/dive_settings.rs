@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct DiveSettings {
@@ -30,37 +32,43 @@ pub struct DiveSettings {
     heart_rate_source: Option<u8>,
 }
 
-impl From<Vec<(u8, Field)>> for DiveSettings {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl DiveSettings {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                0 => msg.name = field.one().map(<String>::from),
-                1 => msg.model = field.one().map(<enums::TissueModelType>::from),
-                2 => msg.gf_low = field.one().map(<u8>::from),
-                3 => msg.gf_high = field.one().map(<u8>::from),
-                4 => msg.water_type = field.one().map(<enums::WaterType>::from),
-                5 => msg.water_density = field.one().map(<f32>::from),
-                6 => msg.po2_warn = field.one().map(<u8>::from),
-                7 => msg.po2_critical = field.one().map(<u8>::from),
-                8 => msg.po2_deco = field.one().map(<u8>::from),
-                9 => msg.safety_stop_enabled = field.one().map(<bool>::from),
-                10 => msg.bottom_depth = field.one().map(<f32>::from),
-                11 => msg.bottom_time = field.one().map(<u32>::from),
-                12 => msg.apnea_countdown_enabled = field.one().map(<bool>::from),
-                13 => msg.apnea_countdown_time = field.one().map(<u32>::from),
-                14 => msg.backlight_mode = field.one().map(<enums::DiveBacklightMode>::from),
-                15 => msg.backlight_brightness = field.one().map(<u8>::from),
-                16 => msg.backlight_timeout = field.one().map(<enums::BacklightTimeout>::from),
-                17 => msg.repeat_dive_interval = field.one().map(<u16>::from),
-                18 => msg.safety_stop_time = field.one().map(<u16>::from),
-                19 => msg.heart_rate_source_type = field.one().map(<enums::SourceType>::from),
-                20 => msg.heart_rate_source = field.one().map(<u8>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                0 => msg.name = content.one().map(<String>::from),
+                1 => msg.model = content.one().map(<enums::TissueModelType>::from),
+                2 => msg.gf_low = content.one().map(<u8>::from),
+                3 => msg.gf_high = content.one().map(<u8>::from),
+                4 => msg.water_type = content.one().map(<enums::WaterType>::from),
+                5 => msg.water_density = content.one().map(<f32>::from),
+                6 => msg.po2_warn = content.one().map(<u8>::from),
+                7 => msg.po2_critical = content.one().map(<u8>::from),
+                8 => msg.po2_deco = content.one().map(<u8>::from),
+                9 => msg.safety_stop_enabled = content.one().map(<bool>::from),
+                10 => msg.bottom_depth = content.one().map(<f32>::from),
+                11 => msg.bottom_time = content.one().map(<u32>::from),
+                12 => msg.apnea_countdown_enabled = content.one().map(<bool>::from),
+                13 => msg.apnea_countdown_time = content.one().map(<u32>::from),
+                14 => msg.backlight_mode = content.one().map(<enums::DiveBacklightMode>::from),
+                15 => msg.backlight_brightness = content.one().map(<u8>::from),
+                16 => msg.backlight_timeout = content.one().map(<enums::BacklightTimeout>::from),
+                17 => msg.repeat_dive_interval = content.one().map(<u16>::from),
+                18 => msg.safety_stop_time = content.one().map(<u16>::from),
+                19 => msg.heart_rate_source_type = content.one().map(<enums::SourceType>::from),
+                20 => msg.heart_rate_source = content.one().map(<u8>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

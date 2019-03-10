@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct SdmProfile {
@@ -16,23 +18,29 @@ pub struct SdmProfile {
     odometer_rollover: Option<u8>,
 }
 
-impl From<Vec<(u8, Field)>> for SdmProfile {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl SdmProfile {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = field.one().map(<enums::MessageIndex>::from),
-                0 => msg.enabled = field.one().map(<bool>::from),
-                1 => msg.sdm_ant_id = field.one().map(<u16>::from),
-                2 => msg.sdm_cal_factor = field.one().map(<u16>::from),
-                3 => msg.odometer = field.one().map(<u32>::from),
-                4 => msg.speed_source = field.one().map(<bool>::from),
-                5 => msg.sdm_ant_id_trans_type = field.one().map(<u8>::from),
-                7 => msg.odometer_rollover = field.one().map(<u8>::from),
-                v => panic!("unknown field number: {}", v)
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                0 => msg.enabled = content.one().map(<bool>::from),
+                1 => msg.sdm_ant_id = content.one().map(<u16>::from),
+                2 => msg.sdm_cal_factor = content.one().map(<u16>::from),
+                3 => msg.odometer = content.one().map(<u32>::from),
+                4 => msg.speed_source = content.one().map(<bool>::from),
+                5 => msg.sdm_ant_id_trans_type = content.one().map(<u8>::from),
+                7 => msg.odometer_rollover = content.one().map(<u8>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

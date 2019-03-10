@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct AccelerometerData {
@@ -20,27 +22,33 @@ pub struct AccelerometerData {
     compressed_calibrated_accel_z: Option<Vec<i16>>,
 }
 
-impl From<Vec<(u8, Field)>> for AccelerometerData {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl AccelerometerData {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.timestamp_ms = field.one().map(<u16>::from),
-                1 => msg.sample_time_offset = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                2 => msg.accel_x = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                3 => msg.accel_y = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                4 => msg.accel_z = field.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                5 => msg.calibrated_accel_x = field.many().map(|vec| vec.into_iter().map(<f32>::from).collect()),
-                6 => msg.calibrated_accel_y = field.many().map(|vec| vec.into_iter().map(<f32>::from).collect()),
-                7 => msg.calibrated_accel_z = field.many().map(|vec| vec.into_iter().map(<f32>::from).collect()),
-                8 => msg.compressed_calibrated_accel_x = field.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                9 => msg.compressed_calibrated_accel_y = field.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                10 => msg.compressed_calibrated_accel_z = field.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.timestamp_ms = content.one().map(<u16>::from),
+                1 => msg.sample_time_offset = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                2 => msg.accel_x = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                3 => msg.accel_y = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                4 => msg.accel_z = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                5 => msg.calibrated_accel_x = content.many().map(|vec| vec.into_iter().map(<f32>::from).collect()),
+                6 => msg.calibrated_accel_y = content.many().map(|vec| vec.into_iter().map(<f32>::from).collect()),
+                7 => msg.calibrated_accel_z = content.many().map(|vec| vec.into_iter().map(<f32>::from).collect()),
+                8 => msg.compressed_calibrated_accel_x = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
+                9 => msg.compressed_calibrated_accel_y = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
+                10 => msg.compressed_calibrated_accel_z = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

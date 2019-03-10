@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Record {
@@ -75,82 +77,88 @@ pub struct Record {
     n2_load: Option<u16>,
 }
 
-impl From<Vec<(u8, Field)>> for Record {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Record {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = field.one().map(<enums::DateTime>::from),
-                0 => msg.position_lat = field.one().map(<i32>::from),
-                1 => msg.position_long = field.one().map(<i32>::from),
-                2 => msg.altitude = field.one().map(<u16>::from),
-                3 => msg.heart_rate = field.one().map(<u8>::from),
-                4 => msg.cadence = field.one().map(<u8>::from),
-                5 => msg.distance = field.one().map(<u32>::from),
-                6 => msg.speed = field.one().map(<u16>::from),
-                7 => msg.power = field.one().map(<u16>::from),
-                8 => msg.compressed_speed_distance = field.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                9 => msg.grade = field.one().map(<i16>::from),
-                10 => msg.resistance = field.one().map(<u8>::from),
-                11 => msg.time_from_course = field.one().map(<i32>::from),
-                12 => msg.cycle_length = field.one().map(<u8>::from),
-                13 => msg.temperature = field.one().map(<i8>::from),
-                17 => msg.speed_1s = field.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                18 => msg.cycles = field.one().map(<u8>::from),
-                19 => msg.total_cycles = field.one().map(<u32>::from),
-                28 => msg.compressed_accumulated_power = field.one().map(<u16>::from),
-                29 => msg.accumulated_power = field.one().map(<u32>::from),
-                30 => msg.left_right_balance = field.one().map(<enums::LeftRightBalance>::from),
-                31 => msg.gps_accuracy = field.one().map(<u8>::from),
-                32 => msg.vertical_speed = field.one().map(<i16>::from),
-                33 => msg.calories = field.one().map(<u16>::from),
-                39 => msg.vertical_oscillation = field.one().map(<u16>::from),
-                40 => msg.stance_time_percent = field.one().map(<u16>::from),
-                41 => msg.stance_time = field.one().map(<u16>::from),
-                42 => msg.activity_type = field.one().map(<enums::ActivityType>::from),
-                43 => msg.left_torque_effectiveness = field.one().map(<u8>::from),
-                44 => msg.right_torque_effectiveness = field.one().map(<u8>::from),
-                45 => msg.left_pedal_smoothness = field.one().map(<u8>::from),
-                46 => msg.right_pedal_smoothness = field.one().map(<u8>::from),
-                47 => msg.combined_pedal_smoothness = field.one().map(<u8>::from),
-                48 => msg.time128 = field.one().map(<u8>::from),
-                49 => msg.stroke_type = field.one().map(<enums::StrokeType>::from),
-                50 => msg.zone = field.one().map(<u8>::from),
-                51 => msg.ball_speed = field.one().map(<u16>::from),
-                52 => msg.cadence256 = field.one().map(<u16>::from),
-                53 => msg.fractional_cadence = field.one().map(<u8>::from),
-                54 => msg.total_hemoglobin_conc = field.one().map(<u16>::from),
-                55 => msg.total_hemoglobin_conc_min = field.one().map(<u16>::from),
-                56 => msg.total_hemoglobin_conc_max = field.one().map(<u16>::from),
-                57 => msg.saturated_hemoglobin_percent = field.one().map(<u16>::from),
-                58 => msg.saturated_hemoglobin_percent_min = field.one().map(<u16>::from),
-                59 => msg.saturated_hemoglobin_percent_max = field.one().map(<u16>::from),
-                62 => msg.device_index = field.one().map(<enums::DeviceIndex>::from),
-                67 => msg.left_pco = field.one().map(<i8>::from),
-                68 => msg.right_pco = field.one().map(<i8>::from),
-                69 => msg.left_power_phase = field.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                70 => msg.left_power_phase_peak = field.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                71 => msg.right_power_phase = field.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                72 => msg.right_power_phase_peak = field.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                73 => msg.enhanced_speed = field.one().map(<u32>::from),
-                78 => msg.enhanced_altitude = field.one().map(<u32>::from),
-                81 => msg.battery_soc = field.one().map(<u8>::from),
-                82 => msg.motor_power = field.one().map(<u16>::from),
-                83 => msg.vertical_ratio = field.one().map(<u16>::from),
-                84 => msg.stance_time_balance = field.one().map(<u16>::from),
-                85 => msg.step_length = field.one().map(<u16>::from),
-                91 => msg.absolute_pressure = field.one().map(<u32>::from),
-                92 => msg.depth = field.one().map(<u32>::from),
-                93 => msg.next_stop_depth = field.one().map(<u32>::from),
-                94 => msg.next_stop_time = field.one().map(<u32>::from),
-                95 => msg.time_to_surface = field.one().map(<u32>::from),
-                96 => msg.ndl_time = field.one().map(<u32>::from),
-                97 => msg.cns_load = field.one().map(<u8>::from),
-                98 => msg.n2_load = field.one().map(<u16>::from),
-                v => panic!("unknown field number: {}", v)
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                0 => msg.position_lat = content.one().map(<i32>::from),
+                1 => msg.position_long = content.one().map(<i32>::from),
+                2 => msg.altitude = content.one().map(<u16>::from),
+                3 => msg.heart_rate = content.one().map(<u8>::from),
+                4 => msg.cadence = content.one().map(<u8>::from),
+                5 => msg.distance = content.one().map(<u32>::from),
+                6 => msg.speed = content.one().map(<u16>::from),
+                7 => msg.power = content.one().map(<u16>::from),
+                8 => msg.compressed_speed_distance = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                9 => msg.grade = content.one().map(<i16>::from),
+                10 => msg.resistance = content.one().map(<u8>::from),
+                11 => msg.time_from_course = content.one().map(<i32>::from),
+                12 => msg.cycle_length = content.one().map(<u8>::from),
+                13 => msg.temperature = content.one().map(<i8>::from),
+                17 => msg.speed_1s = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                18 => msg.cycles = content.one().map(<u8>::from),
+                19 => msg.total_cycles = content.one().map(<u32>::from),
+                28 => msg.compressed_accumulated_power = content.one().map(<u16>::from),
+                29 => msg.accumulated_power = content.one().map(<u32>::from),
+                30 => msg.left_right_balance = content.one().map(<enums::LeftRightBalance>::from),
+                31 => msg.gps_accuracy = content.one().map(<u8>::from),
+                32 => msg.vertical_speed = content.one().map(<i16>::from),
+                33 => msg.calories = content.one().map(<u16>::from),
+                39 => msg.vertical_oscillation = content.one().map(<u16>::from),
+                40 => msg.stance_time_percent = content.one().map(<u16>::from),
+                41 => msg.stance_time = content.one().map(<u16>::from),
+                42 => msg.activity_type = content.one().map(<enums::ActivityType>::from),
+                43 => msg.left_torque_effectiveness = content.one().map(<u8>::from),
+                44 => msg.right_torque_effectiveness = content.one().map(<u8>::from),
+                45 => msg.left_pedal_smoothness = content.one().map(<u8>::from),
+                46 => msg.right_pedal_smoothness = content.one().map(<u8>::from),
+                47 => msg.combined_pedal_smoothness = content.one().map(<u8>::from),
+                48 => msg.time128 = content.one().map(<u8>::from),
+                49 => msg.stroke_type = content.one().map(<enums::StrokeType>::from),
+                50 => msg.zone = content.one().map(<u8>::from),
+                51 => msg.ball_speed = content.one().map(<u16>::from),
+                52 => msg.cadence256 = content.one().map(<u16>::from),
+                53 => msg.fractional_cadence = content.one().map(<u8>::from),
+                54 => msg.total_hemoglobin_conc = content.one().map(<u16>::from),
+                55 => msg.total_hemoglobin_conc_min = content.one().map(<u16>::from),
+                56 => msg.total_hemoglobin_conc_max = content.one().map(<u16>::from),
+                57 => msg.saturated_hemoglobin_percent = content.one().map(<u16>::from),
+                58 => msg.saturated_hemoglobin_percent_min = content.one().map(<u16>::from),
+                59 => msg.saturated_hemoglobin_percent_max = content.one().map(<u16>::from),
+                62 => msg.device_index = content.one().map(<enums::DeviceIndex>::from),
+                67 => msg.left_pco = content.one().map(<i8>::from),
+                68 => msg.right_pco = content.one().map(<i8>::from),
+                69 => msg.left_power_phase = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                70 => msg.left_power_phase_peak = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                71 => msg.right_power_phase = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                72 => msg.right_power_phase_peak = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                73 => msg.enhanced_speed = content.one().map(<u32>::from),
+                78 => msg.enhanced_altitude = content.one().map(<u32>::from),
+                81 => msg.battery_soc = content.one().map(<u8>::from),
+                82 => msg.motor_power = content.one().map(<u16>::from),
+                83 => msg.vertical_ratio = content.one().map(<u16>::from),
+                84 => msg.stance_time_balance = content.one().map(<u16>::from),
+                85 => msg.step_length = content.one().map(<u16>::from),
+                91 => msg.absolute_pressure = content.one().map(<u32>::from),
+                92 => msg.depth = content.one().map(<u32>::from),
+                93 => msg.next_stop_depth = content.one().map(<u32>::from),
+                94 => msg.next_stop_time = content.one().map(<u32>::from),
+                95 => msg.time_to_surface = content.one().map(<u32>::from),
+                96 => msg.ndl_time = content.one().map(<u32>::from),
+                97 => msg.cns_load = content.one().map(<u8>::from),
+                98 => msg.n2_load = content.one().map(<u16>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

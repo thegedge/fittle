@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct Course {
@@ -12,19 +14,25 @@ pub struct Course {
     sub_sport: Option<enums::SubSport>,
 }
 
-impl From<Vec<(u8, Field)>> for Course {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl Course {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                4 => msg.sport = field.one().map(<enums::Sport>::from),
-                5 => msg.name = field.one().map(<String>::from),
-                6 => msg.capabilities = field.one().map(<enums::CourseCapabilities>::from),
-                7 => msg.sub_sport = field.one().map(<enums::SubSport>::from),
-                v => panic!("unknown field number: {}", v)
+                4 => msg.sport = content.one().map(<enums::Sport>::from),
+                5 => msg.name = content.one().map(<String>::from),
+                6 => msg.capabilities = content.one().map(<enums::CourseCapabilities>::from),
+                7 => msg.sub_sport = content.one().map(<enums::SubSport>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 

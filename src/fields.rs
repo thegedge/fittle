@@ -3,7 +3,7 @@ use byteorder::{
     ReadBytesExt,
 };
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum Field {
     One(FieldContent),
     Many(Vec<FieldContent>),
@@ -25,7 +25,7 @@ impl Field {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct FieldDefinition {
     number: u8,
     size: usize,
@@ -132,7 +132,7 @@ impl FieldDefinition {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum FieldContent {
     Enum(u8),
     SignedInt8(i8),
@@ -165,7 +165,7 @@ macro_rules! into_impl {
                     $(
                         FieldContent::$enums(v) => v,
                     )*
-                    v => panic!("cannot convert {:?} into {}", v, stringify!($type)),
+                    v => panic!("cannot convert {:?} into {}", v, stringify!($into_type)),
                 }) 
             }
         }
@@ -176,14 +176,14 @@ macro_rules! into_impl {
                     $(
                         Field::One(FieldContent::$enums(v)) => v,
                     )*
-                    v => panic!("cannot convert {:?} into {}", v, stringify!($type)),
+                    v => panic!("cannot convert {:?} into {}", v, stringify!($into_type)),
                 })
             }
         }
     };
 }
 
-into_impl!(bool, UnsignedInt8, |v| v != 0);
+into_impl!(bool, Enum | UnsignedInt8, |v| v != 0);
 into_impl!(u8, Enum | UnsignedInt8 | UnsignedInt8z);
 into_impl!(u16, UnsignedInt16 | UnsignedInt16z);
 into_impl!(u32, UnsignedInt32 | UnsignedInt32z);

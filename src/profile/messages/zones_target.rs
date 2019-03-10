@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
+use byteorder::{ByteOrder, ReadBytesExt};
+
 #[allow(unused_imports)]
 use crate::profile::enums;
-use crate::fields::Field;
+use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default)]
 pub struct ZonesTarget {
@@ -13,20 +15,26 @@ pub struct ZonesTarget {
     pwr_calc_type: Option<enums::PwrZoneCalc>,
 }
 
-impl From<Vec<(u8, Field)>> for ZonesTarget {
-    fn from(fields: Vec<(u8, Field)>) -> Self {
+impl ZonesTarget {
+    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+        -> Result<Self, std::io::Error>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
         let mut msg: Self = Default::default();
-        for (number, field) in fields {
+        for field in fields {
+            let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                1 => msg.max_heart_rate = field.one().map(<u8>::from),
-                2 => msg.threshold_heart_rate = field.one().map(<u8>::from),
-                3 => msg.functional_threshold_power = field.one().map(<u16>::from),
-                5 => msg.hr_calc_type = field.one().map(<enums::HrZoneCalc>::from),
-                7 => msg.pwr_calc_type = field.one().map(<enums::PwrZoneCalc>::from),
-                v => panic!("unknown field number: {}", v)
+                1 => msg.max_heart_rate = content.one().map(<u8>::from),
+                2 => msg.threshold_heart_rate = content.one().map(<u8>::from),
+                3 => msg.functional_threshold_power = content.one().map(<u16>::from),
+                5 => msg.hr_calc_type = content.one().map(<enums::HrZoneCalc>::from),
+                7 => msg.pwr_calc_type = content.one().map(<enums::PwrZoneCalc>::from),
+                _ => (),
             };
         }
-        msg
+        Ok(msg)
     }
 }
 
