@@ -1,22 +1,41 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct SegmentFile {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     file_uuid: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     user_profile_primary_key: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     leader_type: Option<Vec<enums::SegmentLeaderboardType>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     leader_group_primary_key: Option<Vec<u32>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     leader_activity_id: Option<Vec<u32>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     leader_activity_id_string: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     default_race_leader: Option<u8>,
+
 }
 
 impl SegmentFile {

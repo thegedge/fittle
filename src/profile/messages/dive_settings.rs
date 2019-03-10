@@ -1,35 +1,80 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct DiveSettings {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     model: Option<enums::TissueModelType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     gf_low: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     gf_high: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     water_type: Option<enums::WaterType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     water_density: Option<f32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     po2_warn: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     po2_critical: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     po2_deco: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     safety_stop_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bottom_depth: Option<f32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bottom_time: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     apnea_countdown_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     apnea_countdown_time: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     backlight_mode: Option<enums::DiveBacklightMode>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     backlight_brightness: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     backlight_timeout: Option<enums::BacklightTimeout>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     repeat_dive_interval: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     safety_stop_time: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     heart_rate_source_type: Option<enums::SourceType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     heart_rate_source: Option<u8>,
+
 }
 
 impl DiveSettings {

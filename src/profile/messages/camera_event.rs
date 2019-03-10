@@ -1,18 +1,29 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct CameraEvent {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     camera_event_type: Option<enums::CameraEventType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     camera_file_uuid: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     camera_orientation: Option<enums::CameraOrientationType>,
+
 }
 
 impl CameraEvent {

@@ -1,25 +1,50 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct AviationAttitude {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     system_time: Option<Vec<u32>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pitch: Option<Vec<i16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     roll: Option<Vec<i16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     accel_lateral: Option<Vec<i16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     accel_normal: Option<Vec<i16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     turn_rate: Option<Vec<i16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     stage: Option<Vec<enums::AttitudeStage>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     attitude_stage_complete: Option<Vec<u8>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     track: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     validity: Option<Vec<enums::AttitudeValidity>>,
+
 }
 
 impl AviationAttitude {

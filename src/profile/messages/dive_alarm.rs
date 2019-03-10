@@ -1,20 +1,35 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct DiveAlarm {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     depth: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     time: Option<i32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     alarm_type: Option<enums::DiveAlarmType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sound: Option<enums::Tone>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     dive_types: Option<Vec<enums::SubSport>>,
+
 }
 
 impl DiveAlarm {

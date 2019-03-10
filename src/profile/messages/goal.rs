@@ -1,26 +1,53 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct Goal {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sport: Option<enums::Sport>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sub_sport: Option<enums::SubSport>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     start_date: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     end_date: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     type_: Option<enums::Goal>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     value: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     repeat: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     target_value: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     recurrence: Option<enums::GoalRecurrence>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     recurrence_value: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     source: Option<enums::GoalSource>,
+
 }
 
 impl Goal {

@@ -1,24 +1,47 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct BloodPressure {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     systolic_pressure: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     diastolic_pressure: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     mean_arterial_pressure: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     map_3_sample_mean: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     map_morning_values: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     map_evening_values: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     heart_rate: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     heart_rate_type: Option<enums::HrType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     status: Option<enums::BpStatus>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     user_profile_index: Option<enums::MessageIndex>,
+
 }
 
 impl BloodPressure {

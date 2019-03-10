@@ -1,42 +1,101 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct Monitoring {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     device_index: Option<enums::DeviceIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     calories: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     distance: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     cycles: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     active_time: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     activity_type: Option<enums::ActivityType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     activity_subtype: Option<enums::ActivitySubtype>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     activity_level: Option<enums::ActivityLevel>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     distance_16: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     cycles_16: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     active_time_16: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     local_timestamp: Option<enums::LocalDateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     temperature: Option<i16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     temperature_min: Option<i16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     temperature_max: Option<i16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     activity_time: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     active_calories: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     current_activity_type_intensity: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_min_8: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_16: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     heart_rate: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     intensity: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     duration_min: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     duration: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     ascent: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     descent: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     moderate_activity_minutes: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     vigorous_activity_minutes: Option<u16>,
+
 }
 
 impl Monitoring {

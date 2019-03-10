@@ -1,24 +1,47 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct Set {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     duration: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     repetitions: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     weight: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     set_type: Option<enums::SetType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     start_time: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     category: Option<Vec<enums::ExerciseCategory>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     category_subtype: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     weight_display_unit: Option<enums::FitBaseUnit>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     wkt_step_index: Option<enums::MessageIndex>,
+
 }
 
 impl Set {

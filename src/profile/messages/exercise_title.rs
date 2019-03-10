@@ -1,17 +1,26 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct ExerciseTitle {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     exercise_category: Option<enums::ExerciseCategory>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     exercise_name: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     wkt_step_name: Option<Vec<String>>,
+
 }
 
 impl ExerciseTitle {

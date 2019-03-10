@@ -1,18 +1,29 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct AntChannelId {
+    #[serde(skip_serializing_if = "Option::is_none")]
     channel_number: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     device_type: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     device_number: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     transmission_type: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     device_index: Option<enums::DeviceIndex>,
+
 }
 
 impl AntChannelId {

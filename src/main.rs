@@ -1,4 +1,4 @@
-extern crate byteorder;
+#![feature(custom_attribute)]
 
 mod profile;
 mod fields;
@@ -7,12 +7,20 @@ mod parser;
 use std::io::prelude::*;
 use std::io;
 
-fn main() -> parser::Result<()> {
+fn main() -> Result<(), String> {
     let stdin = io::stdin();
     let mut handle = stdin.lock();
 
     let mut bytes = Vec::new();
     let _ = handle.read_to_end(&mut bytes);
 
-    parser::parse(&bytes)
+    match  parser::parse(&bytes) {
+        Ok(results) => {
+            match serde_json::to_string(&results) {
+                Ok(json) => Ok(println!("{}", json)),
+                Err(e) => Err(e.to_string()),
+            }
+        },
+        Err(e) => Err(format!("{:?}", e)),
+    }
 }

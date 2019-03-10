@@ -1,15 +1,20 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct FileCreator {
+    #[serde(skip_serializing_if = "Option::is_none")]
     software_version: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     hardware_version: Option<u8>,
+
 }
 
 impl FileCreator {

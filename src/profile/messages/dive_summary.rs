@@ -1,26 +1,53 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct DiveSummary {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     reference_mesg: Option<enums::MesgNum>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     reference_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     avg_depth: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     max_depth: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     surface_interval: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     start_cns: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     end_cns: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     start_n2: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     end_n2: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     o2_toxicity: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     dive_number: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bottom_time: Option<u32>,
+
 }
 
 impl DiveSummary {

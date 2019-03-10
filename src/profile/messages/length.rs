@@ -1,31 +1,68 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct Length {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     event: Option<enums::Event>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     event_type: Option<enums::EventType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     start_time: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     total_elapsed_time: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     total_timer_time: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     total_strokes: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     avg_speed: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     swim_stroke: Option<enums::SwimStroke>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     avg_swimming_cadence: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     event_group: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     total_calories: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     length_type: Option<enums::LengthType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     player_score: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     opponent_score: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     stroke_count: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     zone_count: Option<Vec<u16>>,
+
 }
 
 impl Length {

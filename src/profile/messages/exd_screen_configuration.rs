@@ -1,17 +1,26 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct ExdScreenConfiguration {
+    #[serde(skip_serializing_if = "Option::is_none")]
     screen_index: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     field_count: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     layout: Option<enums::ExdLayout>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     screen_enabled: Option<bool>,
+
 }
 
 impl ExdScreenConfiguration {

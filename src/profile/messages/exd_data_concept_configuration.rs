@@ -1,24 +1,47 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct ExdDataConceptConfiguration {
+    #[serde(skip_serializing_if = "Option::is_none")]
     screen_index: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     concept_field: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     field_id: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     concept_index: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     data_page: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     concept_key: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     scaling: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     data_units: Option<enums::ExdDataUnits>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     qualifier: Option<enums::ExdQualifiers>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     descriptor: Option<enums::ExdDescriptors>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     is_signed: Option<bool>,
+
 }
 
 impl ExdDataConceptConfiguration {

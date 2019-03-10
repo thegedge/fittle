@@ -1,22 +1,41 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct ObdiiData {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     time_offset: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pid: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     raw_data: Option<Vec<u8>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pid_data_size: Option<Vec<u8>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     system_time: Option<Vec<u32>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     start_timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     start_timestamp_ms: Option<u16>,
+
 }
 
 impl ObdiiData {

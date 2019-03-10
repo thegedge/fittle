@@ -1,17 +1,26 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct MetZone {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     high_bpm: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     calories: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     fat_calories: Option<u8>,
+
 }
 
 impl MetZone {

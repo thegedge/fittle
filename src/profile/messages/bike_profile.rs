@@ -1,45 +1,110 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct BikeProfile {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sport: Option<enums::Sport>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sub_sport: Option<enums::SubSport>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     odometer: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bike_spd_ant_id: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bike_cad_ant_id: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bike_spdcad_ant_id: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bike_power_ant_id: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     custom_wheelsize: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     auto_wheelsize: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bike_weight: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     power_cal_factor: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     auto_wheel_cal: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     auto_power_zero: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     id: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     spd_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     cad_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     spdcad_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     power_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     crank_length: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bike_spd_ant_id_trans_type: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bike_cad_ant_id_trans_type: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bike_spdcad_ant_id_trans_type: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bike_power_ant_id_trans_type: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     odometer_rollover: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     front_gear_num: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     front_gear: Option<Vec<u8>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     rear_gear_num: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     rear_gear: Option<Vec<u8>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     shimano_di2_enabled: Option<bool>,
+
 }
 
 impl BikeProfile {

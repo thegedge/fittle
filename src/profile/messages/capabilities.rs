@@ -1,15 +1,20 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct Capabilities {
+    #[serde(skip_serializing_if = "Option::is_none")]
     workouts_supported: Option<enums::WorkoutCapabilities>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     connectivity_supported: Option<enums::ConnectivityCapabilities>,
+
 }
 
 impl Capabilities {

@@ -1,16 +1,23 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct Sport {
+    #[serde(skip_serializing_if = "Option::is_none")]
     sport: Option<enums::Sport>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sub_sport: Option<enums::SubSport>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
+
 }
 
 impl Sport {

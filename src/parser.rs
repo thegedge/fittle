@@ -1,11 +1,12 @@
 use std::{
-    result,
+    convert::From,
     io::{
         Cursor,
         Read,
         Seek,
         SeekFrom,
     },
+    result,
 };
 
 use byteorder::{
@@ -104,7 +105,7 @@ fn read_bits(value: &mut u8, n: u8) -> u8 {
     ret
 }
 
-pub fn parse(bytes: &[u8]) -> Result<()> {
+pub fn parse(bytes: &[u8]) -> Result<Vec<Message>> {
     let reader = Cursor::new(bytes);
     Parser { reader }.parse()
 }
@@ -174,7 +175,8 @@ impl<Reader> Parser<Reader> where Reader: Read + Seek {
         Ok(FileHeader { size, protocol_version, profile_version, data_size, data_type, crc })
     }
 
-    fn parse<'i>(&mut self) -> Result<()> {
+    fn parse<'i>(&mut self) -> Result<Vec<Message>> {
+        let mut results = Vec::new();
         let mut local_types = vec![None; 255];
 
         let file_header = self.file_header()?;
@@ -192,7 +194,8 @@ impl<Reader> Parser<Reader> where Reader: Read + Seek {
             } else {
                 match local_types[local_message_type as usize] {
                     Some(ref data_definition) => {
-                        let msg = if data_definition.architecture == BIG_ENDIANNESS {
+                        // TODO eliminate this branch
+                        let msg_result = if data_definition.architecture == BIG_ENDIANNESS {
                             Message::read::<BigEndian, Reader>(
                                 &mut self.reader,
                                 data_definition.message_type,
@@ -206,7 +209,9 @@ impl<Reader> Parser<Reader> where Reader: Read + Seek {
                             )
                         };
 
-                        println!("Message: {:?}", msg);
+                        if let Ok(msg) = msg_result {
+                            results.push(msg)
+                        }
                     },
                     None => panic!("local message type {} not yet defined", local_message_type),
                 }
@@ -215,11 +220,11 @@ impl<Reader> Parser<Reader> where Reader: Read + Seek {
 
         // TODO CRC verification
 
-        Ok(())
+        Ok(results)
     }
 }
 
-impl std::convert::From<std::io::Error> for ParserError {
+impl From<std::io::Error> for ParserError {
     fn from(_: std::io::Error) -> Self {
         ParserError::FailedToParse
     }

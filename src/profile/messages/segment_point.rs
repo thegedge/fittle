@@ -1,19 +1,32 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct SegmentPoint {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     position_lat: Option<i32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     position_long: Option<i32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     distance: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     altitude: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     leader_time: Option<Vec<u32>>,
+
 }
 
 impl SegmentPoint {

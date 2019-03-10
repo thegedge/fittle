@@ -92,7 +92,9 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
     fn generate_types(&mut self) -> Result<(), Error> {
         let range = self.workbook.worksheet_range("Types")??;
 
-        self.enums_stream.write(b"use crate::fields::FieldContent;\n\n")?;
+        self.enums_stream.write(b"use crate::fields::FieldContent;\n")?;
+        self.enums_stream.write(b"use serde::Serialize;\n")?;
+        self.enums_stream.write(b"\n")?;
 
         // Skip the header row
         let mut iter = range.rows().skip(1).peekable();
@@ -251,12 +253,13 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
 
             message_stream.write(GENERATED_FILE_COMMENT)?;
             message_stream.write(b"use byteorder::{ByteOrder, ReadBytesExt};\n")?;
+            message_stream.write(b"use serde::Serialize;\n")?;
             message_stream.write(b"\n")?;
             message_stream.write(b"#[allow(unused_imports)]\n")?;
             message_stream.write(b"use crate::profile::enums;\n")?;
             message_stream.write(b"use crate::fields::FieldDefinition;\n")?;
             message_stream.write(b"\n")?;
-            message_stream.write(b"#[derive(Debug, Default)]\n")?;
+            message_stream.write(b"#[derive(Debug, Default, Serialize)]\n")?;
             message_stream.write_fmt(format_args!("pub struct {0} {{\n", message_struct_name))?;
             for (field_name, field_type, _number, is_array) in &values {
                 let rust_type = rust_type(&field_type);
@@ -266,7 +269,9 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                     rust_type
                 };
 
+                message_stream.write(b"    #[serde(skip_serializing_if = \"Option::is_none\")]\n")?;
                 message_stream.write_fmt(format_args!("    {0}: Option<{1}>,\n", field_name, rust_field_type))?;
+                message_stream.write(b"\n")?;
             };
             message_stream.write(b"}\n\n")?;
 
@@ -321,8 +326,11 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
         // method to read everything from a Cursor.
         // 
         self.messages_stream.write(b"use byteorder::{ByteOrder, ReadBytesExt};\n")?;
+        self.messages_stream.write(b"use serde::Serialize;\n")?;
+        self.messages_stream.write(b"\n")?;
         self.messages_stream.write(b"use crate::profile::enums::MesgNum;\n")?;
         self.messages_stream.write(b"use crate::fields::FieldDefinition;\n")?;
+        self.messages_stream.write(b"\n")?;
 
         for (message_name, _message_struct_name) in message_names.iter() {
           self.messages_stream.write_fmt(format_args!("mod {0};\n", message_name))?;
@@ -334,16 +342,14 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
         }
 
         self.messages_stream.write(b"\n")?;
-        self.messages_stream.write(b"#[derive(Debug)]\n")?;
+        self.messages_stream.write(b"#[derive(Debug, Serialize)]\n")?;
+        self.messages_stream.write(b"#[serde(tag = \"message_type\")]\n")?;
+        self.messages_stream.write(b"#[serde(rename_all = \"snake_case\")]\n")?;
         self.messages_stream.write(b"pub enum Message {\n")?;
         for (_message_name, message_struct_name) in message_names.iter() {
           self.messages_stream.write_fmt(format_args!("    {0}({0}),\n", message_struct_name))?;
         }
         self.messages_stream.write(b"}\n\n")?;
-
-        // TODO this match statement works for now, but I'd like others to be able to extend this
-        //      library with their own implementations for custom fields/messages. May require a
-        //      big refactor down the road...
 
         // Read a Message from a cursor
         self.messages_stream.write(b"impl Message {\n")?;
@@ -353,8 +359,11 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
         self.messages_stream.write(b"            Order: ByteOrder,\n")?;
         self.messages_stream.write(b"            Reader: ReadBytesExt,\n")?;
         self.messages_stream.write(b"    {\n")?;
-        self.messages_stream.write(b"        match msg {\n")?;
 
+        // TODO this match statement works for now, but I'd like others to be able to extend this
+        //      library with their own implementations for custom fields/messages. May require a
+        //      big refactor down the road...
+        self.messages_stream.write(b"        match msg {\n")?;
         for (message_name, message_struct_name) in message_names.iter() {
             self.messages_stream.write_fmt(format_args!(r#"
             MesgNum::{1} =>
@@ -366,7 +375,6 @@ impl <D: Seek + Read, F: Write> CodeGen<D, F> {
                 message_struct_name,
             ))?;
         }
-
         self.messages_stream.write(b"            m => {\n")?;
         self.messages_stream.write(b"                fields.iter()\n")?;
         self.messages_stream.write(b"                    .map(|f| f.content_from::<Order, Reader>(reader))\n")?;
@@ -457,7 +465,8 @@ fn write_enum<W>(stream: &mut W, type_name: &str, sheet_type: &str, mut entries:
     // Write the message enum (sorted by name)
     entries.sort();
 
-    stream.write(b"#[derive(Clone, Copy, Debug)]\n")?;
+    stream.write(b"#[derive(Clone, Copy, Debug, Serialize)]\n")?;
+    stream.write(b"#[serde(rename_all = \"snake_case\")]\n")?;
     stream.write_fmt(format_args!("pub enum {} {{\n", enum_name))?;
     for (message_name, _) in &entries {
         stream.write_fmt(format_args!("    {0},\n", message_name))?;

@@ -1,18 +1,29 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct FieldCapabilities {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     file: Option<enums::File>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     mesg_num: Option<enums::MesgNum>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     field_num: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     count: Option<u16>,
+
 }
 
 impl FieldCapabilities {

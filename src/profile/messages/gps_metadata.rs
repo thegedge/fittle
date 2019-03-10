@@ -1,22 +1,41 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct GpsMetadata {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     position_lat: Option<i32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     position_long: Option<i32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     enhanced_altitude: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     enhanced_speed: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     heading: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     utc_timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     velocity: Option<Vec<i16>>,
+
 }
 
 impl GpsMetadata {

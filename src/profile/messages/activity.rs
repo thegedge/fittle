@@ -1,21 +1,38 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct Activity {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     total_timer_time: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     num_sessions: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     type_: Option<enums::Activity>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     event: Option<enums::Event>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     event_type: Option<enums::EventType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     local_timestamp: Option<enums::LocalDateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     event_group: Option<u8>,
+
 }
 
 impl Activity {

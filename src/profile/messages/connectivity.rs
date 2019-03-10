@@ -1,26 +1,53 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct Connectivity {
+    #[serde(skip_serializing_if = "Option::is_none")]
     bluetooth_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     bluetooth_le_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     ant_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     live_tracking_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     weather_conditions_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     weather_alerts_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     auto_activity_upload_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     course_download_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     workout_download_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     gps_ephemeris_download_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     incident_detection_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     grouptrack_enabled: Option<bool>,
+
 }
 
 impl Connectivity {

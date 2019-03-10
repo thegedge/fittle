@@ -1,22 +1,41 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct GyroscopeData {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sample_time_offset: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     gyro_x: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     gyro_y: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     gyro_z: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     calibrated_gyro_x: Option<Vec<f32>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     calibrated_gyro_y: Option<Vec<f32>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     calibrated_gyro_z: Option<Vec<f32>>,
+
 }
 
 impl GyroscopeData {

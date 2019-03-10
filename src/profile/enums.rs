@@ -1,8 +1,10 @@
 // DO NOT EDIT -- generated code
 
 use crate::fields::FieldContent;
+use serde::Serialize;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum File {
     Activity,
     ActivitySummary,
@@ -55,7 +57,8 @@ impl From<FieldContent> for File {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum MesgNum {
     AccelerometerData,
     Activity,
@@ -244,7 +247,8 @@ impl From<FieldContent> for MesgNum {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Checksum {
     Clear,
     Ok,
@@ -265,7 +269,8 @@ impl From<FieldContent> for Checksum {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum FileFlags {
     Erase,
     Read,
@@ -288,7 +293,8 @@ impl From<FieldContent> for FileFlags {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum MesgCount {
     MaxPerFile,
     MaxPerFileType,
@@ -311,7 +317,8 @@ impl From<FieldContent> for MesgCount {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DateTime {
     Min,
     UnknownValue(u64),
@@ -330,7 +337,8 @@ impl From<FieldContent> for DateTime {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LocalDateTime {
     Min,
     UnknownValue(u64),
@@ -349,7 +357,8 @@ impl From<FieldContent> for LocalDateTime {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum MessageIndex {
     Mask,
     Reserved,
@@ -372,7 +381,8 @@ impl From<FieldContent> for MessageIndex {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DeviceIndex {
     Creator,
     UnknownValue(u64),
@@ -391,7 +401,8 @@ impl From<FieldContent> for DeviceIndex {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Gender {
     Female,
     Male,
@@ -412,7 +423,8 @@ impl From<FieldContent> for Gender {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Language {
     Arabic,
     BrazilianPortuguese,
@@ -507,7 +519,8 @@ impl From<FieldContent> for Language {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TimeZone {
     Adelaide,
     Alberta,
@@ -736,7 +749,8 @@ impl From<FieldContent> for TimeZone {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DisplayMeasure {
     Metric,
     Nautical,
@@ -759,7 +773,8 @@ impl From<FieldContent> for DisplayMeasure {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DisplayHeart {
     Bpm,
     Max,
@@ -782,7 +797,8 @@ impl From<FieldContent> for DisplayHeart {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DisplayPower {
     PercentFtp,
     Watts,
@@ -803,7 +819,8 @@ impl From<FieldContent> for DisplayPower {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DisplayPosition {
     AustrianGrid,
     BorneoRso,
@@ -904,7 +921,8 @@ impl From<FieldContent> for DisplayPosition {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Switch {
     Auto,
     Off,
@@ -927,7 +945,8 @@ impl From<FieldContent> for Switch {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Sport {
     All,
     AlpineSkiing,
@@ -1044,7 +1063,8 @@ impl From<FieldContent> for Sport {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SubSport {
     All,
     ApneaDiving,
@@ -1183,7 +1203,8 @@ impl From<FieldContent> for SubSport {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SportEvent {
     Fitness,
     Geocaching,
@@ -1218,7 +1239,8 @@ impl From<FieldContent> for SportEvent {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Activity {
     AutoMultiSport,
     Manual,
@@ -1239,7 +1261,8 @@ impl From<FieldContent> for Activity {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Intensity {
     Active,
     Cooldown,
@@ -1264,7 +1287,8 @@ impl From<FieldContent> for Intensity {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SessionTrigger {
     ActivityEnd,
     AutoMultiSport,
@@ -1289,7 +1313,8 @@ impl From<FieldContent> for SessionTrigger {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AutolapTrigger {
     Distance,
     Off,
@@ -1320,7 +1345,8 @@ impl From<FieldContent> for AutolapTrigger {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LapTrigger {
     Distance,
     FitnessEquipment,
@@ -1355,7 +1381,8 @@ impl From<FieldContent> for LapTrigger {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TimeMode {
     Hour12,
     Hour12WithSeconds,
@@ -1384,7 +1411,8 @@ impl From<FieldContent> for TimeMode {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BacklightMode {
     AutoBrightness,
     KeyAndMessages,
@@ -1415,7 +1443,8 @@ impl From<FieldContent> for BacklightMode {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DateMode {
     DayMonth,
     MonthDay,
@@ -1436,7 +1465,8 @@ impl From<FieldContent> for DateMode {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BacklightTimeout {
     Infinite,
     UnknownValue(u64),
@@ -1455,7 +1485,8 @@ impl From<FieldContent> for BacklightTimeout {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Event {
     Activity,
     Battery,
@@ -1544,7 +1575,8 @@ impl From<FieldContent> for Event {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum EventType {
     BeginDepreciated,
     ConsecutiveDepreciated,
@@ -1581,7 +1613,8 @@ impl From<FieldContent> for EventType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TimerTrigger {
     Auto,
     FitnessEquipment,
@@ -1604,7 +1637,8 @@ impl From<FieldContent> for TimerTrigger {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum FitnessEquipmentState {
     InUse,
     Paused,
@@ -1629,7 +1663,8 @@ impl From<FieldContent> for FitnessEquipmentState {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Tone {
     Off,
     Tone,
@@ -1654,7 +1689,8 @@ impl From<FieldContent> for Tone {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Autoscroll {
     Fast,
     Medium,
@@ -1679,7 +1715,8 @@ impl From<FieldContent> for Autoscroll {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ActivityClass {
     Athlete,
     Level,
@@ -1702,7 +1739,8 @@ impl From<FieldContent> for ActivityClass {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum HrZoneCalc {
     Custom,
     PercentHrr,
@@ -1725,7 +1763,8 @@ impl From<FieldContent> for HrZoneCalc {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum PwrZoneCalc {
     Custom,
     PercentFtp,
@@ -1746,7 +1785,8 @@ impl From<FieldContent> for PwrZoneCalc {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WktStepDuration {
     Calories,
     Distance,
@@ -1823,7 +1863,8 @@ impl From<FieldContent> for WktStepDuration {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WktStepTarget {
     Cadence,
     Grade,
@@ -1868,7 +1909,8 @@ impl From<FieldContent> for WktStepTarget {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Goal {
     ActiveMinutes,
     Ascent,
@@ -1899,7 +1941,8 @@ impl From<FieldContent> for Goal {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum GoalRecurrence {
     Custom,
     Daily,
@@ -1928,7 +1971,8 @@ impl From<FieldContent> for GoalRecurrence {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum GoalSource {
     Auto,
     Community,
@@ -1951,7 +1995,8 @@ impl From<FieldContent> for GoalSource {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Schedule {
     Course,
     Workout,
@@ -1972,7 +2017,8 @@ impl From<FieldContent> for Schedule {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CoursePoint {
     Danger,
     FirstAid,
@@ -2041,7 +2087,8 @@ impl From<FieldContent> for CoursePoint {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Manufacturer {
     AAndD,
     AceSensor,
@@ -2388,7 +2435,8 @@ impl From<FieldContent> for Manufacturer {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum GarminProduct {
     Alf04,
     Amx,
@@ -2719,7 +2767,8 @@ impl From<FieldContent> for GarminProduct {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AntplusDeviceType {
     Antfs,
     BikeAero,
@@ -2784,7 +2833,8 @@ impl From<FieldContent> for AntplusDeviceType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AntNetwork {
     Antfs,
     Antplus,
@@ -2809,7 +2859,8 @@ impl From<FieldContent> for AntNetwork {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WorkoutCapabilities {
     Cadence,
     Custom,
@@ -2854,7 +2905,8 @@ impl From<FieldContent> for WorkoutCapabilities {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BatteryStatus {
     Charging,
     Critical,
@@ -2885,7 +2937,8 @@ impl From<FieldContent> for BatteryStatus {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum HrType {
     Irregular,
     Normal,
@@ -2906,7 +2959,8 @@ impl From<FieldContent> for HrType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CourseCapabilities {
     Bikeway,
     Cadence,
@@ -2945,7 +2999,8 @@ impl From<FieldContent> for CourseCapabilities {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Weight {
     Calculating,
     UnknownValue(u64),
@@ -2964,7 +3019,8 @@ impl From<FieldContent> for Weight {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WorkoutHr {
     BpmOffset,
     UnknownValue(u64),
@@ -2983,7 +3039,8 @@ impl From<FieldContent> for WorkoutHr {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WorkoutPower {
     WattsOffset,
     UnknownValue(u64),
@@ -3002,7 +3059,8 @@ impl From<FieldContent> for WorkoutPower {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BpStatus {
     ErrorDataOutOfRange,
     ErrorIncompleteData,
@@ -3029,7 +3087,8 @@ impl From<FieldContent> for BpStatus {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum UserLocalId {
     LocalMax,
     LocalMin,
@@ -3058,7 +3117,8 @@ impl From<FieldContent> for UserLocalId {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SwimStroke {
     Backstroke,
     Breaststroke,
@@ -3089,7 +3149,8 @@ impl From<FieldContent> for SwimStroke {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ActivityType {
     All,
     Cycling,
@@ -3124,7 +3185,8 @@ impl From<FieldContent> for ActivityType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ActivitySubtype {
     All,
     Cyclocross,
@@ -3181,7 +3243,8 @@ impl From<FieldContent> for ActivitySubtype {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ActivityLevel {
     High,
     Low,
@@ -3204,7 +3267,8 @@ impl From<FieldContent> for ActivityLevel {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Side {
     Left,
     Right,
@@ -3225,7 +3289,8 @@ impl From<FieldContent> for Side {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LeftRightBalance {
     Mask,
     Right,
@@ -3246,7 +3311,8 @@ impl From<FieldContent> for LeftRightBalance {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LeftRightBalance100 {
     Mask,
     Right,
@@ -3267,7 +3333,8 @@ impl From<FieldContent> for LeftRightBalance100 {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LengthType {
     Active,
     Idle,
@@ -3288,7 +3355,8 @@ impl From<FieldContent> for LengthType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DayOfWeek {
     Friday,
     Monday,
@@ -3319,7 +3387,8 @@ impl From<FieldContent> for DayOfWeek {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ConnectivityCapabilities {
     ActivityUpload,
     Ant,
@@ -3400,7 +3469,8 @@ impl From<FieldContent> for ConnectivityCapabilities {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WeatherReport {
     Current,
     DailyForecast,
@@ -3423,7 +3493,8 @@ impl From<FieldContent> for WeatherReport {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WeatherStatus {
     Clear,
     Cloudy,
@@ -3482,7 +3553,8 @@ impl From<FieldContent> for WeatherStatus {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WeatherSeverity {
     Advisory,
     Statement,
@@ -3509,7 +3581,8 @@ impl From<FieldContent> for WeatherSeverity {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WeatherSevereType {
     AirQuality,
     AirStagnation,
@@ -3696,7 +3769,8 @@ impl From<FieldContent> for WeatherSevereType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TimeIntoDay {
     UnknownValue(u64),
 }
@@ -3713,7 +3787,8 @@ impl From<FieldContent> for TimeIntoDay {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LocaltimeIntoDay {
     UnknownValue(u64),
 }
@@ -3730,7 +3805,8 @@ impl From<FieldContent> for LocaltimeIntoDay {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum StrokeType {
     Backhand,
     Forehand,
@@ -3759,7 +3835,8 @@ impl From<FieldContent> for StrokeType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BodyLocation {
     LeftAbdomen,
     LeftArm,
@@ -3856,7 +3933,8 @@ impl From<FieldContent> for BodyLocation {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SegmentLapStatus {
     End,
     Fail,
@@ -3877,7 +3955,8 @@ impl From<FieldContent> for SegmentLapStatus {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SegmentLeaderboardType {
     Challenger,
     ClubLeader,
@@ -3916,7 +3995,8 @@ impl From<FieldContent> for SegmentLeaderboardType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SegmentDeleteStatus {
     DeleteAll,
     DeleteOne,
@@ -3939,7 +4019,8 @@ impl From<FieldContent> for SegmentDeleteStatus {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SegmentSelectionType {
     Starred,
     Suggested,
@@ -3960,7 +4041,8 @@ impl From<FieldContent> for SegmentSelectionType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SourceType {
     Ant,
     Antplus,
@@ -3989,7 +4071,8 @@ impl From<FieldContent> for SourceType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LocalDeviceType {
     UnknownValue(u64),
 }
@@ -4006,7 +4089,8 @@ impl From<FieldContent> for LocalDeviceType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DisplayOrientation {
     Auto,
     Landscape,
@@ -4033,7 +4117,8 @@ impl From<FieldContent> for DisplayOrientation {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WorkoutEquipment {
     None,
     SwimFins,
@@ -4062,7 +4147,8 @@ impl From<FieldContent> for WorkoutEquipment {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WatchfaceMode {
     Analog,
     ConnectIq,
@@ -4087,7 +4173,8 @@ impl From<FieldContent> for WatchfaceMode {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DigitalWatchfaceLayout {
     Bold,
     Modern,
@@ -4110,7 +4197,8 @@ impl From<FieldContent> for DigitalWatchfaceLayout {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AnalogWatchfaceLayout {
     Minimal,
     Modern,
@@ -4133,7 +4221,8 @@ impl From<FieldContent> for AnalogWatchfaceLayout {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RiderPositionType {
     Seated,
     Standing,
@@ -4158,7 +4247,8 @@ impl From<FieldContent> for RiderPositionType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum PowerPhaseType {
     PowerPhaseArcLength,
     PowerPhaseCenter,
@@ -4183,7 +4273,8 @@ impl From<FieldContent> for PowerPhaseType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CameraEventType {
     PhotoTaken,
     VideoEnd,
@@ -4226,7 +4317,8 @@ impl From<FieldContent> for CameraEventType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SensorType {
     Accelerometer,
     Barometer,
@@ -4251,7 +4343,8 @@ impl From<FieldContent> for SensorType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BikeLightNetworkConfigType {
     Auto,
     HighVisibility,
@@ -4276,7 +4369,8 @@ impl From<FieldContent> for BikeLightNetworkConfigType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CommTimeoutType {
     ConnectionLost,
     ConnectionTimeout,
@@ -4301,7 +4395,8 @@ impl From<FieldContent> for CommTimeoutType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CameraOrientationType {
     CameraOrientation0,
     CameraOrientation180,
@@ -4326,7 +4421,8 @@ impl From<FieldContent> for CameraOrientationType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AttitudeStage {
     Aligning,
     Degraded,
@@ -4351,7 +4447,8 @@ impl From<FieldContent> for AttitudeStage {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AttitudeValidity {
     GpsInvalid,
     HwFail,
@@ -4394,7 +4491,8 @@ impl From<FieldContent> for AttitudeValidity {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AutoSyncFrequency {
     Frequent,
     Never,
@@ -4421,7 +4519,8 @@ impl From<FieldContent> for AutoSyncFrequency {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ExdLayout {
     FullQuarterSplit,
     FullScreen,
@@ -4454,7 +4553,8 @@ impl From<FieldContent> for ExdLayout {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ExdDisplayType {
     Balance,
     Bar,
@@ -4493,7 +4593,8 @@ impl From<FieldContent> for ExdDisplayType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ExdDataUnits {
     Bpm,
     Bradians,
@@ -4610,7 +4711,8 @@ impl From<FieldContent> for ExdDataUnits {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ExdQualifiers {
     Average,
     AverageLap,
@@ -4715,7 +4817,8 @@ impl From<FieldContent> for ExdQualifiers {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ExdDescriptors {
     AmbientPressure,
     AnaerobicTrainingEffect,
@@ -4926,7 +5029,8 @@ impl From<FieldContent> for ExdDescriptors {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AutoActivityDetect {
     Cycling,
     Elliptical,
@@ -4957,7 +5061,8 @@ impl From<FieldContent> for AutoActivityDetect {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SupportedExdScreenLayouts {
     FullQuarterSplit,
     FullScreen,
@@ -4990,7 +5095,8 @@ impl From<FieldContent> for SupportedExdScreenLayouts {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum FitBaseType {
     Byte,
     Enum,
@@ -5041,7 +5147,8 @@ impl From<FieldContent> for FitBaseType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TurnType {
     ArrivingIdx,
     ArrivingLeftIdx,
@@ -5134,7 +5241,8 @@ impl From<FieldContent> for TurnType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BikeLightBeamAngleMode {
     Auto,
     Manual,
@@ -5155,7 +5263,8 @@ impl From<FieldContent> for BikeLightBeamAngleMode {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum FitBaseUnit {
     Kilogram,
     Other,
@@ -5178,7 +5287,8 @@ impl From<FieldContent> for FitBaseUnit {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SetType {
     Active,
     Rest,
@@ -5199,7 +5309,8 @@ impl From<FieldContent> for SetType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ExerciseCategory {
     BenchPress,
     CalfRaise,
@@ -5284,7 +5395,8 @@ impl From<FieldContent> for ExerciseCategory {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum BenchPressExerciseName {
     AlternatingDumbbellChestPress,
     AlternatingDumbbellChestPressOnSwissBall,
@@ -5355,7 +5467,8 @@ impl From<FieldContent> for BenchPressExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CalfRaiseExerciseName {
     DonkeyCalfRaise,
     SeatedCalfRaise,
@@ -5414,7 +5527,8 @@ impl From<FieldContent> for CalfRaiseExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CardioExerciseName {
     BobAndWeaveCircle,
     CardioCoreCrawl,
@@ -5475,7 +5589,8 @@ impl From<FieldContent> for CardioExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CarryExerciseName {
     BarHolds,
     FarmersWalk,
@@ -5502,7 +5617,8 @@ impl From<FieldContent> for CarryExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ChopExerciseName {
     CablePullThrough,
     CableRotationalLift,
@@ -5565,7 +5681,8 @@ impl From<FieldContent> for ChopExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CoreExerciseName {
     AbdominalLegRotations,
     AbsJabs,
@@ -5728,7 +5845,8 @@ impl From<FieldContent> for CoreExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CrunchExerciseName {
     BicycleCrunch,
     CableCrunch,
@@ -5915,7 +6033,8 @@ impl From<FieldContent> for CrunchExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CurlExerciseName {
     AlternatingDumbbellBicepsCurl,
     AlternatingDumbbellBicepsCurlOnSwissBall,
@@ -6020,7 +6139,8 @@ impl From<FieldContent> for CurlExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DeadliftExerciseName {
     BarbellDeadlift,
     BarbellStraightLegDeadlift,
@@ -6075,7 +6195,8 @@ impl From<FieldContent> for DeadliftExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum FlyeExerciseName {
     ArmRotations,
     CableCrossover,
@@ -6112,7 +6233,8 @@ impl From<FieldContent> for FlyeExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum HipRaiseExerciseName {
     BarbellHipThrustOnFloor,
     BarbellHipThrustWithBench,
@@ -6229,7 +6351,8 @@ impl From<FieldContent> for HipRaiseExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum HipStabilityExerciseName {
     BandSideLyingLegRaise,
     DeadBug,
@@ -6314,7 +6437,8 @@ impl From<FieldContent> for HipStabilityExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum HipSwingExerciseName {
     SingleArmDumbbellSwing,
     SingleArmKettlebellSwing,
@@ -6337,7 +6461,8 @@ impl From<FieldContent> for HipSwingExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum HyperextensionExerciseName {
     BackExtensionWithOppositeArmAndLegReach,
     BaseRotations,
@@ -6434,7 +6559,8 @@ impl From<FieldContent> for HyperextensionExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LateralRaiseExerciseName {
     AlternatingLateralRaiseWithStaticHold,
     ArmCircles,
@@ -6519,7 +6645,8 @@ impl From<FieldContent> for LateralRaiseExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LegCurlExerciseName {
     GoodMorning,
     LegCurl,
@@ -6560,7 +6687,8 @@ impl From<FieldContent> for LegCurlExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LegRaiseExerciseName {
     HangingKneeRaise,
     HangingLegRaise,
@@ -6621,7 +6749,8 @@ impl From<FieldContent> for LegRaiseExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum LungeExerciseName {
     AlternatingBarbellForwardLunge,
     AlternatingDumbbellLungeWithReach,
@@ -6800,7 +6929,8 @@ impl From<FieldContent> for LungeExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum OlympicLiftExerciseName {
     BarbellHangPowerClean,
     BarbellHangPowerSnatch,
@@ -6859,7 +6989,8 @@ impl From<FieldContent> for OlympicLiftExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum PlankExerciseName {
     BearCrawl,
     BridgeOneLegBridge,
@@ -7146,7 +7277,8 @@ impl From<FieldContent> for PlankExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum PlyoExerciseName {
     AlternatingJumpLunge,
     BarbellJumpSquat,
@@ -7229,7 +7361,8 @@ impl From<FieldContent> for PlyoExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum PullUpExerciseName {
     BandAssistedChinUp,
     BandedPullUps,
@@ -7324,7 +7457,8 @@ impl From<FieldContent> for PullUpExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum PushUpExerciseName {
     AlternatingHandsMedicineBallPushUp,
     AlternatingStaggeredPushUp,
@@ -7499,7 +7633,8 @@ impl From<FieldContent> for PushUpExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RowExerciseName {
     BarbellStraightLegDeadliftToRow,
     CableRowStanding,
@@ -7584,7 +7719,8 @@ impl From<FieldContent> for RowExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ShoulderPressExerciseName {
     AlternatingDumbbellShoulderPress,
     ArnoldPress,
@@ -7649,7 +7785,8 @@ impl From<FieldContent> for ShoulderPressExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ShoulderStabilityExerciseName {
     BandExternalRotation,
     BandInternalRotation,
@@ -7732,7 +7869,8 @@ impl From<FieldContent> for ShoulderStabilityExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ShrugExerciseName {
     BarbellJumpShrug,
     BarbellShrug,
@@ -7783,7 +7921,8 @@ impl From<FieldContent> for ShrugExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SitUpExerciseName {
     AlternatingSitUp,
     BentKneeVUp,
@@ -7876,7 +8015,8 @@ impl From<FieldContent> for SitUpExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SquatExerciseName {
     BackSquatWithBodyBar,
     BackSquats,
@@ -8077,7 +8217,8 @@ impl From<FieldContent> for SquatExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TotalBodyExerciseName {
     Burpee,
     BurpeeBoxJump,
@@ -8120,7 +8261,8 @@ impl From<FieldContent> for TotalBodyExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TricepsExtensionExerciseName {
     BenchDip,
     BodyWeightDip,
@@ -8219,7 +8361,8 @@ impl From<FieldContent> for TricepsExtensionExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WarmUpExerciseName {
     AnkleCircles,
     AnkleDorsiflexionWithBand,
@@ -8298,7 +8441,8 @@ impl From<FieldContent> for WarmUpExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RunExerciseName {
     Jog,
     Run,
@@ -8323,7 +8467,8 @@ impl From<FieldContent> for RunExerciseName {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum WaterType {
     Custom,
     En13319,
@@ -8348,7 +8493,8 @@ impl From<FieldContent> for WaterType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TissueModelType {
     Zhl16C,
     UnknownValue(u64),
@@ -8367,7 +8513,8 @@ impl From<FieldContent> for TissueModelType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DiveGasStatus {
     BackupOnly,
     Disabled,
@@ -8390,7 +8537,8 @@ impl From<FieldContent> for DiveGasStatus {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DiveAlarmType {
     Depth,
     Time,
@@ -8411,7 +8559,8 @@ impl From<FieldContent> for DiveAlarmType {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DiveBacklightMode {
     AlwaysOn,
     AtDepth,
@@ -8432,7 +8581,8 @@ impl From<FieldContent> for DiveBacklightMode {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum FaveroProduct {
     AssiomaDuo,
     AssiomaUno,

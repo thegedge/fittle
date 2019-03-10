@@ -1,8 +1,11 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
+
 use crate::profile::enums::MesgNum;
 use crate::fields::FieldDefinition;
+
 mod accelerometer_data;
 mod activity;
 mod ant_channel_id;
@@ -175,7 +178,9 @@ use self::workout_session::WorkoutSession;
 use self::workout_step::WorkoutStep;
 use self::zones_target::ZonesTarget;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
+#[serde(tag = "message_type")]
+#[serde(rename_all = "snake_case")]
 pub enum Message {
     AccelerometerData(AccelerometerData),
     Activity(Activity),

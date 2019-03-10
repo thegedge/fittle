@@ -1,19 +1,32 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct OneDSensorCalibration {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sensor_type: Option<enums::SensorType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     calibration_factor: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     calibration_divisor: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     level_shift: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     offset_cal: Option<i32>,
+
 }
 
 impl OneDSensorCalibration {

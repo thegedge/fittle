@@ -1,28 +1,59 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct WorkoutStep {
+    #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     wkt_step_name: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     duration_type: Option<enums::WktStepDuration>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     duration_value: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     target_type: Option<enums::WktStepTarget>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     target_value: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     custom_target_value_low: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     custom_target_value_high: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     intensity: Option<enums::Intensity>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     notes: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     equipment: Option<enums::WorkoutEquipment>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     exercise_category: Option<enums::ExerciseCategory>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     exercise_name: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     exercise_weight: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     weight_display_unit: Option<enums::FitBaseUnit>,
+
 }
 
 impl WorkoutStep {

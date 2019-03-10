@@ -1,20 +1,35 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct VideoClip {
+    #[serde(skip_serializing_if = "Option::is_none")]
     clip_number: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     start_timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     start_timestamp_ms: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     end_timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     end_timestamp_ms: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     clip_start: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     clip_end: Option<u32>,
+
 }
 
 impl VideoClip {

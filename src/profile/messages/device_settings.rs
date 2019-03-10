@@ -1,36 +1,83 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct DeviceSettings {
+    #[serde(skip_serializing_if = "Option::is_none")]
     active_time_zone: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     utc_offset: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     time_offset: Option<Vec<u32>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     time_mode: Option<Vec<enums::TimeMode>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     time_zone_offset: Option<Vec<i8>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     backlight_mode: Option<enums::BacklightMode>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     activity_tracker_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     clock_time: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pages_enabled: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     move_alert_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     date_mode: Option<enums::DateMode>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     display_orientation: Option<enums::DisplayOrientation>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     mounting_side: Option<enums::Side>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     default_page: Option<Vec<u16>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     autosync_min_steps: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     autosync_min_time: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     lactate_threshold_autodetect_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     ble_auto_upload_enabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     auto_sync_frequency: Option<enums::AutoSyncFrequency>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     auto_activity_detect: Option<enums::AutoActivityDetect>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     number_of_screens: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     smart_notification_display_orientation: Option<enums::DisplayOrientation>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     tap_interface: Option<enums::Switch>,
+
 }
 
 impl DeviceSettings {

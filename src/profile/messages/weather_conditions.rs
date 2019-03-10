@@ -1,29 +1,62 @@
 // DO NOT EDIT -- generated code
 
 use byteorder::{ByteOrder, ReadBytesExt};
+use serde::Serialize;
 
 #[allow(unused_imports)]
 use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct WeatherConditions {
+    #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     weather_report: Option<enums::WeatherReport>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     temperature: Option<i8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     condition: Option<enums::WeatherStatus>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     wind_direction: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     wind_speed: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     precipitation_probability: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     temperature_feels_like: Option<i8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     relative_humidity: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     location: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     observed_at_time: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     observed_location_lat: Option<i32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     observed_location_long: Option<i32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     day_of_week: Option<enums::DayOfWeek>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     high_temperature: Option<i8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     low_temperature: Option<i8>,
+
 }
 
 impl WeatherConditions {
