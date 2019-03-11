@@ -9,11 +9,9 @@ use serde::Serialize;
 
 use crate::profile::enums::MesgNum;
 use crate::fields::FieldDefinition;
-
 {{#each .}}
 mod {{module}};
 {{~/each}}
-
 {{#each .}}
 use self::{{module}}::{{name}};
 {{~/each}}

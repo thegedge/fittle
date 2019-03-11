@@ -66,6 +66,7 @@ struct FittleEnumVariant {
 #[derive(Clone, Serialize)]
 struct FittleEnum {
     name: String,
+    module: String,
     base_type: String,
     variants: Vec<FittleEnumVariant>,
     variants_sorted_by_value: Vec<FittleEnumVariant>,
@@ -92,15 +93,23 @@ fn main() -> Result<(), Error> {
     renderer.set_strict_mode(true);
     renderer.register_escape_fn(str::to_owned);
     renderer.register_template_string("enum", include_str!("../templates/enum.handlebars"))?;
-    renderer.register_template_string("enums", include_str!("../templates/enums.handlebars"))?;
+    renderer.register_template_string("enums_mod", include_str!("../templates/enums_mod.handlebars"))?;
     renderer.register_template_string("message", include_str!("../templates/message.handlebars"))?;
     renderer.register_template_string("messages_mod", include_str!("../templates/messages_mod.handlebars"))?;
 
     let mut workbook = open_workbook(env!("FIT_PROFILE_PATH")).expect("cannot open fit profile xlsx");
 
     let enums = enums(&mut workbook)?;
-    let enums_stream = File::create(format!("{}/enums.rs", OUTPUT_DIR)).expect("cannot create enums.rs");
-    renderer.render_to_write("enums", &enums, enums_stream)?;
+    let enums_stream = File::create(format!("{}/enums/mod.rs", OUTPUT_DIR)).expect("cannot create enums/mod.rs");
+    renderer.render_to_write("enums_mod", &enums, enums_stream)?;
+
+    for enum_ in enums.iter() {
+        let enum_stream =
+            File::create(format!("{}/enums/{}.rs", OUTPUT_DIR, enum_.module))
+                .expect("cannot create enums/<enum>.rs");
+
+        renderer.render_to_write("enum", &enum_, enum_stream)?;
+    }
 
     let messages = messages(&mut workbook)?;
     let messages_stream = File::create(format!("{}/messages/mod.rs", OUTPUT_DIR)).expect("cannot create messages/mod.rs");
@@ -203,6 +212,7 @@ fn enums<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleEnum>, Erro
             v => {
                 enums.push(FittleEnum {
                     name: to_pascal_case(v),
+                    module: v.to_owned(),
                     base_type: field_content_type(base_type).to_owned(),
                     variants,
                     variants_sorted_by_value,

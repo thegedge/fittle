@@ -1,0 +1,7 @@
+// DO NOT EDIT -- generated code
+{{#each .}}
+mod {{module}};
+{{~/each}}
+{{#each .}}
+pub use self::{{module}}::{{name}};
+{{~/each}}

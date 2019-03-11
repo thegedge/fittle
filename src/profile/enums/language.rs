@@ -1,0 +1,98 @@
+use crate::fields::FieldContent;
+use serde::Serialize;
+
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Language {
+    Arabic,
+    BrazilianPortuguese,
+    Bulgarian,
+    Burmese,
+    Chinese,
+    Croatian,
+    Custom,
+    Czech,
+    Danish,
+    Dutch,
+    English,
+    Farsi,
+    Finnish,
+    French,
+    German,
+    Greek,
+    Hebrew,
+    Hungarian,
+    Indonesian,
+    Italian,
+    Japanese,
+    Korean,
+    Latvian,
+    Malaysian,
+    Mongolian,
+    Norwegian,
+    Polish,
+    Portuguese,
+    Romanian,
+    Russian,
+    Slovakian,
+    Slovenian,
+    Spanish,
+    Swedish,
+    Taiwanese,
+    Thai,
+    Turkish,
+    Ukrainian,
+    Vietnamese,
+    UnknownValue(u64),
+}
+
+impl From<FieldContent> for Language {
+    fn from(field: FieldContent) -> Self {
+        if let FieldContent::Enum(enum_value) = field {
+            match enum_value {
+                0 => Language::English,
+                1 => Language::French,
+                2 => Language::Italian,
+                3 => Language::German,
+                4 => Language::Spanish,
+                5 => Language::Croatian,
+                6 => Language::Czech,
+                7 => Language::Danish,
+                8 => Language::Dutch,
+                9 => Language::Finnish,
+                10 => Language::Greek,
+                11 => Language::Hungarian,
+                12 => Language::Norwegian,
+                13 => Language::Polish,
+                14 => Language::Portuguese,
+                15 => Language::Slovakian,
+                16 => Language::Slovenian,
+                17 => Language::Swedish,
+                18 => Language::Russian,
+                19 => Language::Turkish,
+                20 => Language::Latvian,
+                21 => Language::Ukrainian,
+                22 => Language::Arabic,
+                23 => Language::Farsi,
+                24 => Language::Bulgarian,
+                25 => Language::Romanian,
+                26 => Language::Chinese,
+                27 => Language::Japanese,
+                28 => Language::Korean,
+                29 => Language::Taiwanese,
+                30 => Language::Thai,
+                31 => Language::Hebrew,
+                32 => Language::BrazilianPortuguese,
+                33 => Language::Indonesian,
+                34 => Language::Malaysian,
+                35 => Language::Vietnamese,
+                36 => Language::Burmese,
+                37 => Language::Mongolian,
+                254 => Language::Custom,
+                n => Language::UnknownValue(n as u64),
+            }
+        } else {
+          panic!("can't convert Language to {:?}", field);
+        }
+    }
+}

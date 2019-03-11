@@ -166,7 +166,7 @@ macro_rules! into_impl {
                         FieldContent::$enums(v) => v,
                     )*
                     v => panic!("cannot convert {:?} into {}", v, stringify!($into_type)),
-                }) 
+                })
             }
         }
 

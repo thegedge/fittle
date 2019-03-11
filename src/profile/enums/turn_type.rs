@@ -1,0 +1,96 @@
+use crate::fields::FieldContent;
+use serde::Serialize;
+
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TurnType {
+    ArrivingIdx,
+    ArrivingLeftIdx,
+    ArrivingRightIdx,
+    ArrivingViaIdx,
+    ArrivingViaLeftIdx,
+    ArrivingViaRightIdx,
+    BearKeepLeftIdx,
+    BearKeepRightIdx,
+    ContinueIdx,
+    ExitLeftIdx,
+    ExitRightIdx,
+    FerryIdx,
+    IconIdxCnt,
+    IconInvIdx,
+    Roundabout135Idx,
+    Roundabout180Idx,
+    Roundabout225Idx,
+    Roundabout270Idx,
+    Roundabout315Idx,
+    Roundabout360Idx,
+    Roundabout45Idx,
+    Roundabout90Idx,
+    RoundaboutGenericIdx,
+    RoundaboutNeg135Idx,
+    RoundaboutNeg180Idx,
+    RoundaboutNeg225Idx,
+    RoundaboutNeg270Idx,
+    RoundaboutNeg315Idx,
+    RoundaboutNeg360Idx,
+    RoundaboutNeg45Idx,
+    RoundaboutNeg90Idx,
+    RoundaboutNegGenericIdx,
+    SharpTurnLeftIdx,
+    SharpTurnRightIdx,
+    TurnLeftIdx,
+    TurnRightIdx,
+    UturnLeftIdx,
+    UturnRightIdx,
+    UnknownValue(u64),
+}
+
+impl From<FieldContent> for TurnType {
+    fn from(field: FieldContent) -> Self {
+        if let FieldContent::Enum(enum_value) = field {
+            match enum_value {
+                0 => TurnType::ArrivingIdx,
+                1 => TurnType::ArrivingLeftIdx,
+                2 => TurnType::ArrivingRightIdx,
+                3 => TurnType::ArrivingViaIdx,
+                4 => TurnType::ArrivingViaLeftIdx,
+                5 => TurnType::ArrivingViaRightIdx,
+                6 => TurnType::BearKeepLeftIdx,
+                7 => TurnType::BearKeepRightIdx,
+                8 => TurnType::ContinueIdx,
+                9 => TurnType::ExitLeftIdx,
+                10 => TurnType::ExitRightIdx,
+                11 => TurnType::FerryIdx,
+                12 => TurnType::Roundabout45Idx,
+                13 => TurnType::Roundabout90Idx,
+                14 => TurnType::Roundabout135Idx,
+                15 => TurnType::Roundabout180Idx,
+                16 => TurnType::Roundabout225Idx,
+                17 => TurnType::Roundabout270Idx,
+                18 => TurnType::Roundabout315Idx,
+                19 => TurnType::Roundabout360Idx,
+                20 => TurnType::RoundaboutNeg45Idx,
+                21 => TurnType::RoundaboutNeg90Idx,
+                22 => TurnType::RoundaboutNeg135Idx,
+                23 => TurnType::RoundaboutNeg180Idx,
+                24 => TurnType::RoundaboutNeg225Idx,
+                25 => TurnType::RoundaboutNeg270Idx,
+                26 => TurnType::RoundaboutNeg315Idx,
+                27 => TurnType::RoundaboutNeg360Idx,
+                28 => TurnType::RoundaboutGenericIdx,
+                29 => TurnType::RoundaboutNegGenericIdx,
+                30 => TurnType::SharpTurnLeftIdx,
+                31 => TurnType::SharpTurnRightIdx,
+                32 => TurnType::TurnLeftIdx,
+                33 => TurnType::TurnRightIdx,
+                34 => TurnType::UturnLeftIdx,
+                35 => TurnType::UturnRightIdx,
+                36 => TurnType::IconInvIdx,
+                37 => TurnType::IconIdxCnt,
+                n => TurnType::UnknownValue(n as u64),
+            }
+        } else {
+          panic!("can't convert TurnType to {:?}", field);
+        }
+    }
+}

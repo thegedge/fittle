@@ -10,7 +10,6 @@ use serde::Serialize;
 use crate::profile::enums::MesgNum;
 use crate::fields::FieldDefinition;
 
-
 mod accelerometer_data;
 mod activity;
 mod ant_channel_id;
@@ -96,7 +95,6 @@ mod workout;
 mod workout_session;
 mod workout_step;
 mod zones_target;
-
 
 use self::accelerometer_data::AccelerometerData;
 use self::activity::Activity;

@@ -1,0 +1,96 @@
+use crate::fields::FieldContent;
+use serde::Serialize;
+
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SitUpExerciseName {
+    AlternatingSitUp,
+    BentKneeVUp,
+    ButterflySitUp,
+    CrossPunchRollUp,
+    CrossedArmsSitUp,
+    GetUpSitUp,
+    HoveringSitUp,
+    KettlebellSitUp,
+    MedicineBallAlternatingVUp,
+    MedicineBallSitUp,
+    MedicineBallVUp,
+    ModifiedSitUp,
+    NegativeSitUp,
+    OneArmFullSitUp,
+    RecliningCircle,
+    ReverseCurlUp,
+    SingleLegSwissBallJackknife,
+    SitUp,
+    TheTeaser,
+    TheTeaserWeighted,
+    ThreePartRollDown,
+    VUp,
+    WeightedAlternatingSitUp,
+    WeightedBentKneeVUp,
+    WeightedButterflySitup,
+    WeightedCrossPunchRollUp,
+    WeightedCrossedArmsSitUp,
+    WeightedGetUpSitUp,
+    WeightedHoveringSitUp,
+    WeightedRecliningCircle,
+    WeightedReverseCurlUp,
+    WeightedRussianTwistOnSwissBall,
+    WeightedSingleLegSwissBallJackknife,
+    WeightedSitUp,
+    WeightedThreePartRollDown,
+    WeightedVUp,
+    WeightedXAbs,
+    XAbs,
+    UnknownValue(u64),
+}
+
+impl From<FieldContent> for SitUpExerciseName {
+    fn from(field: FieldContent) -> Self {
+        if let FieldContent::UnsignedInt16(enum_value) = field {
+            match enum_value {
+                0 => SitUpExerciseName::AlternatingSitUp,
+                1 => SitUpExerciseName::WeightedAlternatingSitUp,
+                2 => SitUpExerciseName::BentKneeVUp,
+                3 => SitUpExerciseName::WeightedBentKneeVUp,
+                4 => SitUpExerciseName::ButterflySitUp,
+                5 => SitUpExerciseName::WeightedButterflySitup,
+                6 => SitUpExerciseName::CrossPunchRollUp,
+                7 => SitUpExerciseName::WeightedCrossPunchRollUp,
+                8 => SitUpExerciseName::CrossedArmsSitUp,
+                9 => SitUpExerciseName::WeightedCrossedArmsSitUp,
+                10 => SitUpExerciseName::GetUpSitUp,
+                11 => SitUpExerciseName::WeightedGetUpSitUp,
+                12 => SitUpExerciseName::HoveringSitUp,
+                13 => SitUpExerciseName::WeightedHoveringSitUp,
+                14 => SitUpExerciseName::KettlebellSitUp,
+                15 => SitUpExerciseName::MedicineBallAlternatingVUp,
+                16 => SitUpExerciseName::MedicineBallSitUp,
+                17 => SitUpExerciseName::MedicineBallVUp,
+                18 => SitUpExerciseName::ModifiedSitUp,
+                19 => SitUpExerciseName::NegativeSitUp,
+                20 => SitUpExerciseName::OneArmFullSitUp,
+                21 => SitUpExerciseName::RecliningCircle,
+                22 => SitUpExerciseName::WeightedRecliningCircle,
+                23 => SitUpExerciseName::ReverseCurlUp,
+                24 => SitUpExerciseName::WeightedReverseCurlUp,
+                25 => SitUpExerciseName::SingleLegSwissBallJackknife,
+                26 => SitUpExerciseName::WeightedSingleLegSwissBallJackknife,
+                27 => SitUpExerciseName::TheTeaser,
+                28 => SitUpExerciseName::TheTeaserWeighted,
+                29 => SitUpExerciseName::ThreePartRollDown,
+                30 => SitUpExerciseName::WeightedThreePartRollDown,
+                31 => SitUpExerciseName::VUp,
+                32 => SitUpExerciseName::WeightedVUp,
+                33 => SitUpExerciseName::WeightedRussianTwistOnSwissBall,
+                34 => SitUpExerciseName::WeightedSitUp,
+                35 => SitUpExerciseName::XAbs,
+                36 => SitUpExerciseName::WeightedXAbs,
+                37 => SitUpExerciseName::SitUp,
+                n => SitUpExerciseName::UnknownValue(n as u64),
+            }
+        } else {
+          panic!("can't convert SitUpExerciseName to {:?}", field);
+        }
+    }
+}

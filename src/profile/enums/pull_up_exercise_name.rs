@@ -1,0 +1,98 @@
+use crate::fields::FieldContent;
+use serde::Serialize;
+
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PullUpExerciseName {
+    BandAssistedChinUp,
+    BandedPullUps,
+    BurpeePullUp,
+    CloseGripChinUp,
+    CloseGripLatPulldown,
+    CrossoverChinUp,
+    EzBarPullover,
+    HangingHurdle,
+    JumpingPullUps,
+    KippingPullUp,
+    KneelingLatPulldown,
+    KneelingUnderhandGripLatPulldown,
+    LPullUp,
+    LatPulldown,
+    MixedGripChinUp,
+    MixedGripPullUp,
+    PullUp,
+    ReverseGripPulldown,
+    StandingCablePullover,
+    StraightArmPulldown,
+    SuspendedChinUp,
+    SwissBallEzBarPullover,
+    ThirtyDegreeLatPulldown,
+    TowelPullUp,
+    WeightedBurpeePullUp,
+    WeightedCloseGripChinUp,
+    WeightedCrossoverChinUp,
+    WeightedHangingHurdle,
+    WeightedJumpingPullUps,
+    WeightedKippingPullUp,
+    WeightedLPullUp,
+    WeightedMixedGripChinUp,
+    WeightedMixedGripPullUp,
+    WeightedPullUp,
+    WeightedSuspendedChinUp,
+    WeightedTowelPullUp,
+    WeightedWideGripPullUp,
+    WideGripLatPulldown,
+    WideGripPullUp,
+    UnknownValue(u64),
+}
+
+impl From<FieldContent> for PullUpExerciseName {
+    fn from(field: FieldContent) -> Self {
+        if let FieldContent::UnsignedInt16(enum_value) = field {
+            match enum_value {
+                0 => PullUpExerciseName::BandedPullUps,
+                1 => PullUpExerciseName::ThirtyDegreeLatPulldown,
+                2 => PullUpExerciseName::BandAssistedChinUp,
+                3 => PullUpExerciseName::CloseGripChinUp,
+                4 => PullUpExerciseName::WeightedCloseGripChinUp,
+                5 => PullUpExerciseName::CloseGripLatPulldown,
+                6 => PullUpExerciseName::CrossoverChinUp,
+                7 => PullUpExerciseName::WeightedCrossoverChinUp,
+                8 => PullUpExerciseName::EzBarPullover,
+                9 => PullUpExerciseName::HangingHurdle,
+                10 => PullUpExerciseName::WeightedHangingHurdle,
+                11 => PullUpExerciseName::KneelingLatPulldown,
+                12 => PullUpExerciseName::KneelingUnderhandGripLatPulldown,
+                13 => PullUpExerciseName::LatPulldown,
+                14 => PullUpExerciseName::MixedGripChinUp,
+                15 => PullUpExerciseName::WeightedMixedGripChinUp,
+                16 => PullUpExerciseName::MixedGripPullUp,
+                17 => PullUpExerciseName::WeightedMixedGripPullUp,
+                18 => PullUpExerciseName::ReverseGripPulldown,
+                19 => PullUpExerciseName::StandingCablePullover,
+                20 => PullUpExerciseName::StraightArmPulldown,
+                21 => PullUpExerciseName::SwissBallEzBarPullover,
+                22 => PullUpExerciseName::TowelPullUp,
+                23 => PullUpExerciseName::WeightedTowelPullUp,
+                24 => PullUpExerciseName::WeightedPullUp,
+                25 => PullUpExerciseName::WideGripLatPulldown,
+                26 => PullUpExerciseName::WideGripPullUp,
+                27 => PullUpExerciseName::WeightedWideGripPullUp,
+                28 => PullUpExerciseName::BurpeePullUp,
+                29 => PullUpExerciseName::WeightedBurpeePullUp,
+                30 => PullUpExerciseName::JumpingPullUps,
+                31 => PullUpExerciseName::WeightedJumpingPullUps,
+                32 => PullUpExerciseName::KippingPullUp,
+                33 => PullUpExerciseName::WeightedKippingPullUp,
+                34 => PullUpExerciseName::LPullUp,
+                35 => PullUpExerciseName::WeightedLPullUp,
+                36 => PullUpExerciseName::SuspendedChinUp,
+                37 => PullUpExerciseName::WeightedSuspendedChinUp,
+                38 => PullUpExerciseName::PullUp,
+                n => PullUpExerciseName::UnknownValue(n as u64),
+            }
+        } else {
+          panic!("can't convert PullUpExerciseName to {:?}", field);
+        }
+    }
+}
