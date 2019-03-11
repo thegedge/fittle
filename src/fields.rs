@@ -153,9 +153,9 @@ pub enum FieldContent {
     UnsignedInt64z(u64),
 }
 
-macro_rules! into_impl {
+macro_rules! from_impl {
     ( $into_type:ty, $( $enums:tt )|+ ) => {
-        into_impl!($into_type, $($enums)|+, |v| <$into_type>::from(v));
+        from_impl!($into_type, $($enums)|+, |v| <$into_type>::from(v));
     };
 
     ( $into_type:ty, $( $enums:tt )|+, $conversion:expr ) => {
@@ -169,30 +169,19 @@ macro_rules! into_impl {
                 })
             }
         }
-
-        impl From<Field> for $into_type {
-            fn from(f: Field) -> Self {
-                ($conversion)(match f {
-                    $(
-                        Field::One(FieldContent::$enums(v)) => v,
-                    )*
-                    v => panic!("cannot convert {:?} into {}", v, stringify!($into_type)),
-                })
-            }
-        }
     };
 }
 
-into_impl!(bool, Enum | UnsignedInt8, |v| v != 0);
-into_impl!(u8, Enum | UnsignedInt8 | UnsignedInt8z);
-into_impl!(u16, UnsignedInt16 | UnsignedInt16z);
-into_impl!(u32, UnsignedInt32 | UnsignedInt32z);
-into_impl!(u64, UnsignedInt64 | UnsignedInt64z);
-into_impl!(i8, SignedInt8);
-into_impl!(i16, SignedInt16);
-into_impl!(i32, SignedInt32);
-into_impl!(i64, SignedInt64);
-into_impl!(f32, Float32);
-into_impl!(f64, Float64);
-into_impl!(String, String);
-into_impl!(Vec<u8>, ByteArray);
+from_impl!(bool, Enum | UnsignedInt8, |v| v != 0);
+from_impl!(u8, Enum | UnsignedInt8 | UnsignedInt8z);
+from_impl!(u16, UnsignedInt16 | UnsignedInt16z);
+from_impl!(u32, UnsignedInt32 | UnsignedInt32z);
+from_impl!(u64, UnsignedInt64 | UnsignedInt64z);
+from_impl!(i8, SignedInt8);
+from_impl!(i16, SignedInt16);
+from_impl!(i32, SignedInt32);
+from_impl!(i64, SignedInt64);
+from_impl!(f32, Float32);
+from_impl!(f64, Float64);
+from_impl!(String, String);
+from_impl!(Vec<u8>, ByteArray);
