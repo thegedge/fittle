@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,51 +14,50 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct FieldDescription {
     #[serde(skip_serializing_if = "Option::is_none")]
+    accumulate: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    array: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    bits: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    components: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     developer_data_index: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     field_definition_number: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    fit_base_type_id: Option<enums::FitBaseType>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     field_name: Option<Vec<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    array: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    components: Option<String>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    scale: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    offset: Option<i8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    units: Option<Vec<String>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    bits: Option<String>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    accumulate: Option<String>,
+    fit_base_type_id: Option<enums::FitBaseType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     fit_base_unit_id: Option<enums::FitBaseUnit>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
+    native_field_num: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     native_mesg_num: Option<enums::MesgNum>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    native_field_num: Option<u8>,
+    offset: Option<i8>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    scale: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    units: Option<Vec<String>>,
 }
 
 impl FieldDescription {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -81,7 +84,7 @@ impl FieldDescription {
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

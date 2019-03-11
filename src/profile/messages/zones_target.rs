@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,24 +14,23 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct ZonesTarget {
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_heart_rate: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    threshold_heart_rate: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     functional_threshold_power: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     hr_calc_type: Option<enums::HrZoneCalc>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
+    max_heart_rate: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pwr_calc_type: Option<enums::PwrZoneCalc>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    threshold_heart_rate: Option<u8>,
 }
 
 impl ZonesTarget {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -45,7 +48,7 @@ impl ZonesTarget {
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -11,11 +15,10 @@ use crate::fields::FieldDefinition;
 pub struct Hrv {
     #[serde(skip_serializing_if = "Option::is_none")]
     time: Option<Vec<u16>>,
-
 }
 
 impl Hrv {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -29,7 +32,7 @@ impl Hrv {
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

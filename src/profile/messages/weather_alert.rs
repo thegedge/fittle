@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,27 +14,26 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct WeatherAlert {
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    report_id: Option<String>,
+    expire_time: Option<enums::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     issue_time: Option<enums::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    expire_time: Option<enums::DateTime>,
+    report_id: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     severity: Option<enums::WeatherSeverity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    type_: Option<enums::WeatherSevereType>,
+    timestamp: Option<enums::DateTime>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    type_: Option<enums::WeatherSevereType>,
 }
 
 impl WeatherAlert {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -40,16 +43,16 @@ impl WeatherAlert {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
                 0 => msg.report_id = content.one().map(<String>::from),
                 1 => msg.issue_time = content.one().map(<enums::DateTime>::from),
                 2 => msg.expire_time = content.one().map(<enums::DateTime>::from),
                 3 => msg.severity = content.one().map(<enums::WeatherSeverity>::from),
                 4 => msg.type_ = content.one().map(<enums::WeatherSevereType>::from),
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,42 +14,41 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct ExdDataConceptConfiguration {
     #[serde(skip_serializing_if = "Option::is_none")]
-    screen_index: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     concept_field: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    field_id: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     concept_index: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    data_page: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     concept_key: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    scaling: Option<u8>,
+    data_page: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     data_units: Option<enums::ExdDataUnits>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    qualifier: Option<enums::ExdQualifiers>,
+    descriptor: Option<enums::ExdDescriptors>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    descriptor: Option<enums::ExdDescriptors>,
+    field_id: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     is_signed: Option<bool>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    qualifier: Option<enums::ExdQualifiers>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    scaling: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    screen_index: Option<u8>,
 }
 
 impl ExdDataConceptConfiguration {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -69,7 +72,7 @@ impl ExdDataConceptConfiguration {
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

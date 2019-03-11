@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,18 +14,17 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct Video {
     #[serde(skip_serializing_if = "Option::is_none")]
-    url: Option<String>,
+    duration: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     hosting_provider: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    duration: Option<u32>,
-
+    url: Option<String>,
 }
 
 impl Video {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -37,7 +40,7 @@ impl Video {
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

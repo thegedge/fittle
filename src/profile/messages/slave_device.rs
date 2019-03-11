@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -14,11 +18,10 @@ pub struct SlaveDevice {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     product: Option<u16>,
-
 }
 
 impl SlaveDevice {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -33,7 +36,7 @@ impl SlaveDevice {
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

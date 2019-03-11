@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,13 +14,16 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct FileId {
     #[serde(skip_serializing_if = "Option::is_none")]
-    type_: Option<enums::File>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     manufacturer: Option<enums::Manufacturer>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
+    number: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     product: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    product_name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     serial_number: Option<u32>,
@@ -25,15 +32,11 @@ pub struct FileId {
     time_created: Option<enums::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    number: Option<u16>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    product_name: Option<String>,
-
+    type_: Option<enums::File>,
 }
 
 impl FileId {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -53,7 +56,7 @@ impl FileId {
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

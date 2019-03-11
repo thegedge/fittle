@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,48 +14,47 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct Event {
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    event: Option<enums::Event>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    event_type: Option<enums::EventType>,
+    data: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     data16: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    data: Option<u32>,
+    device_index: Option<enums::DeviceIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    event: Option<enums::Event>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     event_group: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    score: Option<u16>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    opponent_score: Option<u16>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    front_gear_num: Option<u8>,
+    event_type: Option<enums::EventType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     front_gear: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    rear_gear_num: Option<u8>,
+    front_gear_num: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    opponent_score: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     rear_gear: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    device_index: Option<enums::DeviceIndex>,
+    rear_gear_num: Option<u8>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    score: Option<u16>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    timestamp: Option<enums::DateTime>,
 }
 
 impl Event {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -61,7 +64,6 @@ impl Event {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
                 0 => msg.event = content.one().map(<enums::Event>::from),
                 1 => msg.event_type = content.one().map(<enums::EventType>::from),
                 2 => msg.data16 = content.one().map(<u16>::from),
@@ -74,10 +76,11 @@ impl Event {
                 11 => msg.rear_gear_num = content.one().map(<u8>::from),
                 12 => msg.rear_gear = content.one().map(<u8>::from),
                 13 => msg.device_index = content.one().map(<enums::DeviceIndex>::from),
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

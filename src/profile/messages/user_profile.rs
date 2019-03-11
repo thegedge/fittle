@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,37 +14,10 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct UserProfile {
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    friendly_name: Option<String>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    gender: Option<enums::Gender>,
+    activity_class: Option<enums::ActivityClass>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     age: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    height: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    weight: Option<u16>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    language: Option<enums::Language>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    elev_setting: Option<enums::DisplayMeasure>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    weight_setting: Option<enums::DisplayMeasure>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    resting_heart_rate: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    default_max_running_heart_rate: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     default_max_biking_heart_rate: Option<u8>,
@@ -49,40 +26,64 @@ pub struct UserProfile {
     default_max_heart_rate: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    hr_setting: Option<enums::DisplayHeart>,
+    default_max_running_heart_rate: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    speed_setting: Option<enums::DisplayMeasure>,
+    depth_setting: Option<enums::DisplayMeasure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     dist_setting: Option<enums::DisplayMeasure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    power_setting: Option<enums::DisplayPower>,
+    dive_count: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    activity_class: Option<enums::ActivityClass>,
+    elev_setting: Option<enums::DisplayMeasure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    position_setting: Option<enums::DisplayPosition>,
+    friendly_name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    temperature_setting: Option<enums::DisplayMeasure>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    local_id: Option<enums::UserLocalId>,
+    gender: Option<enums::Gender>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     global_id: Option<Vec<u8>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    wake_time: Option<enums::LocaltimeIntoDay>,
+    height: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    height_setting: Option<enums::DisplayMeasure>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    hr_setting: Option<enums::DisplayHeart>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    language: Option<enums::Language>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    local_id: Option<enums::UserLocalId>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    message_index: Option<enums::MessageIndex>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    position_setting: Option<enums::DisplayPosition>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    power_setting: Option<enums::DisplayPower>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    resting_heart_rate: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     sleep_time: Option<enums::LocaltimeIntoDay>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    height_setting: Option<enums::DisplayMeasure>,
+    speed_setting: Option<enums::DisplayMeasure>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    temperature_setting: Option<enums::DisplayMeasure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     user_running_step_length: Option<u16>,
@@ -91,15 +92,17 @@ pub struct UserProfile {
     user_walking_step_length: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    depth_setting: Option<enums::DisplayMeasure>,
+    wake_time: Option<enums::LocaltimeIntoDay>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    dive_count: Option<u32>,
+    weight: Option<u16>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    weight_setting: Option<enums::DisplayMeasure>,
 }
 
 impl UserProfile {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -109,7 +112,6 @@ impl UserProfile {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
                 0 => msg.friendly_name = content.one().map(<String>::from),
                 1 => msg.gender = content.one().map(<enums::Gender>::from),
                 2 => msg.age = content.one().map(<u8>::from),
@@ -138,10 +140,11 @@ impl UserProfile {
                 32 => msg.user_walking_step_length = content.one().map(<u16>::from),
                 47 => msg.depth_setting = content.one().map(<enums::DisplayMeasure>::from),
                 49 => msg.dive_count = content.one().map(<u32>::from),
+                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

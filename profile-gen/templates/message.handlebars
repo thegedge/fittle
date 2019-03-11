@@ -12,18 +12,14 @@ use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
-pub struct SpeedZone {
+pub struct {{name}} {
+{{~#each fields}}
     #[serde(skip_serializing_if = "Option::is_none")]
-    high_value: Option<u16>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    name: Option<String>,
+    {{name}}: Option<{{rust_type}}>,
+{{/each~}}
 }
 
-impl SpeedZone {
+impl {{name}} {
     pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
@@ -34,9 +30,9 @@ impl SpeedZone {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.high_value = content.one().map(<u16>::from),
-                1 => msg.name = content.one().map(<String>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+            {{~#each fields_sorted_by_number}}
+                {{number}} => msg.{{name}} = {{conversion_function}},
+            {{~/each}}
                 _ => (),
             };
         }

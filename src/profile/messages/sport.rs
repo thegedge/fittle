@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,18 +14,17 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct Sport {
     #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sport: Option<enums::Sport>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     sub_sport: Option<enums::SubSport>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    name: Option<String>,
-
 }
 
 impl Sport {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -37,7 +40,7 @@ impl Sport {
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

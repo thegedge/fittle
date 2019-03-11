@@ -1,0 +1,24 @@
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum {{name}} {
+{{~#each variants}}
+    {{name}},
+{{~/each}}
+    UnknownValue(u64),
+}
+
+impl From<FieldContent> for {{name}} {
+    fn from(field: FieldContent) -> Self {
+        if let FieldContent::{{base_type}}(enum_value) = field {
+            match enum_value {
+{{~#each variants_sorted_by_value}}
+                {{value}} => {{../name}}::{{name}},
+{{~/each}}
+                n => {{name}}::UnknownValue(n as u64),
+            }
+        } else {
+          panic!("can't convert {{name}} to {:?}", field);
+        }
+    }
+}
+

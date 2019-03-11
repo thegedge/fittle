@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,19 +14,10 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct Activity {
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    total_timer_time: Option<u32>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    num_sessions: Option<u16>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    type_: Option<enums::Activity>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     event: Option<enums::Event>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    event_group: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     event_type: Option<enums::EventType>,
@@ -31,12 +26,20 @@ pub struct Activity {
     local_timestamp: Option<enums::LocalDateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    event_group: Option<u8>,
+    num_sessions: Option<u16>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    timestamp: Option<enums::DateTime>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    total_timer_time: Option<u32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    type_: Option<enums::Activity>,
 }
 
 impl Activity {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -46,7 +49,6 @@ impl Activity {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
                 0 => msg.total_timer_time = content.one().map(<u32>::from),
                 1 => msg.num_sessions = content.one().map(<u16>::from),
                 2 => msg.type_ = content.one().map(<enums::Activity>::from),
@@ -54,10 +56,11 @@ impl Activity {
                 4 => msg.event_type = content.one().map(<enums::EventType>::from),
                 5 => msg.local_timestamp = content.one().map(<enums::LocalDateTime>::from),
                 6 => msg.event_group = content.one().map(<u8>::from),
+                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

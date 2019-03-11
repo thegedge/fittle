@@ -1,10 +1,15 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 use crate::profile::enums::MesgNum;
 use crate::fields::FieldDefinition;
+
 
 mod accelerometer_data;
 mod activity;
@@ -91,6 +96,7 @@ mod workout;
 mod workout_session;
 mod workout_step;
 mod zones_target;
+
 
 use self::accelerometer_data::AccelerometerData;
 use self::activity::Activity;
@@ -269,6 +275,7 @@ pub enum Message {
     ZonesTarget(ZonesTarget),
 }
 
+// Read a Message from a cursor
 impl Message {
     pub fn read<'i, Order, Reader>(reader: &mut Reader, msg: MesgNum, fields: &Vec<FieldDefinition>)
         -> Result<Message, String>
@@ -276,439 +283,445 @@ impl Message {
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
+        // TODO this match statement works for now, but I'd like others to be able to extend this
+        //      library with their own implementations for custom fields/messages. May require a
+        //      big refactor down the road...
         match msg {
-
             MesgNum::AccelerometerData =>
                 accelerometer_data::AccelerometerData::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::AccelerometerData(m))
-                    .map_err(|_e| "could not read AccelerometerData".to_owned()),
+                    .map(Message::AccelerometerData)
+                    .map_err(|_e| "could not read message AccelerometerData".to_owned()),
 
             MesgNum::Activity =>
                 activity::Activity::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Activity(m))
-                    .map_err(|_e| "could not read Activity".to_owned()),
+                    .map(Message::Activity)
+                    .map_err(|_e| "could not read message Activity".to_owned()),
 
             MesgNum::AntChannelId =>
                 ant_channel_id::AntChannelId::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::AntChannelId(m))
-                    .map_err(|_e| "could not read AntChannelId".to_owned()),
+                    .map(Message::AntChannelId)
+                    .map_err(|_e| "could not read message AntChannelId".to_owned()),
 
             MesgNum::AntRx =>
                 ant_rx::AntRx::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::AntRx(m))
-                    .map_err(|_e| "could not read AntRx".to_owned()),
+                    .map(Message::AntRx)
+                    .map_err(|_e| "could not read message AntRx".to_owned()),
 
             MesgNum::AntTx =>
                 ant_tx::AntTx::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::AntTx(m))
-                    .map_err(|_e| "could not read AntTx".to_owned()),
+                    .map(Message::AntTx)
+                    .map_err(|_e| "could not read message AntTx".to_owned()),
 
             MesgNum::AviationAttitude =>
                 aviation_attitude::AviationAttitude::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::AviationAttitude(m))
-                    .map_err(|_e| "could not read AviationAttitude".to_owned()),
+                    .map(Message::AviationAttitude)
+                    .map_err(|_e| "could not read message AviationAttitude".to_owned()),
 
             MesgNum::BarometerData =>
                 barometer_data::BarometerData::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::BarometerData(m))
-                    .map_err(|_e| "could not read BarometerData".to_owned()),
+                    .map(Message::BarometerData)
+                    .map_err(|_e| "could not read message BarometerData".to_owned()),
 
             MesgNum::BikeProfile =>
                 bike_profile::BikeProfile::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::BikeProfile(m))
-                    .map_err(|_e| "could not read BikeProfile".to_owned()),
+                    .map(Message::BikeProfile)
+                    .map_err(|_e| "could not read message BikeProfile".to_owned()),
 
             MesgNum::BloodPressure =>
                 blood_pressure::BloodPressure::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::BloodPressure(m))
-                    .map_err(|_e| "could not read BloodPressure".to_owned()),
+                    .map(Message::BloodPressure)
+                    .map_err(|_e| "could not read message BloodPressure".to_owned()),
 
             MesgNum::CadenceZone =>
                 cadence_zone::CadenceZone::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::CadenceZone(m))
-                    .map_err(|_e| "could not read CadenceZone".to_owned()),
+                    .map(Message::CadenceZone)
+                    .map_err(|_e| "could not read message CadenceZone".to_owned()),
 
             MesgNum::CameraEvent =>
                 camera_event::CameraEvent::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::CameraEvent(m))
-                    .map_err(|_e| "could not read CameraEvent".to_owned()),
+                    .map(Message::CameraEvent)
+                    .map_err(|_e| "could not read message CameraEvent".to_owned()),
 
             MesgNum::Capabilities =>
                 capabilities::Capabilities::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Capabilities(m))
-                    .map_err(|_e| "could not read Capabilities".to_owned()),
+                    .map(Message::Capabilities)
+                    .map_err(|_e| "could not read message Capabilities".to_owned()),
 
             MesgNum::Connectivity =>
                 connectivity::Connectivity::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Connectivity(m))
-                    .map_err(|_e| "could not read Connectivity".to_owned()),
+                    .map(Message::Connectivity)
+                    .map_err(|_e| "could not read message Connectivity".to_owned()),
 
             MesgNum::Course =>
                 course::Course::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Course(m))
-                    .map_err(|_e| "could not read Course".to_owned()),
+                    .map(Message::Course)
+                    .map_err(|_e| "could not read message Course".to_owned()),
 
             MesgNum::CoursePoint =>
                 course_point::CoursePoint::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::CoursePoint(m))
-                    .map_err(|_e| "could not read CoursePoint".to_owned()),
+                    .map(Message::CoursePoint)
+                    .map_err(|_e| "could not read message CoursePoint".to_owned()),
 
             MesgNum::DeveloperDataId =>
                 developer_data_id::DeveloperDataId::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::DeveloperDataId(m))
-                    .map_err(|_e| "could not read DeveloperDataId".to_owned()),
+                    .map(Message::DeveloperDataId)
+                    .map_err(|_e| "could not read message DeveloperDataId".to_owned()),
 
             MesgNum::DeviceInfo =>
                 device_info::DeviceInfo::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::DeviceInfo(m))
-                    .map_err(|_e| "could not read DeviceInfo".to_owned()),
+                    .map(Message::DeviceInfo)
+                    .map_err(|_e| "could not read message DeviceInfo".to_owned()),
 
             MesgNum::DeviceSettings =>
                 device_settings::DeviceSettings::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::DeviceSettings(m))
-                    .map_err(|_e| "could not read DeviceSettings".to_owned()),
+                    .map(Message::DeviceSettings)
+                    .map_err(|_e| "could not read message DeviceSettings".to_owned()),
 
             MesgNum::DiveAlarm =>
                 dive_alarm::DiveAlarm::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::DiveAlarm(m))
-                    .map_err(|_e| "could not read DiveAlarm".to_owned()),
+                    .map(Message::DiveAlarm)
+                    .map_err(|_e| "could not read message DiveAlarm".to_owned()),
 
             MesgNum::DiveGas =>
                 dive_gas::DiveGas::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::DiveGas(m))
-                    .map_err(|_e| "could not read DiveGas".to_owned()),
+                    .map(Message::DiveGas)
+                    .map_err(|_e| "could not read message DiveGas".to_owned()),
 
             MesgNum::DiveSettings =>
                 dive_settings::DiveSettings::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::DiveSettings(m))
-                    .map_err(|_e| "could not read DiveSettings".to_owned()),
+                    .map(Message::DiveSettings)
+                    .map_err(|_e| "could not read message DiveSettings".to_owned()),
 
             MesgNum::DiveSummary =>
                 dive_summary::DiveSummary::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::DiveSummary(m))
-                    .map_err(|_e| "could not read DiveSummary".to_owned()),
+                    .map(Message::DiveSummary)
+                    .map_err(|_e| "could not read message DiveSummary".to_owned()),
 
             MesgNum::Event =>
                 event::Event::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Event(m))
-                    .map_err(|_e| "could not read Event".to_owned()),
+                    .map(Message::Event)
+                    .map_err(|_e| "could not read message Event".to_owned()),
 
             MesgNum::ExdDataConceptConfiguration =>
                 exd_data_concept_configuration::ExdDataConceptConfiguration::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::ExdDataConceptConfiguration(m))
-                    .map_err(|_e| "could not read ExdDataConceptConfiguration".to_owned()),
+                    .map(Message::ExdDataConceptConfiguration)
+                    .map_err(|_e| "could not read message ExdDataConceptConfiguration".to_owned()),
 
             MesgNum::ExdDataFieldConfiguration =>
                 exd_data_field_configuration::ExdDataFieldConfiguration::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::ExdDataFieldConfiguration(m))
-                    .map_err(|_e| "could not read ExdDataFieldConfiguration".to_owned()),
+                    .map(Message::ExdDataFieldConfiguration)
+                    .map_err(|_e| "could not read message ExdDataFieldConfiguration".to_owned()),
 
             MesgNum::ExdScreenConfiguration =>
                 exd_screen_configuration::ExdScreenConfiguration::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::ExdScreenConfiguration(m))
-                    .map_err(|_e| "could not read ExdScreenConfiguration".to_owned()),
+                    .map(Message::ExdScreenConfiguration)
+                    .map_err(|_e| "could not read message ExdScreenConfiguration".to_owned()),
 
             MesgNum::ExerciseTitle =>
                 exercise_title::ExerciseTitle::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::ExerciseTitle(m))
-                    .map_err(|_e| "could not read ExerciseTitle".to_owned()),
+                    .map(Message::ExerciseTitle)
+                    .map_err(|_e| "could not read message ExerciseTitle".to_owned()),
 
             MesgNum::FieldCapabilities =>
                 field_capabilities::FieldCapabilities::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::FieldCapabilities(m))
-                    .map_err(|_e| "could not read FieldCapabilities".to_owned()),
+                    .map(Message::FieldCapabilities)
+                    .map_err(|_e| "could not read message FieldCapabilities".to_owned()),
 
             MesgNum::FieldDescription =>
                 field_description::FieldDescription::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::FieldDescription(m))
-                    .map_err(|_e| "could not read FieldDescription".to_owned()),
+                    .map(Message::FieldDescription)
+                    .map_err(|_e| "could not read message FieldDescription".to_owned()),
 
             MesgNum::FileCapabilities =>
                 file_capabilities::FileCapabilities::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::FileCapabilities(m))
-                    .map_err(|_e| "could not read FileCapabilities".to_owned()),
+                    .map(Message::FileCapabilities)
+                    .map_err(|_e| "could not read message FileCapabilities".to_owned()),
 
             MesgNum::FileCreator =>
                 file_creator::FileCreator::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::FileCreator(m))
-                    .map_err(|_e| "could not read FileCreator".to_owned()),
+                    .map(Message::FileCreator)
+                    .map_err(|_e| "could not read message FileCreator".to_owned()),
 
             MesgNum::FileId =>
                 file_id::FileId::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::FileId(m))
-                    .map_err(|_e| "could not read FileId".to_owned()),
+                    .map(Message::FileId)
+                    .map_err(|_e| "could not read message FileId".to_owned()),
 
             MesgNum::Goal =>
                 goal::Goal::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Goal(m))
-                    .map_err(|_e| "could not read Goal".to_owned()),
+                    .map(Message::Goal)
+                    .map_err(|_e| "could not read message Goal".to_owned()),
 
             MesgNum::GpsMetadata =>
                 gps_metadata::GpsMetadata::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::GpsMetadata(m))
-                    .map_err(|_e| "could not read GpsMetadata".to_owned()),
+                    .map(Message::GpsMetadata)
+                    .map_err(|_e| "could not read message GpsMetadata".to_owned()),
 
             MesgNum::GyroscopeData =>
                 gyroscope_data::GyroscopeData::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::GyroscopeData(m))
-                    .map_err(|_e| "could not read GyroscopeData".to_owned()),
+                    .map(Message::GyroscopeData)
+                    .map_err(|_e| "could not read message GyroscopeData".to_owned()),
 
             MesgNum::Hr =>
                 hr::Hr::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Hr(m))
-                    .map_err(|_e| "could not read Hr".to_owned()),
+                    .map(Message::Hr)
+                    .map_err(|_e| "could not read message Hr".to_owned()),
 
             MesgNum::HrZone =>
                 hr_zone::HrZone::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::HrZone(m))
-                    .map_err(|_e| "could not read HrZone".to_owned()),
+                    .map(Message::HrZone)
+                    .map_err(|_e| "could not read message HrZone".to_owned()),
 
             MesgNum::HrmProfile =>
                 hrm_profile::HrmProfile::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::HrmProfile(m))
-                    .map_err(|_e| "could not read HrmProfile".to_owned()),
+                    .map(Message::HrmProfile)
+                    .map_err(|_e| "could not read message HrmProfile".to_owned()),
 
             MesgNum::Hrv =>
                 hrv::Hrv::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Hrv(m))
-                    .map_err(|_e| "could not read Hrv".to_owned()),
+                    .map(Message::Hrv)
+                    .map_err(|_e| "could not read message Hrv".to_owned()),
 
             MesgNum::Lap =>
                 lap::Lap::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Lap(m))
-                    .map_err(|_e| "could not read Lap".to_owned()),
+                    .map(Message::Lap)
+                    .map_err(|_e| "could not read message Lap".to_owned()),
 
             MesgNum::Length =>
                 length::Length::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Length(m))
-                    .map_err(|_e| "could not read Length".to_owned()),
+                    .map(Message::Length)
+                    .map_err(|_e| "could not read message Length".to_owned()),
 
             MesgNum::MagnetometerData =>
                 magnetometer_data::MagnetometerData::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::MagnetometerData(m))
-                    .map_err(|_e| "could not read MagnetometerData".to_owned()),
+                    .map(Message::MagnetometerData)
+                    .map_err(|_e| "could not read message MagnetometerData".to_owned()),
 
             MesgNum::MemoGlob =>
                 memo_glob::MemoGlob::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::MemoGlob(m))
-                    .map_err(|_e| "could not read MemoGlob".to_owned()),
+                    .map(Message::MemoGlob)
+                    .map_err(|_e| "could not read message MemoGlob".to_owned()),
 
             MesgNum::MesgCapabilities =>
                 mesg_capabilities::MesgCapabilities::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::MesgCapabilities(m))
-                    .map_err(|_e| "could not read MesgCapabilities".to_owned()),
+                    .map(Message::MesgCapabilities)
+                    .map_err(|_e| "could not read message MesgCapabilities".to_owned()),
 
             MesgNum::MetZone =>
                 met_zone::MetZone::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::MetZone(m))
-                    .map_err(|_e| "could not read MetZone".to_owned()),
+                    .map(Message::MetZone)
+                    .map_err(|_e| "could not read message MetZone".to_owned()),
 
             MesgNum::Monitoring =>
                 monitoring::Monitoring::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Monitoring(m))
-                    .map_err(|_e| "could not read Monitoring".to_owned()),
+                    .map(Message::Monitoring)
+                    .map_err(|_e| "could not read message Monitoring".to_owned()),
 
             MesgNum::MonitoringInfo =>
                 monitoring_info::MonitoringInfo::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::MonitoringInfo(m))
-                    .map_err(|_e| "could not read MonitoringInfo".to_owned()),
+                    .map(Message::MonitoringInfo)
+                    .map_err(|_e| "could not read message MonitoringInfo".to_owned()),
 
             MesgNum::NmeaSentence =>
                 nmea_sentence::NmeaSentence::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::NmeaSentence(m))
-                    .map_err(|_e| "could not read NmeaSentence".to_owned()),
+                    .map(Message::NmeaSentence)
+                    .map_err(|_e| "could not read message NmeaSentence".to_owned()),
 
             MesgNum::ObdiiData =>
                 obdii_data::ObdiiData::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::ObdiiData(m))
-                    .map_err(|_e| "could not read ObdiiData".to_owned()),
+                    .map(Message::ObdiiData)
+                    .map_err(|_e| "could not read message ObdiiData".to_owned()),
 
             MesgNum::OhrSettings =>
                 ohr_settings::OhrSettings::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::OhrSettings(m))
-                    .map_err(|_e| "could not read OhrSettings".to_owned()),
+                    .map(Message::OhrSettings)
+                    .map_err(|_e| "could not read message OhrSettings".to_owned()),
 
             MesgNum::OneDSensorCalibration =>
                 one_d_sensor_calibration::OneDSensorCalibration::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::OneDSensorCalibration(m))
-                    .map_err(|_e| "could not read OneDSensorCalibration".to_owned()),
+                    .map(Message::OneDSensorCalibration)
+                    .map_err(|_e| "could not read message OneDSensorCalibration".to_owned()),
 
             MesgNum::PowerZone =>
                 power_zone::PowerZone::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::PowerZone(m))
-                    .map_err(|_e| "could not read PowerZone".to_owned()),
+                    .map(Message::PowerZone)
+                    .map_err(|_e| "could not read message PowerZone".to_owned()),
 
             MesgNum::Record =>
                 record::Record::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Record(m))
-                    .map_err(|_e| "could not read Record".to_owned()),
+                    .map(Message::Record)
+                    .map_err(|_e| "could not read message Record".to_owned()),
 
             MesgNum::Schedule =>
                 schedule::Schedule::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Schedule(m))
-                    .map_err(|_e| "could not read Schedule".to_owned()),
+                    .map(Message::Schedule)
+                    .map_err(|_e| "could not read message Schedule".to_owned()),
 
             MesgNum::SdmProfile =>
                 sdm_profile::SdmProfile::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::SdmProfile(m))
-                    .map_err(|_e| "could not read SdmProfile".to_owned()),
+                    .map(Message::SdmProfile)
+                    .map_err(|_e| "could not read message SdmProfile".to_owned()),
 
             MesgNum::SegmentFile =>
                 segment_file::SegmentFile::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::SegmentFile(m))
-                    .map_err(|_e| "could not read SegmentFile".to_owned()),
+                    .map(Message::SegmentFile)
+                    .map_err(|_e| "could not read message SegmentFile".to_owned()),
 
             MesgNum::SegmentId =>
                 segment_id::SegmentId::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::SegmentId(m))
-                    .map_err(|_e| "could not read SegmentId".to_owned()),
+                    .map(Message::SegmentId)
+                    .map_err(|_e| "could not read message SegmentId".to_owned()),
 
             MesgNum::SegmentLap =>
                 segment_lap::SegmentLap::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::SegmentLap(m))
-                    .map_err(|_e| "could not read SegmentLap".to_owned()),
+                    .map(Message::SegmentLap)
+                    .map_err(|_e| "could not read message SegmentLap".to_owned()),
 
             MesgNum::SegmentLeaderboardEntry =>
                 segment_leaderboard_entry::SegmentLeaderboardEntry::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::SegmentLeaderboardEntry(m))
-                    .map_err(|_e| "could not read SegmentLeaderboardEntry".to_owned()),
+                    .map(Message::SegmentLeaderboardEntry)
+                    .map_err(|_e| "could not read message SegmentLeaderboardEntry".to_owned()),
 
             MesgNum::SegmentPoint =>
                 segment_point::SegmentPoint::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::SegmentPoint(m))
-                    .map_err(|_e| "could not read SegmentPoint".to_owned()),
+                    .map(Message::SegmentPoint)
+                    .map_err(|_e| "could not read message SegmentPoint".to_owned()),
 
             MesgNum::Session =>
                 session::Session::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Session(m))
-                    .map_err(|_e| "could not read Session".to_owned()),
+                    .map(Message::Session)
+                    .map_err(|_e| "could not read message Session".to_owned()),
 
             MesgNum::Set =>
                 set::Set::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Set(m))
-                    .map_err(|_e| "could not read Set".to_owned()),
+                    .map(Message::Set)
+                    .map_err(|_e| "could not read message Set".to_owned()),
 
             MesgNum::SlaveDevice =>
                 slave_device::SlaveDevice::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::SlaveDevice(m))
-                    .map_err(|_e| "could not read SlaveDevice".to_owned()),
+                    .map(Message::SlaveDevice)
+                    .map_err(|_e| "could not read message SlaveDevice".to_owned()),
 
             MesgNum::Software =>
                 software::Software::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Software(m))
-                    .map_err(|_e| "could not read Software".to_owned()),
+                    .map(Message::Software)
+                    .map_err(|_e| "could not read message Software".to_owned()),
 
             MesgNum::SpeedZone =>
                 speed_zone::SpeedZone::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::SpeedZone(m))
-                    .map_err(|_e| "could not read SpeedZone".to_owned()),
+                    .map(Message::SpeedZone)
+                    .map_err(|_e| "could not read message SpeedZone".to_owned()),
 
             MesgNum::Sport =>
                 sport::Sport::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Sport(m))
-                    .map_err(|_e| "could not read Sport".to_owned()),
+                    .map(Message::Sport)
+                    .map_err(|_e| "could not read message Sport".to_owned()),
 
             MesgNum::StressLevel =>
                 stress_level::StressLevel::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::StressLevel(m))
-                    .map_err(|_e| "could not read StressLevel".to_owned()),
+                    .map(Message::StressLevel)
+                    .map_err(|_e| "could not read message StressLevel".to_owned()),
 
             MesgNum::ThreeDSensorCalibration =>
                 three_d_sensor_calibration::ThreeDSensorCalibration::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::ThreeDSensorCalibration(m))
-                    .map_err(|_e| "could not read ThreeDSensorCalibration".to_owned()),
+                    .map(Message::ThreeDSensorCalibration)
+                    .map_err(|_e| "could not read message ThreeDSensorCalibration".to_owned()),
 
             MesgNum::TimestampCorrelation =>
                 timestamp_correlation::TimestampCorrelation::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::TimestampCorrelation(m))
-                    .map_err(|_e| "could not read TimestampCorrelation".to_owned()),
+                    .map(Message::TimestampCorrelation)
+                    .map_err(|_e| "could not read message TimestampCorrelation".to_owned()),
 
             MesgNum::Totals =>
                 totals::Totals::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Totals(m))
-                    .map_err(|_e| "could not read Totals".to_owned()),
+                    .map(Message::Totals)
+                    .map_err(|_e| "could not read message Totals".to_owned()),
 
             MesgNum::TrainingFile =>
                 training_file::TrainingFile::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::TrainingFile(m))
-                    .map_err(|_e| "could not read TrainingFile".to_owned()),
+                    .map(Message::TrainingFile)
+                    .map_err(|_e| "could not read message TrainingFile".to_owned()),
 
             MesgNum::UserProfile =>
                 user_profile::UserProfile::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::UserProfile(m))
-                    .map_err(|_e| "could not read UserProfile".to_owned()),
+                    .map(Message::UserProfile)
+                    .map_err(|_e| "could not read message UserProfile".to_owned()),
 
             MesgNum::Video =>
                 video::Video::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Video(m))
-                    .map_err(|_e| "could not read Video".to_owned()),
+                    .map(Message::Video)
+                    .map_err(|_e| "could not read message Video".to_owned()),
 
             MesgNum::VideoClip =>
                 video_clip::VideoClip::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::VideoClip(m))
-                    .map_err(|_e| "could not read VideoClip".to_owned()),
+                    .map(Message::VideoClip)
+                    .map_err(|_e| "could not read message VideoClip".to_owned()),
 
             MesgNum::VideoDescription =>
                 video_description::VideoDescription::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::VideoDescription(m))
-                    .map_err(|_e| "could not read VideoDescription".to_owned()),
+                    .map(Message::VideoDescription)
+                    .map_err(|_e| "could not read message VideoDescription".to_owned()),
 
             MesgNum::VideoFrame =>
                 video_frame::VideoFrame::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::VideoFrame(m))
-                    .map_err(|_e| "could not read VideoFrame".to_owned()),
+                    .map(Message::VideoFrame)
+                    .map_err(|_e| "could not read message VideoFrame".to_owned()),
 
             MesgNum::VideoTitle =>
                 video_title::VideoTitle::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::VideoTitle(m))
-                    .map_err(|_e| "could not read VideoTitle".to_owned()),
+                    .map(Message::VideoTitle)
+                    .map_err(|_e| "could not read message VideoTitle".to_owned()),
 
             MesgNum::WatchfaceSettings =>
                 watchface_settings::WatchfaceSettings::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::WatchfaceSettings(m))
-                    .map_err(|_e| "could not read WatchfaceSettings".to_owned()),
+                    .map(Message::WatchfaceSettings)
+                    .map_err(|_e| "could not read message WatchfaceSettings".to_owned()),
 
             MesgNum::WeatherAlert =>
                 weather_alert::WeatherAlert::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::WeatherAlert(m))
-                    .map_err(|_e| "could not read WeatherAlert".to_owned()),
+                    .map(Message::WeatherAlert)
+                    .map_err(|_e| "could not read message WeatherAlert".to_owned()),
 
             MesgNum::WeatherConditions =>
                 weather_conditions::WeatherConditions::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::WeatherConditions(m))
-                    .map_err(|_e| "could not read WeatherConditions".to_owned()),
+                    .map(Message::WeatherConditions)
+                    .map_err(|_e| "could not read message WeatherConditions".to_owned()),
 
             MesgNum::WeightScale =>
                 weight_scale::WeightScale::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::WeightScale(m))
-                    .map_err(|_e| "could not read WeightScale".to_owned()),
+                    .map(Message::WeightScale)
+                    .map_err(|_e| "could not read message WeightScale".to_owned()),
 
             MesgNum::Workout =>
                 workout::Workout::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::Workout(m))
-                    .map_err(|_e| "could not read Workout".to_owned()),
+                    .map(Message::Workout)
+                    .map_err(|_e| "could not read message Workout".to_owned()),
 
             MesgNum::WorkoutSession =>
                 workout_session::WorkoutSession::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::WorkoutSession(m))
-                    .map_err(|_e| "could not read WorkoutSession".to_owned()),
+                    .map(Message::WorkoutSession)
+                    .map_err(|_e| "could not read message WorkoutSession".to_owned()),
 
             MesgNum::WorkoutStep =>
                 workout_step::WorkoutStep::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::WorkoutStep(m))
-                    .map_err(|_e| "could not read WorkoutStep".to_owned()),
+                    .map(Message::WorkoutStep)
+                    .map_err(|_e| "could not read message WorkoutStep".to_owned()),
 
             MesgNum::ZonesTarget =>
                 zones_target::ZonesTarget::from_fields::<Order, Reader>(reader, fields)
-                    .map(|m| Message::ZonesTarget(m))
-                    .map_err(|_e| "could not read ZonesTarget".to_owned()),
+                    .map(Message::ZonesTarget)
+                    .map_err(|_e| "could not read message ZonesTarget".to_owned()),
+
             m => {
+                // Ensure we move the reader forward
                 fields.iter()
                     .map(|f| f.content_from::<Order, Reader>(reader))
                     .collect::<Result<Vec<_>, _>>()
                     .map_err(|e| e.to_string())?;
+
                 Err(format!("unknown message: {:?}", m))
             },
         }
     }
 }
+

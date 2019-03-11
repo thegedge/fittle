@@ -1,6 +1,10 @@
 // DO NOT EDIT -- generated code
 
-use byteorder::{ByteOrder, ReadBytesExt};
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
 use serde::Serialize;
 
 #[allow(unused_imports)]
@@ -10,27 +14,26 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct ExdDataFieldConfiguration {
     #[serde(skip_serializing_if = "Option::is_none")]
-    screen_index: Option<u8>,
+    concept_count: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     concept_field: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    field_id: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    concept_count: Option<u8>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     display_type: Option<enums::ExdDisplayType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    title: Option<Vec<String>>,
+    field_id: Option<u8>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    screen_index: Option<u8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    title: Option<Vec<String>>,
 }
 
 impl ExdDataFieldConfiguration {
-    pub fn from_fields<'i, Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
@@ -49,7 +52,7 @@ impl ExdDataFieldConfiguration {
                 _ => (),
             };
         }
+
         Ok(msg)
     }
 }
-

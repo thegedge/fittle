@@ -1,0 +1,60 @@
+// DO NOT EDIT -- generated code
+
+use byteorder::{
+    ByteOrder,
+    ReadBytesExt
+};
+
+use serde::Serialize;
+
+use crate::profile::enums::MesgNum;
+use crate::fields::FieldDefinition;
+
+{{#each .}}
+mod {{module}};
+{{~/each}}
+
+{{#each .}}
+use self::{{module}}::{{name}};
+{{~/each}}
+
+#[derive(Debug, Serialize)]
+#[serde(tag = "message_type")]
+#[serde(rename_all = "snake_case")]
+pub enum Message {
+{{~#each .}}
+    {{name}}({{name}}),
+{{~/each}}
+}
+
+// Read a Message from a cursor
+impl Message {
+    pub fn read<'i, Order, Reader>(reader: &mut Reader, msg: MesgNum, fields: &Vec<FieldDefinition>)
+        -> Result<Message, String>
+        where
+            Order: ByteOrder,
+            Reader: ReadBytesExt,
+    {
+        // TODO this match statement works for now, but I'd like others to be able to extend this
+        //      library with their own implementations for custom fields/messages. May require a
+        //      big refactor down the road...
+        match msg {
+{{~#each .}}
+            MesgNum::{{name}} =>
+                {{module}}::{{name}}::from_fields::<Order, Reader>(reader, fields)
+                    .map(Message::{{name}})
+                    .map_err(|_e| "could not read message {{name}}".to_owned()),
+{{/each}}
+            m => {
+                // Ensure we move the reader forward
+                fields.iter()
+                    .map(|f| f.content_from::<Order, Reader>(reader))
+                    .collect::<Result<Vec<_>, _>>()
+                    .map_err(|e| e.to_string())?;
+
+                Err(format!("unknown message: {:?}", m))
+            },
+        }
+    }
+}
+
