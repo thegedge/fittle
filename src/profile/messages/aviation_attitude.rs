@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -29,13 +27,13 @@ pub struct AviationAttitude {
     roll: Option<Vec<i16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    stage: Option<Vec<enums::AttitudeStage>>,
+    stage: Option<Vec<crate::profile::enums::AttitudeStage>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     system_time: Option<Vec<u32>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
@@ -47,7 +45,7 @@ pub struct AviationAttitude {
     turn_rate: Option<Vec<i16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    validity: Option<Vec<enums::AttitudeValidity>>,
+    validity: Option<Vec<crate::profile::enums::AttitudeValidity>>,
 }
 
 impl AviationAttitude {
@@ -68,11 +66,11 @@ impl AviationAttitude {
                 4 => msg.accel_lateral = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
                 5 => msg.accel_normal = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
                 6 => msg.turn_rate = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                7 => msg.stage = content.many().map(|vec| vec.into_iter().map(<enums::AttitudeStage>::from).collect()),
+                7 => msg.stage = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::AttitudeStage>::from).collect()),
                 8 => msg.attitude_stage_complete = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 9 => msg.track = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                10 => msg.validity = content.many().map(|vec| vec.into_iter().map(<enums::AttitudeValidity>::from).collect()),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                10 => msg.validity = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::AttitudeValidity>::from).collect()),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

@@ -7,14 +7,12 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
 pub struct StressLevel {
     #[serde(skip_serializing_if = "Option::is_none")]
-    stress_level_time: Option<enums::DateTime>,
+    stress_level_time: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     stress_level_value: Option<i16>,
@@ -32,7 +30,7 @@ impl StressLevel {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 0 => msg.stress_level_value = content.one().map(<i16>::from),
-                1 => msg.stress_level_time = content.one().map(<enums::DateTime>::from),
+                1 => msg.stress_level_time = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -23,7 +21,7 @@ pub struct ObdiiData {
     raw_data: Option<Vec<u8>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    start_timestamp: Option<enums::DateTime>,
+    start_timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     start_timestamp_ms: Option<u16>,
@@ -35,7 +33,7 @@ pub struct ObdiiData {
     time_offset: Option<Vec<u16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
@@ -58,9 +56,9 @@ impl ObdiiData {
                 3 => msg.raw_data = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 4 => msg.pid_data_size = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 5 => msg.system_time = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                6 => msg.start_timestamp = content.one().map(<enums::DateTime>::from),
+                6 => msg.start_timestamp = content.one().map(<crate::fields::DateTime>::from),
                 7 => msg.start_timestamp_ms = content.one().map(<u16>::from),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

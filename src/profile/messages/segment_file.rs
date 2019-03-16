@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -32,10 +30,10 @@ pub struct SegmentFile {
     leader_group_primary_key: Option<Vec<u32>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    leader_type: Option<Vec<enums::SegmentLeaderboardType>>,
+    leader_type: Option<Vec<crate::profile::enums::SegmentLeaderboardType>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     user_profile_primary_key: Option<u32>,
@@ -55,12 +53,12 @@ impl SegmentFile {
                 1 => msg.file_uuid = content.one().map(<String>::from),
                 3 => msg.enabled = content.one().map(<bool>::from),
                 4 => msg.user_profile_primary_key = content.one().map(<u32>::from),
-                7 => msg.leader_type = content.many().map(|vec| vec.into_iter().map(<enums::SegmentLeaderboardType>::from).collect()),
+                7 => msg.leader_type = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::SegmentLeaderboardType>::from).collect()),
                 8 => msg.leader_group_primary_key = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
                 9 => msg.leader_activity_id = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
                 10 => msg.leader_activity_id_string = content.many().map(|vec| vec.into_iter().map(<String>::from).collect()),
                 11 => msg.default_race_leader = content.one().map(<u8>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

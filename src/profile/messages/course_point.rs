@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -20,7 +18,7 @@ pub struct CoursePoint {
     favorite: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
@@ -32,10 +30,10 @@ pub struct CoursePoint {
     position_long: Option<i32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    type_: Option<enums::CoursePoint>,
+    type_: Option<crate::profile::enums::CoursePoint>,
 }
 
 impl CoursePoint {
@@ -49,14 +47,14 @@ impl CoursePoint {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                1 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                1 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 2 => msg.position_lat = content.one().map(<i32>::from),
                 3 => msg.position_long = content.one().map(<i32>::from),
                 4 => msg.distance = content.one().map(<u32>::from),
-                5 => msg.type_ = content.one().map(<enums::CoursePoint>::from),
+                5 => msg.type_ = content.one().map(<crate::profile::enums::CoursePoint>::from),
                 6 => msg.name = content.one().map(<String>::from),
                 8 => msg.favorite = content.one().map(<bool>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

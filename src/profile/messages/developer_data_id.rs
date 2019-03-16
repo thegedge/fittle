@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -26,7 +24,7 @@ pub struct DeveloperDataId {
     developer_id: Option<Vec<u8>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    manufacturer_id: Option<enums::Manufacturer>,
+    manufacturer_id: Option<crate::profile::enums::Manufacturer>,
 }
 
 impl DeveloperDataId {
@@ -42,7 +40,7 @@ impl DeveloperDataId {
             match number {
                 0 => msg.developer_id = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 1 => msg.application_id = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                2 => msg.manufacturer_id = content.one().map(<enums::Manufacturer>::from),
+                2 => msg.manufacturer_id = content.one().map(<crate::profile::enums::Manufacturer>::from),
                 3 => msg.developer_data_index = content.one().map(<u8>::from),
                 4 => msg.application_version = content.one().map(<u32>::from),
                 _ => (),

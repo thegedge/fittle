@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -98,13 +96,13 @@ pub struct SegmentLap {
     end_position_long: Option<i32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    event: Option<enums::Event>,
+    event: Option<crate::profile::enums::Event>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     event_group: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    event_type: Option<enums::EventType>,
+    event_type: Option<crate::profile::enums::EventType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     front_gear_shift_count: Option<u16>,
@@ -113,10 +111,10 @@ pub struct SegmentLap {
     gps_accuracy: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    left_right_balance: Option<enums::LeftRightBalance100>,
+    left_right_balance: Option<crate::profile::enums::LeftRightBalance100>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    manufacturer: Option<enums::Manufacturer>,
+    manufacturer: Option<crate::profile::enums::Manufacturer>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     max_altitude: Option<u16>,
@@ -158,7 +156,7 @@ pub struct SegmentLap {
     max_temperature: Option<i8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     min_altitude: Option<u16>,
@@ -185,10 +183,10 @@ pub struct SegmentLap {
     repetition_num: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sport: Option<enums::Sport>,
+    sport: Option<crate::profile::enums::Sport>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sport_event: Option<enums::SportEvent>,
+    sport_event: Option<crate::profile::enums::SportEvent>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     stand_count: Option<u16>,
@@ -200,13 +198,13 @@ pub struct SegmentLap {
     start_position_long: Option<i32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    start_time: Option<enums::DateTime>,
+    start_time: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    status: Option<enums::SegmentLapStatus>,
+    status: Option<crate::profile::enums::SegmentLapStatus>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sub_sport: Option<enums::SubSport>,
+    sub_sport: Option<crate::profile::enums::SubSport>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     swc_lat: Option<i32>,
@@ -230,7 +228,7 @@ pub struct SegmentLap {
     time_standing: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     total_ascent: Option<u16>,
@@ -269,7 +267,7 @@ pub struct SegmentLap {
     uuid: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    wkt_step_index: Option<enums::MessageIndex>,
+    wkt_step_index: Option<crate::profile::enums::MessageIndex>,
 }
 
 impl SegmentLap {
@@ -283,9 +281,9 @@ impl SegmentLap {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.event = content.one().map(<enums::Event>::from),
-                1 => msg.event_type = content.one().map(<enums::EventType>::from),
-                2 => msg.start_time = content.one().map(<enums::DateTime>::from),
+                0 => msg.event = content.one().map(<crate::profile::enums::Event>::from),
+                1 => msg.event_type = content.one().map(<crate::profile::enums::EventType>::from),
+                2 => msg.start_time = content.one().map(<crate::fields::DateTime>::from),
                 3 => msg.start_position_lat = content.one().map(<i32>::from),
                 4 => msg.start_position_long = content.one().map(<i32>::from),
                 5 => msg.end_position_lat = content.one().map(<i32>::from),
@@ -306,7 +304,7 @@ impl SegmentLap {
                 20 => msg.max_power = content.one().map(<u16>::from),
                 21 => msg.total_ascent = content.one().map(<u16>::from),
                 22 => msg.total_descent = content.one().map(<u16>::from),
-                23 => msg.sport = content.one().map(<enums::Sport>::from),
+                23 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
                 24 => msg.event_group = content.one().map(<u8>::from),
                 25 => msg.nec_lat = content.one().map(<i32>::from),
                 26 => msg.nec_long = content.one().map(<i32>::from),
@@ -314,8 +312,8 @@ impl SegmentLap {
                 28 => msg.swc_long = content.one().map(<i32>::from),
                 29 => msg.name = content.one().map(<String>::from),
                 30 => msg.normalized_power = content.one().map(<u16>::from),
-                31 => msg.left_right_balance = content.one().map(<enums::LeftRightBalance100>::from),
-                32 => msg.sub_sport = content.one().map(<enums::SubSport>::from),
+                31 => msg.left_right_balance = content.one().map(<crate::profile::enums::LeftRightBalance100>::from),
+                32 => msg.sub_sport = content.one().map(<crate::profile::enums::SubSport>::from),
                 33 => msg.total_work = content.one().map(<u32>::from),
                 34 => msg.avg_altitude = content.one().map(<u16>::from),
                 35 => msg.max_altitude = content.one().map(<u16>::from),
@@ -340,14 +338,14 @@ impl SegmentLap {
                 54 => msg.min_altitude = content.one().map(<u16>::from),
                 55 => msg.min_heart_rate = content.one().map(<u8>::from),
                 56 => msg.active_time = content.one().map(<u32>::from),
-                57 => msg.wkt_step_index = content.one().map(<enums::MessageIndex>::from),
-                58 => msg.sport_event = content.one().map(<enums::SportEvent>::from),
+                57 => msg.wkt_step_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
+                58 => msg.sport_event = content.one().map(<crate::profile::enums::SportEvent>::from),
                 59 => msg.avg_left_torque_effectiveness = content.one().map(<u8>::from),
                 60 => msg.avg_right_torque_effectiveness = content.one().map(<u8>::from),
                 61 => msg.avg_left_pedal_smoothness = content.one().map(<u8>::from),
                 62 => msg.avg_right_pedal_smoothness = content.one().map(<u8>::from),
                 63 => msg.avg_combined_pedal_smoothness = content.one().map(<u8>::from),
-                64 => msg.status = content.one().map(<enums::SegmentLapStatus>::from),
+                64 => msg.status = content.one().map(<crate::profile::enums::SegmentLapStatus>::from),
                 65 => msg.uuid = content.one().map(<String>::from),
                 66 => msg.avg_fractional_cadence = content.one().map(<u8>::from),
                 67 => msg.max_fractional_cadence = content.one().map(<u8>::from),
@@ -366,9 +364,9 @@ impl SegmentLap {
                 80 => msg.max_power_position = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
                 81 => msg.avg_cadence_position = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 82 => msg.max_cadence_position = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                83 => msg.manufacturer = content.one().map(<enums::Manufacturer>::from),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                83 => msg.manufacturer = content.one().map(<crate::profile::enums::Manufacturer>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,7 +15,7 @@ pub struct MemoGlob {
     memo: Option<Vec<u8>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     message_number: Option<u16>,
@@ -39,7 +37,7 @@ impl MemoGlob {
             match number {
                 0 => msg.memo = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 1 => msg.message_number = content.one().map(<u16>::from),
-                2 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                2 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 250 => msg.part_index = content.one().map(<u32>::from),
                 _ => (),
             };

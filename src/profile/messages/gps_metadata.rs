@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -29,13 +27,13 @@ pub struct GpsMetadata {
     position_long: Option<i32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    utc_timestamp: Option<enums::DateTime>,
+    utc_timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     velocity: Option<Vec<i16>>,
@@ -58,9 +56,9 @@ impl GpsMetadata {
                 3 => msg.enhanced_altitude = content.one().map(<u32>::from),
                 4 => msg.enhanced_speed = content.one().map(<u32>::from),
                 5 => msg.heading = content.one().map(<u16>::from),
-                6 => msg.utc_timestamp = content.one().map(<enums::DateTime>::from),
+                6 => msg.utc_timestamp = content.one().map(<crate::fields::DateTime>::from),
                 7 => msg.velocity = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

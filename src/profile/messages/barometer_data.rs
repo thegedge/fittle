@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -20,7 +18,7 @@ pub struct BarometerData {
     sample_time_offset: Option<Vec<u16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
@@ -40,7 +38,7 @@ impl BarometerData {
                 0 => msg.timestamp_ms = content.one().map(<u16>::from),
                 1 => msg.sample_time_offset = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
                 2 => msg.baro_pres = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,13 +15,13 @@ pub struct ZonesTarget {
     functional_threshold_power: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    hr_calc_type: Option<enums::HrZoneCalc>,
+    hr_calc_type: Option<crate::profile::enums::HrZoneCalc>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     max_heart_rate: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pwr_calc_type: Option<enums::PwrZoneCalc>,
+    pwr_calc_type: Option<crate::profile::enums::PwrZoneCalc>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     threshold_heart_rate: Option<u8>,
@@ -43,8 +41,8 @@ impl ZonesTarget {
                 1 => msg.max_heart_rate = content.one().map(<u8>::from),
                 2 => msg.threshold_heart_rate = content.one().map(<u8>::from),
                 3 => msg.functional_threshold_power = content.one().map(<u16>::from),
-                5 => msg.hr_calc_type = content.one().map(<enums::HrZoneCalc>::from),
-                7 => msg.pwr_calc_type = content.one().map(<enums::PwrZoneCalc>::from),
+                5 => msg.hr_calc_type = content.one().map(<crate::profile::enums::HrZoneCalc>::from),
+                7 => msg.pwr_calc_type = content.one().map(<crate::profile::enums::PwrZoneCalc>::from),
                 _ => (),
             };
         }

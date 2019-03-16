@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -35,16 +33,16 @@ pub struct FieldDescription {
     field_name: Option<Vec<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    fit_base_type_id: Option<enums::FitBaseType>,
+    fit_base_type_id: Option<crate::profile::enums::FitBaseType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    fit_base_unit_id: Option<enums::FitBaseUnit>,
+    fit_base_unit_id: Option<crate::profile::enums::FitBaseUnit>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     native_field_num: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    native_mesg_num: Option<enums::MesgNum>,
+    native_mesg_num: Option<crate::profile::enums::MesgNum>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     offset: Option<i8>,
@@ -69,7 +67,7 @@ impl FieldDescription {
             match number {
                 0 => msg.developer_data_index = content.one().map(<u8>::from),
                 1 => msg.field_definition_number = content.one().map(<u8>::from),
-                2 => msg.fit_base_type_id = content.one().map(<enums::FitBaseType>::from),
+                2 => msg.fit_base_type_id = content.one().map(<crate::profile::enums::FitBaseType>::from),
                 3 => msg.field_name = content.many().map(|vec| vec.into_iter().map(<String>::from).collect()),
                 4 => msg.array = content.one().map(<u8>::from),
                 5 => msg.components = content.one().map(<String>::from),
@@ -78,8 +76,8 @@ impl FieldDescription {
                 8 => msg.units = content.many().map(|vec| vec.into_iter().map(<String>::from).collect()),
                 9 => msg.bits = content.one().map(<String>::from),
                 10 => msg.accumulate = content.one().map(<String>::from),
-                13 => msg.fit_base_unit_id = content.one().map(<enums::FitBaseUnit>::from),
-                14 => msg.native_mesg_num = content.one().map(<enums::MesgNum>::from),
+                13 => msg.fit_base_unit_id = content.one().map(<crate::profile::enums::FitBaseUnit>::from),
+                14 => msg.native_mesg_num = content.one().map(<crate::profile::enums::MesgNum>::from),
                 15 => msg.native_field_num = content.one().map(<u8>::from),
                 _ => (),
             };

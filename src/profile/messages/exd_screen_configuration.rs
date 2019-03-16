@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,7 +15,7 @@ pub struct ExdScreenConfiguration {
     field_count: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    layout: Option<enums::ExdLayout>,
+    layout: Option<crate::profile::enums::ExdLayout>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     screen_enabled: Option<bool>,
@@ -39,7 +37,7 @@ impl ExdScreenConfiguration {
             match number {
                 0 => msg.screen_index = content.one().map(<u8>::from),
                 1 => msg.field_count = content.one().map(<u8>::from),
-                2 => msg.layout = content.one().map(<enums::ExdLayout>::from),
+                2 => msg.layout = content.one().map(<crate::profile::enums::ExdLayout>::from),
                 3 => msg.screen_enabled = content.one().map(<bool>::from),
                 _ => (),
             };

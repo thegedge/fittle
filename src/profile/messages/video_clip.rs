@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -23,13 +21,13 @@ pub struct VideoClip {
     clip_start: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    end_timestamp: Option<enums::DateTime>,
+    end_timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     end_timestamp_ms: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    start_timestamp: Option<enums::DateTime>,
+    start_timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     start_timestamp_ms: Option<u16>,
@@ -47,9 +45,9 @@ impl VideoClip {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 0 => msg.clip_number = content.one().map(<u16>::from),
-                1 => msg.start_timestamp = content.one().map(<enums::DateTime>::from),
+                1 => msg.start_timestamp = content.one().map(<crate::fields::DateTime>::from),
                 2 => msg.start_timestamp_ms = content.one().map(<u16>::from),
-                3 => msg.end_timestamp = content.one().map(<enums::DateTime>::from),
+                3 => msg.end_timestamp = content.one().map(<crate::fields::DateTime>::from),
                 4 => msg.end_timestamp_ms = content.one().map(<u16>::from),
                 6 => msg.clip_start = content.one().map(<u32>::from),
                 7 => msg.clip_end = content.one().map(<u32>::from),

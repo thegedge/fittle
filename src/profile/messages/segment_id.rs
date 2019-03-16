@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,7 +15,7 @@ pub struct SegmentId {
     default_race_leader: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    delete_status: Option<enums::SegmentDeleteStatus>,
+    delete_status: Option<crate::profile::enums::SegmentDeleteStatus>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     device_id: Option<u32>,
@@ -29,10 +27,10 @@ pub struct SegmentId {
     name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    selection_type: Option<enums::SegmentSelectionType>,
+    selection_type: Option<crate::profile::enums::SegmentSelectionType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sport: Option<enums::Sport>,
+    sport: Option<crate::profile::enums::Sport>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     user_profile_primary_key: Option<u32>,
@@ -54,13 +52,13 @@ impl SegmentId {
             match number {
                 0 => msg.name = content.one().map(<String>::from),
                 1 => msg.uuid = content.one().map(<String>::from),
-                2 => msg.sport = content.one().map(<enums::Sport>::from),
+                2 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
                 3 => msg.enabled = content.one().map(<bool>::from),
                 4 => msg.user_profile_primary_key = content.one().map(<u32>::from),
                 5 => msg.device_id = content.one().map(<u32>::from),
                 6 => msg.default_race_leader = content.one().map(<u8>::from),
-                7 => msg.delete_status = content.one().map(<enums::SegmentDeleteStatus>::from),
-                8 => msg.selection_type = content.one().map(<enums::SegmentSelectionType>::from),
+                7 => msg.delete_status = content.one().map(<crate::profile::enums::SegmentDeleteStatus>::from),
+                8 => msg.selection_type = content.one().map(<crate::profile::enums::SegmentSelectionType>::from),
                 _ => (),
             };
         }

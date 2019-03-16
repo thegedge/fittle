@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,22 +15,22 @@ pub struct Schedule {
     completed: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    manufacturer: Option<enums::Manufacturer>,
+    manufacturer: Option<crate::profile::enums::Manufacturer>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     product: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    scheduled_time: Option<enums::LocalDateTime>,
+    scheduled_time: Option<crate::fields::LocalDateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     serial_number: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    time_created: Option<enums::DateTime>,
+    time_created: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    type_: Option<enums::Schedule>,
+    type_: Option<crate::profile::enums::Schedule>,
 }
 
 impl Schedule {
@@ -46,13 +44,13 @@ impl Schedule {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.manufacturer = content.one().map(<enums::Manufacturer>::from),
+                0 => msg.manufacturer = content.one().map(<crate::profile::enums::Manufacturer>::from),
                 1 => msg.product = content.one().map(<u16>::from),
                 2 => msg.serial_number = content.one().map(<u32>::from),
-                3 => msg.time_created = content.one().map(<enums::DateTime>::from),
+                3 => msg.time_created = content.one().map(<crate::fields::DateTime>::from),
                 4 => msg.completed = content.one().map(<bool>::from),
-                5 => msg.type_ = content.one().map(<enums::Schedule>::from),
-                6 => msg.scheduled_time = content.one().map(<enums::LocalDateTime>::from),
+                5 => msg.type_ = content.one().map(<crate::profile::enums::Schedule>::from),
+                6 => msg.scheduled_time = content.one().map(<crate::fields::LocalDateTime>::from),
                 _ => (),
             };
         }

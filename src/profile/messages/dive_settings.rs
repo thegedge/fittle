@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -23,10 +21,10 @@ pub struct DiveSettings {
     backlight_brightness: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    backlight_mode: Option<enums::DiveBacklightMode>,
+    backlight_mode: Option<crate::profile::enums::DiveBacklightMode>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    backlight_timeout: Option<enums::BacklightTimeout>,
+    backlight_timeout: Option<crate::profile::enums::BacklightTimeout>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     bottom_depth: Option<f32>,
@@ -44,13 +42,13 @@ pub struct DiveSettings {
     heart_rate_source: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    heart_rate_source_type: Option<enums::SourceType>,
+    heart_rate_source_type: Option<crate::profile::enums::SourceType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    model: Option<enums::TissueModelType>,
+    model: Option<crate::profile::enums::TissueModelType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
@@ -77,7 +75,7 @@ pub struct DiveSettings {
     water_density: Option<f32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    water_type: Option<enums::WaterType>,
+    water_type: Option<crate::profile::enums::WaterType>,
 }
 
 impl DiveSettings {
@@ -92,10 +90,10 @@ impl DiveSettings {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 0 => msg.name = content.one().map(<String>::from),
-                1 => msg.model = content.one().map(<enums::TissueModelType>::from),
+                1 => msg.model = content.one().map(<crate::profile::enums::TissueModelType>::from),
                 2 => msg.gf_low = content.one().map(<u8>::from),
                 3 => msg.gf_high = content.one().map(<u8>::from),
-                4 => msg.water_type = content.one().map(<enums::WaterType>::from),
+                4 => msg.water_type = content.one().map(<crate::profile::enums::WaterType>::from),
                 5 => msg.water_density = content.one().map(<f32>::from),
                 6 => msg.po2_warn = content.one().map(<u8>::from),
                 7 => msg.po2_critical = content.one().map(<u8>::from),
@@ -105,14 +103,14 @@ impl DiveSettings {
                 11 => msg.bottom_time = content.one().map(<u32>::from),
                 12 => msg.apnea_countdown_enabled = content.one().map(<bool>::from),
                 13 => msg.apnea_countdown_time = content.one().map(<u32>::from),
-                14 => msg.backlight_mode = content.one().map(<enums::DiveBacklightMode>::from),
+                14 => msg.backlight_mode = content.one().map(<crate::profile::enums::DiveBacklightMode>::from),
                 15 => msg.backlight_brightness = content.one().map(<u8>::from),
-                16 => msg.backlight_timeout = content.one().map(<enums::BacklightTimeout>::from),
+                16 => msg.backlight_timeout = content.one().map(<crate::profile::enums::BacklightTimeout>::from),
                 17 => msg.repeat_dive_interval = content.one().map(<u16>::from),
                 18 => msg.safety_stop_time = content.one().map(<u16>::from),
-                19 => msg.heart_rate_source_type = content.one().map(<enums::SourceType>::from),
+                19 => msg.heart_rate_source_type = content.one().map(<crate::profile::enums::SourceType>::from),
                 20 => msg.heart_rate_source = content.one().map(<u8>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

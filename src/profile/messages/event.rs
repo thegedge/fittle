@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -20,16 +18,16 @@ pub struct Event {
     data16: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    device_index: Option<enums::DeviceIndex>,
+    device_index: Option<crate::profile::enums::DeviceIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    event: Option<enums::Event>,
+    event: Option<crate::profile::enums::Event>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     event_group: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    event_type: Option<enums::EventType>,
+    event_type: Option<crate::profile::enums::EventType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     front_gear: Option<u8>,
@@ -50,7 +48,7 @@ pub struct Event {
     score: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 }
 
 impl Event {
@@ -64,8 +62,8 @@ impl Event {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.event = content.one().map(<enums::Event>::from),
-                1 => msg.event_type = content.one().map(<enums::EventType>::from),
+                0 => msg.event = content.one().map(<crate::profile::enums::Event>::from),
+                1 => msg.event_type = content.one().map(<crate::profile::enums::EventType>::from),
                 2 => msg.data16 = content.one().map(<u16>::from),
                 3 => msg.data = content.one().map(<u32>::from),
                 4 => msg.event_group = content.one().map(<u8>::from),
@@ -75,8 +73,8 @@ impl Event {
                 10 => msg.front_gear = content.one().map(<u8>::from),
                 11 => msg.rear_gear_num = content.one().map(<u8>::from),
                 12 => msg.rear_gear = content.one().map(<u8>::from),
-                13 => msg.device_index = content.one().map(<enums::DeviceIndex>::from),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                13 => msg.device_index = content.one().map(<crate::profile::enums::DeviceIndex>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -29,10 +27,10 @@ pub struct ThreeDSensorCalibration {
     orientation_matrix: Option<Vec<i32>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sensor_type: Option<enums::SensorType>,
+    sensor_type: Option<crate::profile::enums::SensorType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 }
 
 impl ThreeDSensorCalibration {
@@ -46,13 +44,13 @@ impl ThreeDSensorCalibration {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.sensor_type = content.one().map(<enums::SensorType>::from),
+                0 => msg.sensor_type = content.one().map(<crate::profile::enums::SensorType>::from),
                 1 => msg.calibration_factor = content.one().map(<u32>::from),
                 2 => msg.calibration_divisor = content.one().map(<u32>::from),
                 3 => msg.level_shift = content.one().map(<u32>::from),
                 4 => msg.offset_cal = content.many().map(|vec| vec.into_iter().map(<i32>::from).collect()),
                 5 => msg.orientation_matrix = content.many().map(|vec| vec.into_iter().map(<i32>::from).collect()),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

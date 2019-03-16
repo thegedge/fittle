@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -26,7 +24,7 @@ pub struct HrmProfile {
     log_hrv: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 }
 
 impl HrmProfile {
@@ -44,7 +42,7 @@ impl HrmProfile {
                 1 => msg.hrm_ant_id = content.one().map(<u16>::from),
                 2 => msg.log_hrv = content.one().map(<bool>::from),
                 3 => msg.hrm_ant_id_trans_type = content.one().map(<u8>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

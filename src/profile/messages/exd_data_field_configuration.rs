@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -20,7 +18,7 @@ pub struct ExdDataFieldConfiguration {
     concept_field: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    display_type: Option<enums::ExdDisplayType>,
+    display_type: Option<crate::profile::enums::ExdDisplayType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     field_id: Option<u8>,
@@ -47,7 +45,7 @@ impl ExdDataFieldConfiguration {
                 1 => msg.concept_field = content.one().map(<u8>::from),
                 2 => msg.field_id = content.one().map(<u8>::from),
                 3 => msg.concept_count = content.one().map(<u8>::from),
-                4 => msg.display_type = content.one().map(<enums::ExdDisplayType>::from),
+                4 => msg.display_type = content.one().map(<crate::profile::enums::ExdDisplayType>::from),
                 5 => msg.title = content.many().map(|vec| vec.into_iter().map(<String>::from).collect()),
                 _ => (),
             };

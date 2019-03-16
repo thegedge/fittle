@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -20,19 +18,19 @@ pub struct Length {
     avg_swimming_cadence: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    event: Option<enums::Event>,
+    event: Option<crate::profile::enums::Event>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     event_group: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    event_type: Option<enums::EventType>,
+    event_type: Option<crate::profile::enums::EventType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    length_type: Option<enums::LengthType>,
+    length_type: Option<crate::profile::enums::LengthType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     opponent_score: Option<u16>,
@@ -41,16 +39,16 @@ pub struct Length {
     player_score: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    start_time: Option<enums::DateTime>,
+    start_time: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     stroke_count: Option<Vec<u16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    swim_stroke: Option<enums::SwimStroke>,
+    swim_stroke: Option<crate::profile::enums::SwimStroke>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     total_calories: Option<u16>,
@@ -79,24 +77,24 @@ impl Length {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.event = content.one().map(<enums::Event>::from),
-                1 => msg.event_type = content.one().map(<enums::EventType>::from),
-                2 => msg.start_time = content.one().map(<enums::DateTime>::from),
+                0 => msg.event = content.one().map(<crate::profile::enums::Event>::from),
+                1 => msg.event_type = content.one().map(<crate::profile::enums::EventType>::from),
+                2 => msg.start_time = content.one().map(<crate::fields::DateTime>::from),
                 3 => msg.total_elapsed_time = content.one().map(<u32>::from),
                 4 => msg.total_timer_time = content.one().map(<u32>::from),
                 5 => msg.total_strokes = content.one().map(<u16>::from),
                 6 => msg.avg_speed = content.one().map(<u16>::from),
-                7 => msg.swim_stroke = content.one().map(<enums::SwimStroke>::from),
+                7 => msg.swim_stroke = content.one().map(<crate::profile::enums::SwimStroke>::from),
                 9 => msg.avg_swimming_cadence = content.one().map(<u8>::from),
                 10 => msg.event_group = content.one().map(<u8>::from),
                 11 => msg.total_calories = content.one().map(<u16>::from),
-                12 => msg.length_type = content.one().map(<enums::LengthType>::from),
+                12 => msg.length_type = content.one().map(<crate::profile::enums::LengthType>::from),
                 18 => msg.player_score = content.one().map(<u16>::from),
                 19 => msg.opponent_score = content.one().map(<u16>::from),
                 20 => msg.stroke_count = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
                 21 => msg.zone_count = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

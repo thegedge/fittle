@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -20,16 +18,16 @@ pub struct WorkoutStep {
     custom_target_value_low: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    duration_type: Option<enums::WktStepDuration>,
+    duration_type: Option<crate::profile::enums::WktStepDuration>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     duration_value: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    equipment: Option<enums::WorkoutEquipment>,
+    equipment: Option<crate::profile::enums::WorkoutEquipment>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    exercise_category: Option<enums::ExerciseCategory>,
+    exercise_category: Option<crate::profile::enums::ExerciseCategory>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     exercise_name: Option<u16>,
@@ -38,22 +36,22 @@ pub struct WorkoutStep {
     exercise_weight: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    intensity: Option<enums::Intensity>,
+    intensity: Option<crate::profile::enums::Intensity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     notes: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    target_type: Option<enums::WktStepTarget>,
+    target_type: Option<crate::profile::enums::WktStepTarget>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     target_value: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    weight_display_unit: Option<enums::FitBaseUnit>,
+    weight_display_unit: Option<crate::profile::enums::FitBaseUnit>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     wkt_step_name: Option<String>,
@@ -71,20 +69,20 @@ impl WorkoutStep {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 0 => msg.wkt_step_name = content.one().map(<String>::from),
-                1 => msg.duration_type = content.one().map(<enums::WktStepDuration>::from),
+                1 => msg.duration_type = content.one().map(<crate::profile::enums::WktStepDuration>::from),
                 2 => msg.duration_value = content.one().map(<u32>::from),
-                3 => msg.target_type = content.one().map(<enums::WktStepTarget>::from),
+                3 => msg.target_type = content.one().map(<crate::profile::enums::WktStepTarget>::from),
                 4 => msg.target_value = content.one().map(<u32>::from),
                 5 => msg.custom_target_value_low = content.one().map(<u32>::from),
                 6 => msg.custom_target_value_high = content.one().map(<u32>::from),
-                7 => msg.intensity = content.one().map(<enums::Intensity>::from),
+                7 => msg.intensity = content.one().map(<crate::profile::enums::Intensity>::from),
                 8 => msg.notes = content.one().map(<String>::from),
-                9 => msg.equipment = content.one().map(<enums::WorkoutEquipment>::from),
-                10 => msg.exercise_category = content.one().map(<enums::ExerciseCategory>::from),
+                9 => msg.equipment = content.one().map(<crate::profile::enums::WorkoutEquipment>::from),
+                10 => msg.exercise_category = content.one().map(<crate::profile::enums::ExerciseCategory>::from),
                 11 => msg.exercise_name = content.one().map(<u16>::from),
                 12 => msg.exercise_weight = content.one().map(<u16>::from),
-                13 => msg.weight_display_unit = content.one().map(<enums::FitBaseUnit>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                13 => msg.weight_display_unit = content.one().map(<crate::profile::enums::FitBaseUnit>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

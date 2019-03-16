@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,7 +15,7 @@ pub struct VideoDescription {
     message_count: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     text: Option<String>,
@@ -36,7 +34,7 @@ impl VideoDescription {
             match number {
                 0 => msg.message_count = content.one().map(<u16>::from),
                 1 => msg.text = content.one().map(<String>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

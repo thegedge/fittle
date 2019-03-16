@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -26,10 +24,10 @@ pub struct ExdDataConceptConfiguration {
     data_page: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    data_units: Option<enums::ExdDataUnits>,
+    data_units: Option<crate::profile::enums::ExdDataUnits>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    descriptor: Option<enums::ExdDescriptors>,
+    descriptor: Option<crate::profile::enums::ExdDescriptors>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     field_id: Option<u8>,
@@ -38,7 +36,7 @@ pub struct ExdDataConceptConfiguration {
     is_signed: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    qualifier: Option<enums::ExdQualifiers>,
+    qualifier: Option<crate::profile::enums::ExdQualifiers>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     scaling: Option<u8>,
@@ -65,9 +63,9 @@ impl ExdDataConceptConfiguration {
                 4 => msg.data_page = content.one().map(<u8>::from),
                 5 => msg.concept_key = content.one().map(<u8>::from),
                 6 => msg.scaling = content.one().map(<u8>::from),
-                8 => msg.data_units = content.one().map(<enums::ExdDataUnits>::from),
-                9 => msg.qualifier = content.one().map(<enums::ExdQualifiers>::from),
-                10 => msg.descriptor = content.one().map(<enums::ExdDescriptors>::from),
+                8 => msg.data_units = content.one().map(<crate::profile::enums::ExdDataUnits>::from),
+                9 => msg.qualifier = content.one().map(<crate::profile::enums::ExdQualifiers>::from),
+                10 => msg.descriptor = content.one().map(<crate::profile::enums::ExdDescriptors>::from),
                 11 => msg.is_signed = content.one().map(<bool>::from),
                 _ => (),
             };

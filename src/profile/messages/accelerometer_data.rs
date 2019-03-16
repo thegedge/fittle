@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -44,7 +42,7 @@ pub struct AccelerometerData {
     sample_time_offset: Option<Vec<u16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp_ms: Option<u16>,
@@ -72,7 +70,7 @@ impl AccelerometerData {
                 8 => msg.compressed_calibrated_accel_x = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
                 9 => msg.compressed_calibrated_accel_y = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
                 10 => msg.compressed_calibrated_accel_z = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

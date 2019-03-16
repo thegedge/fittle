@@ -209,6 +209,11 @@ fn enums<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleEnum>, Erro
             "language_bits_2" => (),
             "language_bits_3" => (),
             "language_bits_4" => (),
+
+            // These are not real enums (just specify a min time for basis of value)
+            "date_time" => (),
+            "local_date_time" => (),
+
             v => {
                 enums.push(FittleEnum {
                     name: to_pascal_case(v),
@@ -358,6 +363,7 @@ fn field_content_type(field_type: &str) -> &str {
 
 fn rust_type(field_type: &str) -> String {
     match field_type {
+        // Simple base types
         "sint8" => "i8".to_owned(),
         "sint16" => "i16".to_owned(),
         "sint32" => "i32".to_owned(),
@@ -370,7 +376,13 @@ fn rust_type(field_type: &str) -> String {
         "float64" => "f64".to_owned(),
         "bool" => "bool".to_owned(),
         "string" => "String".to_owned(),
-        v => format!("enums::{}", to_pascal_case(v)),
+
+        // Specialized forms
+        "date_time" => "crate::fields::DateTime".to_owned(),
+        "local_date_time" => "crate::fields::LocalDateTime".to_owned(),
+
+        // Everything else will be an enum
+        v => format!("crate::profile::enums::{}", to_pascal_case(v)),
     }
 }
 
@@ -380,6 +392,7 @@ fn message_name(name: &str) -> Option<&str> {
         // Ignore these two, since they represent a custom range
         "mfg_range_min" => None,
         "mfg_range_max" => None,
+
         _ => Some(match name {
             "1partcarbon" => "one_part_carbon",
             "4iiiis" => "four_i_i_i_is",

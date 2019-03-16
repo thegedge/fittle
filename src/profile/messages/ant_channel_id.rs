@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,7 +15,7 @@ pub struct AntChannelId {
     channel_number: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    device_index: Option<enums::DeviceIndex>,
+    device_index: Option<crate::profile::enums::DeviceIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     device_number: Option<u16>,
@@ -44,7 +42,7 @@ impl AntChannelId {
                 1 => msg.device_type = content.one().map(<u8>::from),
                 2 => msg.device_number = content.one().map(<u16>::from),
                 3 => msg.transmission_type = content.one().map(<u8>::from),
-                4 => msg.device_index = content.one().map(<enums::DeviceIndex>::from),
+                4 => msg.device_index = content.one().map(<crate::profile::enums::DeviceIndex>::from),
                 _ => (),
             };
         }

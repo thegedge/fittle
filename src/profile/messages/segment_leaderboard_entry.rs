@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -23,7 +21,7 @@ pub struct SegmentLeaderboardEntry {
     group_primary_key: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
@@ -32,7 +30,7 @@ pub struct SegmentLeaderboardEntry {
     segment_time: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    type_: Option<enums::SegmentLeaderboardType>,
+    type_: Option<crate::profile::enums::SegmentLeaderboardType>,
 }
 
 impl SegmentLeaderboardEntry {
@@ -47,12 +45,12 @@ impl SegmentLeaderboardEntry {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 0 => msg.name = content.one().map(<String>::from),
-                1 => msg.type_ = content.one().map(<enums::SegmentLeaderboardType>::from),
+                1 => msg.type_ = content.one().map(<crate::profile::enums::SegmentLeaderboardType>::from),
                 2 => msg.group_primary_key = content.one().map(<u32>::from),
                 3 => msg.activity_id = content.one().map(<u32>::from),
                 4 => msg.segment_time = content.one().map(<u32>::from),
                 5 => msg.activity_id_string = content.one().map(<String>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

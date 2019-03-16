@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -29,7 +27,7 @@ pub struct AntRx {
     mesg_id: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 }
 
 impl AntRx {
@@ -48,7 +46,7 @@ impl AntRx {
                 2 => msg.mesg_data = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 3 => msg.channel_number = content.one().map(<u8>::from),
                 4 => msg.data = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,13 +15,13 @@ pub struct DiveGas {
     helium_content: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     oxygen_content: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    status: Option<enums::DiveGasStatus>,
+    status: Option<crate::profile::enums::DiveGasStatus>,
 }
 
 impl DiveGas {
@@ -39,8 +37,8 @@ impl DiveGas {
             match number {
                 0 => msg.helium_content = content.one().map(<u8>::from),
                 1 => msg.oxygen_content = content.one().map(<u8>::from),
-                2 => msg.status = content.one().map(<enums::DiveGasStatus>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                2 => msg.status = content.one().map(<crate::profile::enums::DiveGasStatus>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

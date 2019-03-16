@@ -1,7 +1,13 @@
+use chrono::prelude::*;
+use chrono::Duration;
+
 use byteorder::{
     ByteOrder,
     ReadBytesExt,
 };
+
+pub type DateTime = chrono::DateTime<Utc>;
+pub type LocalDateTime = chrono::DateTime<Local>;
 
 #[derive(Clone, Debug)]
 pub enum Field {
@@ -172,7 +178,6 @@ macro_rules! from_impl {
     };
 }
 
-from_impl!(bool, Enum | UnsignedInt8, |v| v != 0);
 from_impl!(u8, Enum | UnsignedInt8 | UnsignedInt8z);
 from_impl!(u16, UnsignedInt16 | UnsignedInt16z);
 from_impl!(u32, UnsignedInt32 | UnsignedInt32z);
@@ -185,3 +190,28 @@ from_impl!(f32, Float32);
 from_impl!(f64, Float64);
 from_impl!(String, String);
 from_impl!(Vec<u8>, ByteArray);
+
+from_impl!(bool, Enum | UnsignedInt8, |v| v != 0);
+
+lazy_static! {
+    static ref UTC_BASIS: DateTime = Utc.ymd(1989, 12, 31).and_hms(0, 0, 0);
+    static ref LOCAL_BASIS: LocalDateTime = Local.ymd(1989, 12, 31).and_hms(0, 0, 0);
+}
+
+from_impl!(DateTime, UnsignedInt32, { |v|
+    if v < 0x10000000 {
+        // TODO time since system boot, not UTC_BASIS
+        *UTC_BASIS + Duration::seconds(v as i64)
+    } else {
+        *UTC_BASIS + Duration::seconds(v as i64)
+    }
+});
+
+from_impl!(LocalDateTime, UnsignedInt32, { |v|
+    if v < 0x10000000 {
+        // TODO time since system boot, not LOCAL_BASIS
+        *LOCAL_BASIS + Duration::seconds(v as i64)
+    } else {
+        *LOCAL_BASIS + Duration::seconds(v as i64)
+    }
+});

@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -149,13 +147,13 @@ pub struct Session {
     enhanced_min_altitude: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    event: Option<enums::Event>,
+    event: Option<crate::profile::enums::Event>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     event_group: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    event_type: Option<enums::EventType>,
+    event_type: Option<crate::profile::enums::EventType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     first_lap_index: Option<u16>,
@@ -167,7 +165,7 @@ pub struct Session {
     intensity_factor: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    left_right_balance: Option<enums::LeftRightBalance100>,
+    left_right_balance: Option<crate::profile::enums::LeftRightBalance100>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     lev_battery_consumption: Option<u8>,
@@ -224,7 +222,7 @@ pub struct Session {
     max_total_hemoglobin_conc: Option<Vec<u16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     min_altitude: Option<u16>,
@@ -266,10 +264,10 @@ pub struct Session {
     pool_length: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pool_length_unit: Option<enums::DisplayMeasure>,
+    pool_length_unit: Option<crate::profile::enums::DisplayMeasure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sport: Option<enums::Sport>,
+    sport: Option<crate::profile::enums::Sport>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     sport_index: Option<u8>,
@@ -284,13 +282,13 @@ pub struct Session {
     start_position_long: Option<i32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    start_time: Option<enums::DateTime>,
+    start_time: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     stroke_count: Option<Vec<u16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sub_sport: Option<enums::SubSport>,
+    sub_sport: Option<crate::profile::enums::SubSport>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     swc_lat: Option<i32>,
@@ -299,7 +297,7 @@ pub struct Session {
     swc_long: Option<i32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    swim_stroke: Option<enums::SwimStroke>,
+    swim_stroke: Option<crate::profile::enums::SwimStroke>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     threshold_power: Option<u16>,
@@ -320,7 +318,7 @@ pub struct Session {
     time_standing: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     total_anaerobic_training_effect: Option<u8>,
@@ -365,7 +363,7 @@ pub struct Session {
     training_stress_score: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    trigger: Option<enums::SessionTrigger>,
+    trigger: Option<crate::profile::enums::SessionTrigger>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     zone_count: Option<Vec<u16>>,
@@ -382,13 +380,13 @@ impl Session {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.event = content.one().map(<enums::Event>::from),
-                1 => msg.event_type = content.one().map(<enums::EventType>::from),
-                2 => msg.start_time = content.one().map(<enums::DateTime>::from),
+                0 => msg.event = content.one().map(<crate::profile::enums::Event>::from),
+                1 => msg.event_type = content.one().map(<crate::profile::enums::EventType>::from),
+                2 => msg.start_time = content.one().map(<crate::fields::DateTime>::from),
                 3 => msg.start_position_lat = content.one().map(<i32>::from),
                 4 => msg.start_position_long = content.one().map(<i32>::from),
-                5 => msg.sport = content.one().map(<enums::Sport>::from),
-                6 => msg.sub_sport = content.one().map(<enums::SubSport>::from),
+                5 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
+                6 => msg.sub_sport = content.one().map(<crate::profile::enums::SubSport>::from),
                 7 => msg.total_elapsed_time = content.one().map(<u32>::from),
                 8 => msg.total_timer_time = content.one().map(<u32>::from),
                 9 => msg.total_distance = content.one().map(<u32>::from),
@@ -409,7 +407,7 @@ impl Session {
                 25 => msg.first_lap_index = content.one().map(<u16>::from),
                 26 => msg.num_laps = content.one().map(<u16>::from),
                 27 => msg.event_group = content.one().map(<u8>::from),
-                28 => msg.trigger = content.one().map(<enums::SessionTrigger>::from),
+                28 => msg.trigger = content.one().map(<crate::profile::enums::SessionTrigger>::from),
                 29 => msg.nec_lat = content.one().map(<i32>::from),
                 30 => msg.nec_long = content.one().map(<i32>::from),
                 31 => msg.swc_lat = content.one().map(<i32>::from),
@@ -417,13 +415,13 @@ impl Session {
                 34 => msg.normalized_power = content.one().map(<u16>::from),
                 35 => msg.training_stress_score = content.one().map(<u16>::from),
                 36 => msg.intensity_factor = content.one().map(<u16>::from),
-                37 => msg.left_right_balance = content.one().map(<enums::LeftRightBalance100>::from),
+                37 => msg.left_right_balance = content.one().map(<crate::profile::enums::LeftRightBalance100>::from),
                 41 => msg.avg_stroke_count = content.one().map(<u32>::from),
                 42 => msg.avg_stroke_distance = content.one().map(<u16>::from),
-                43 => msg.swim_stroke = content.one().map(<enums::SwimStroke>::from),
+                43 => msg.swim_stroke = content.one().map(<crate::profile::enums::SwimStroke>::from),
                 44 => msg.pool_length = content.one().map(<u16>::from),
                 45 => msg.threshold_power = content.one().map(<u16>::from),
-                46 => msg.pool_length_unit = content.one().map(<enums::DisplayMeasure>::from),
+                46 => msg.pool_length_unit = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
                 47 => msg.num_active_lengths = content.one().map(<u16>::from),
                 48 => msg.total_work = content.one().map(<u32>::from),
                 49 => msg.avg_altitude = content.one().map(<u16>::from),
@@ -499,8 +497,8 @@ impl Session {
                 134 => msg.avg_step_length = content.one().map(<u16>::from),
                 137 => msg.total_anaerobic_training_effect = content.one().map(<u8>::from),
                 139 => msg.avg_vam = content.one().map(<u16>::from),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

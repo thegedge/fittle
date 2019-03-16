@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -38,10 +36,10 @@ pub struct WeightScale {
     physique_rating: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    user_profile_index: Option<enums::MessageIndex>,
+    user_profile_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     visceral_fat_mass: Option<u16>,
@@ -50,7 +48,7 @@ pub struct WeightScale {
     visceral_fat_rating: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    weight: Option<enums::Weight>,
+    weight: Option<crate::profile::enums::Weight>,
 }
 
 impl WeightScale {
@@ -64,7 +62,7 @@ impl WeightScale {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.weight = content.one().map(<enums::Weight>::from),
+                0 => msg.weight = content.one().map(<crate::profile::enums::Weight>::from),
                 1 => msg.percent_fat = content.one().map(<u16>::from),
                 2 => msg.percent_hydration = content.one().map(<u16>::from),
                 3 => msg.visceral_fat_mass = content.one().map(<u16>::from),
@@ -75,8 +73,8 @@ impl WeightScale {
                 9 => msg.active_met = content.one().map(<u16>::from),
                 10 => msg.metabolic_age = content.one().map(<u8>::from),
                 11 => msg.visceral_fat_rating = content.one().map(<u8>::from),
-                12 => msg.user_profile_index = content.one().map(<enums::MessageIndex>::from),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                12 => msg.user_profile_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

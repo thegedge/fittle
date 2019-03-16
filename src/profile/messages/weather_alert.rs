@@ -7,29 +7,27 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
 pub struct WeatherAlert {
     #[serde(skip_serializing_if = "Option::is_none")]
-    expire_time: Option<enums::DateTime>,
+    expire_time: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    issue_time: Option<enums::DateTime>,
+    issue_time: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     report_id: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    severity: Option<enums::WeatherSeverity>,
+    severity: Option<crate::profile::enums::WeatherSeverity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    type_: Option<enums::WeatherSevereType>,
+    type_: Option<crate::profile::enums::WeatherSevereType>,
 }
 
 impl WeatherAlert {
@@ -44,11 +42,11 @@ impl WeatherAlert {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 0 => msg.report_id = content.one().map(<String>::from),
-                1 => msg.issue_time = content.one().map(<enums::DateTime>::from),
-                2 => msg.expire_time = content.one().map(<enums::DateTime>::from),
-                3 => msg.severity = content.one().map(<enums::WeatherSeverity>::from),
-                4 => msg.type_ = content.one().map(<enums::WeatherSevereType>::from),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                1 => msg.issue_time = content.one().map(<crate::fields::DateTime>::from),
+                2 => msg.expire_time = content.one().map(<crate::fields::DateTime>::from),
+                3 => msg.severity = content.one().map(<crate::profile::enums::WeatherSeverity>::from),
+                4 => msg.type_ = content.one().map(<crate::profile::enums::WeatherSevereType>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -35,10 +33,10 @@ pub struct DiveSummary {
     o2_toxicity: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    reference_index: Option<enums::MessageIndex>,
+    reference_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    reference_mesg: Option<enums::MesgNum>,
+    reference_mesg: Option<crate::profile::enums::MesgNum>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     start_cns: Option<u8>,
@@ -50,7 +48,7 @@ pub struct DiveSummary {
     surface_interval: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 }
 
 impl DiveSummary {
@@ -64,8 +62,8 @@ impl DiveSummary {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.reference_mesg = content.one().map(<enums::MesgNum>::from),
-                1 => msg.reference_index = content.one().map(<enums::MessageIndex>::from),
+                0 => msg.reference_mesg = content.one().map(<crate::profile::enums::MesgNum>::from),
+                1 => msg.reference_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 2 => msg.avg_depth = content.one().map(<u32>::from),
                 3 => msg.max_depth = content.one().map(<u32>::from),
                 4 => msg.surface_interval = content.one().map(<u32>::from),
@@ -76,7 +74,7 @@ impl DiveSummary {
                 9 => msg.o2_toxicity = content.one().map(<u16>::from),
                 10 => msg.dive_number = content.one().map(<u32>::from),
                 11 => msg.bottom_time = content.one().map(<u32>::from),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

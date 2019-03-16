@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,7 +15,7 @@ pub struct SdmProfile {
     enabled: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     odometer: Option<u32>,
@@ -56,7 +54,7 @@ impl SdmProfile {
                 4 => msg.speed_source = content.one().map(<bool>::from),
                 5 => msg.sdm_ant_id_trans_type = content.one().map(<u8>::from),
                 7 => msg.odometer_rollover = content.one().map(<u8>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

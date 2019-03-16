@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -71,7 +69,7 @@ pub struct BikeProfile {
     id: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
@@ -104,10 +102,10 @@ pub struct BikeProfile {
     spdcad_enabled: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sport: Option<enums::Sport>,
+    sport: Option<crate::profile::enums::Sport>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sub_sport: Option<enums::SubSport>,
+    sub_sport: Option<crate::profile::enums::SubSport>,
 }
 
 impl BikeProfile {
@@ -122,8 +120,8 @@ impl BikeProfile {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 0 => msg.name = content.one().map(<String>::from),
-                1 => msg.sport = content.one().map(<enums::Sport>::from),
-                2 => msg.sub_sport = content.one().map(<enums::SubSport>::from),
+                1 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
+                2 => msg.sub_sport = content.one().map(<crate::profile::enums::SubSport>::from),
                 3 => msg.odometer = content.one().map(<u32>::from),
                 4 => msg.bike_spd_ant_id = content.one().map(<u16>::from),
                 5 => msg.bike_cad_ant_id = content.one().map(<u16>::from),
@@ -152,7 +150,7 @@ impl BikeProfile {
                 40 => msg.rear_gear_num = content.one().map(<u8>::from),
                 41 => msg.rear_gear = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 44 => msg.shimano_di2_enabled = content.one().map(<bool>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

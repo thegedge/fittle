@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -17,7 +15,7 @@ pub struct FileCapabilities {
     directory: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    flags: Option<enums::FileFlags>,
+    flags: Option<crate::profile::enums::FileFlags>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     max_count: Option<u16>,
@@ -26,10 +24,10 @@ pub struct FileCapabilities {
     max_size: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    type_: Option<enums::File>,
+    type_: Option<crate::profile::enums::File>,
 }
 
 impl FileCapabilities {
@@ -43,12 +41,12 @@ impl FileCapabilities {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.type_ = content.one().map(<enums::File>::from),
-                1 => msg.flags = content.one().map(<enums::FileFlags>::from),
+                0 => msg.type_ = content.one().map(<crate::profile::enums::File>::from),
+                1 => msg.flags = content.one().map(<crate::profile::enums::FileFlags>::from),
                 2 => msg.directory = content.one().map(<String>::from),
                 3 => msg.max_count = content.one().map(<u16>::from),
                 4 => msg.max_size = content.one().map(<u32>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

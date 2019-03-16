@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -29,7 +27,7 @@ pub struct Hr {
     time256: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 }
 
 impl Hr {
@@ -48,7 +46,7 @@ impl Hr {
                 6 => msg.filtered_bpm = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 9 => msg.event_timestamp = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
                 10 => msg.event_timestamp_12 = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }

@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -23,7 +21,7 @@ pub struct SegmentPoint {
     leader_time: Option<Vec<u32>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     position_lat: Option<i32>,
@@ -48,7 +46,7 @@ impl SegmentPoint {
                 3 => msg.distance = content.one().map(<u32>::from),
                 4 => msg.altitude = content.one().map(<u16>::from),
                 5 => msg.leader_time = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

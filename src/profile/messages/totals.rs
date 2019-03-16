@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -26,13 +24,13 @@ pub struct Totals {
     elapsed_time: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    message_index: Option<enums::MessageIndex>,
+    message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     sessions: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sport: Option<enums::Sport>,
+    sport: Option<crate::profile::enums::Sport>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     sport_index: Option<u8>,
@@ -41,7 +39,7 @@ pub struct Totals {
     timer_time: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 }
 
 impl Totals {
@@ -58,13 +56,13 @@ impl Totals {
                 0 => msg.timer_time = content.one().map(<u32>::from),
                 1 => msg.distance = content.one().map(<u32>::from),
                 2 => msg.calories = content.one().map(<u32>::from),
-                3 => msg.sport = content.one().map(<enums::Sport>::from),
+                3 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
                 4 => msg.elapsed_time = content.one().map(<u32>::from),
                 5 => msg.sessions = content.one().map(<u16>::from),
                 6 => msg.active_time = content.one().map(<u32>::from),
                 9 => msg.sport_index = content.one().map(<u8>::from),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
-                254 => msg.message_index = content.one().map(<enums::MessageIndex>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
+                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };
         }

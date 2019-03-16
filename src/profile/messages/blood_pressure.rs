@@ -7,8 +7,6 @@ use byteorder::{
 
 use serde::Serialize;
 
-#[allow(unused_imports)]
-use crate::profile::enums;
 use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
@@ -20,7 +18,7 @@ pub struct BloodPressure {
     heart_rate: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    heart_rate_type: Option<enums::HrType>,
+    heart_rate_type: Option<crate::profile::enums::HrType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     map_3_sample_mean: Option<u16>,
@@ -35,16 +33,16 @@ pub struct BloodPressure {
     mean_arterial_pressure: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    status: Option<enums::BpStatus>,
+    status: Option<crate::profile::enums::BpStatus>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     systolic_pressure: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp: Option<enums::DateTime>,
+    timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    user_profile_index: Option<enums::MessageIndex>,
+    user_profile_index: Option<crate::profile::enums::MessageIndex>,
 }
 
 impl BloodPressure {
@@ -65,10 +63,10 @@ impl BloodPressure {
                 4 => msg.map_morning_values = content.one().map(<u16>::from),
                 5 => msg.map_evening_values = content.one().map(<u16>::from),
                 6 => msg.heart_rate = content.one().map(<u8>::from),
-                7 => msg.heart_rate_type = content.one().map(<enums::HrType>::from),
-                8 => msg.status = content.one().map(<enums::BpStatus>::from),
-                9 => msg.user_profile_index = content.one().map(<enums::MessageIndex>::from),
-                253 => msg.timestamp = content.one().map(<enums::DateTime>::from),
+                7 => msg.heart_rate_type = content.one().map(<crate::profile::enums::HrType>::from),
+                8 => msg.status = content.one().map(<crate::profile::enums::BpStatus>::from),
+                9 => msg.user_profile_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
+                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };
         }
