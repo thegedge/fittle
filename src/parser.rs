@@ -29,6 +29,7 @@ use crate::{
 #[derive(Debug)]
 pub enum ParserError {
     FailedToParse,
+    CompressedTimestampsUnsupported,
 }
 
 pub type Result<T> = result::Result<T, ParserError>;
@@ -75,6 +76,13 @@ impl RecordHeader {
     fn is_definition(&self) -> bool {
         match self {
             RecordHeader::Normal(NormalHeader { message_type: MESSAGE_TYPE_DEFINITION, .. }) => true,
+            _ => false,
+        }
+    }
+
+    fn is_compressed(&self) -> bool {
+        match self {
+            RecordHeader::Compressed(_) => true,
             _ => false,
         }
     }
@@ -187,6 +195,9 @@ impl<Reader> Parser<Reader> where Reader: Read + Seek {
             let local_message_type = record_header.local_message_type();
 
             // TODO compressed offsets
+            if record_header.is_compressed() {
+                return Err(ParserError::CompressedTimestampsUnsupported)
+            }
 
             if record_header.is_definition() {
                 let data_definition = self.data_definition()?;

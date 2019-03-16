@@ -15,7 +15,7 @@ fn main() -> Result<(), String> {
     let mut bytes = Vec::new();
     let _ = handle.read_to_end(&mut bytes);
 
-    match  parser::parse(&bytes) {
+    match parser::parse(&bytes) {
         Ok(results) => {
             match serde_json::to_string(&results) {
                 Ok(json) => Ok(println!("{}", json)),
