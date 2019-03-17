@@ -20,3 +20,14 @@ example, to get one's heart rate during a session:
 ```sh
 cargo run < run.fit | jq -C '.[] | select(.message_type == "record") | .heart_rate'
 ```
+
+## Generating profile code
+
+The `fittle-profile-gen` binary works by generating code from a FIT profile spreadsheet. You can
+find this at [www.thisisant.com](https://www.thisisant.com/developer/resources/downloads/). Once
+downloaded and extracted, you can generate the profile code by running:
+
+```sh
+export FIT_PROFILE_PATH="/path/to/sdk/FitSDKRelease_20.80.00/Profile.xlsx"
+cargo run -p fittle-profile-gen
+```
