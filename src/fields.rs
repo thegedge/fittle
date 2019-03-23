@@ -1,5 +1,7 @@
-use chrono::prelude::*;
-use chrono::Duration;
+use chrono::{
+    prelude::*,
+    Duration,
+};
 
 use byteorder::{
     ByteOrder,
@@ -18,6 +20,7 @@ pub enum Field {
 impl Field {
     pub fn one(self) -> Option<FieldContent> {
         match self {
+            Field::One(FieldContent::Invalid) => None,
             Field::One(v) => Some(v),
             _ => None
         }
@@ -25,7 +28,13 @@ impl Field {
 
     pub fn many(self) -> Option<Vec<FieldContent>> {
         match self {
-            Field::Many(v) => Some(v),
+            Field::Many(v) => {
+                if v.iter().all(FieldContent::is_invalid) {
+                    None
+                } else {
+                    Some(v)
+                }
+            },
             _ => None
         }
     }
@@ -73,7 +82,7 @@ impl FieldDefinition {
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
-        Ok(match self.base_type {
+        let value = match self.base_type {
             0 => FieldContent::Enum(reader.read_u8()?),
             1 => FieldContent::SignedInt8(reader.read_i8()?),
             2 => FieldContent::UnsignedInt8(reader.read_u8()?),
@@ -85,9 +94,13 @@ impl FieldDefinition {
                 let mut data = vec![0; self.size];
                 reader.read_exact(&mut data)?;
 
-                let mut iter = data.splitn(2, |b| *b == 0);
-                let string = String::from_utf8_lossy(iter.next().expect("should have at least one item"));
-                FieldContent::String(string.into_owned())
+                if self.size == 0 || (self.size == 1 && data[0] == 0) {
+                    FieldContent::Invalid
+                } else {
+                    let mut iter = data.splitn(2, |b| *b == 0);
+                    let string = String::from_utf8_lossy(iter.next().expect("should have at least one item"));
+                    FieldContent::String(string.into_owned())
+                }
             },
             8 => FieldContent::Float32(reader.read_f32::<Order>()?),
             9 => FieldContent::Float64(reader.read_f64::<Order>()?),
@@ -97,16 +110,42 @@ impl FieldDefinition {
             13 => {
                 let mut data = vec![0; self.size];
                 reader.read_exact(&mut data)?;
-                FieldContent::ByteArray(data)
+                if data.iter().all(|v| *v == 0xFF) {
+                    FieldContent::Invalid
+                } else {
+                    FieldContent::ByteArray(data)
+                }
             },
             14 => FieldContent::SignedInt64(reader.read_i64::<Order>()?),
             15 => FieldContent::UnsignedInt64(reader.read_u64::<Order>()?),
             16 => FieldContent::UnsignedInt64z(reader.read_u64::<Order>()?),
             _ => panic!("impossible base type: {}", self.base_type),
+        };
+
+        // TODO this isn't ideal
+        Ok(match value {
+            FieldContent::Enum(v) => if v == 0xFF { FieldContent::Invalid } else { value },
+            FieldContent::SignedInt8(v) => if v == 0x7F { FieldContent::Invalid } else { value },
+            FieldContent::UnsignedInt8(v) => if v == 0xFF { FieldContent::Invalid } else { value },
+            FieldContent::SignedInt16(v) => if v == 0x7FFF { FieldContent::Invalid } else { value },
+            FieldContent::UnsignedInt16(v) => if v == 0xFFFF { FieldContent::Invalid } else { value },
+            FieldContent::SignedInt32(v) => if v == 0x7FFFFFFF { FieldContent::Invalid } else { value },
+            FieldContent::UnsignedInt32(v) => if v == 0xFFFFFFFF { FieldContent::Invalid } else { value },
+            FieldContent::String(_) => value,
+            FieldContent::Float32(v) => if v.to_bits() == 0xFFFFFFFF { FieldContent::Invalid } else { value },
+            FieldContent::Float64(v) => if v.to_bits() == 0xFFFFFFFFFFFFFFFF { FieldContent::Invalid } else { value },
+            FieldContent::UnsignedInt8z(v) => if v == 0 { FieldContent::Invalid } else { value },
+            FieldContent::UnsignedInt16z(v) => if v == 0 { FieldContent::Invalid } else { value },
+            FieldContent::UnsignedInt32z(v) => if v == 0 { FieldContent::Invalid } else { value },
+            FieldContent::ByteArray(_) => value,
+            FieldContent::SignedInt64(v) => if v == 0x7FFFFFFFFFFFFFFF { FieldContent::Invalid } else { value },
+            FieldContent::UnsignedInt64(v) => if v == 0xFFFFFFFFFFFFFFFF { FieldContent::Invalid } else { value },
+            FieldContent::UnsignedInt64z(v) => if v == 0 { FieldContent::Invalid } else { value },
+            _ => FieldContent::Invalid,
         })
     }
 
-    pub fn base_size(&self) -> usize {
+    fn base_size(&self) -> usize {
         match self.base_type {
             0 => 1,
             1 => 1,
@@ -129,7 +168,7 @@ impl FieldDefinition {
         }
     }
 
-    pub fn value_count(&self) -> usize {
+    fn value_count(&self) -> usize {
         match self.base_type {
             7 => 1,
             13 => 1,
@@ -157,6 +196,16 @@ pub enum FieldContent {
     SignedInt64(i64),
     UnsignedInt64(u64),
     UnsignedInt64z(u64),
+    Invalid
+}
+
+impl FieldContent {
+    pub fn is_invalid(&self) -> bool {
+        match self {
+            FieldContent::Invalid => true,
+            _ => false,
+        }
+    }
 }
 
 macro_rules! from_impl {
@@ -166,13 +215,13 @@ macro_rules! from_impl {
 
     ( $into_type:ty, $( $enums:tt )|+, $conversion:expr ) => {
         impl From<FieldContent> for $into_type {
-            fn from(fc: FieldContent) -> Self {
-                ($conversion)(match fc {
+            fn from(fc: FieldContent) -> $into_type {
+                match fc {
                     $(
-                        FieldContent::$enums(v) => v,
+                        FieldContent::$enums(v) => ($conversion)(v),
                     )*
                     v => panic!("cannot convert {:?} into {}", v, stringify!($into_type)),
-                })
+                }
             }
         }
     };
