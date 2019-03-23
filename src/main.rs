@@ -3,6 +3,7 @@ extern crate lazy_static;
 
 mod profile;
 mod fields;
+mod message;
 mod parser;
 
 use std::io::prelude::*;

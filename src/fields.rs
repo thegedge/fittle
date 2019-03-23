@@ -8,10 +8,13 @@ use byteorder::{
     ReadBytesExt,
 };
 
+use serde::Serialize;
+
 pub type DateTime = chrono::DateTime<Utc>;
 pub type LocalDateTime = chrono::DateTime<Local>;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
+#[serde(untagged)]
 pub enum Field {
     One(FieldContent),
     Many(Vec<FieldContent>),
@@ -36,6 +39,13 @@ impl Field {
                 }
             },
             _ => None
+        }
+    }
+
+    pub fn is_invalid(&self) -> bool {
+        match self {
+            Field::One(v) => v.is_invalid(),
+            Field::Many(v) => v.iter().all(FieldContent::is_invalid),
         }
     }
 }
@@ -177,7 +187,8 @@ impl FieldDefinition {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
+#[serde(untagged)]
 pub enum FieldContent {
     Enum(u8),
     SignedInt8(i8),

@@ -9,6 +9,7 @@ use serde::Serialize;
 
 use crate::profile::enums::MesgNum;
 use crate::fields::FieldDefinition;
+use crate::message::GenericMessage;
 {{#each .}}
 mod {{module}};
 {{~/each}}
@@ -23,6 +24,7 @@ pub enum Message {
 {{~#each .}}
     {{name}}({{name}}),
 {{~/each}}
+    Unknown(GenericMessage),
 }
 
 // Read a Message from a cursor
@@ -38,20 +40,20 @@ impl Message {
         //      big refactor down the road...
         match msg {
 {{~#each .}}
-            MesgNum::{{name}} =>
+            MesgNum::{{name}} => {
                 {{module}}::{{name}}::from_fields::<Order, Reader>(reader, fields)
                     .map(Message::{{name}})
-                    .map_err(|_e| "could not read message {{name}}".to_owned()),
-{{/each}}
-            m => {
-                // Ensure we move the reader forward
-                fields.iter()
-                    .map(|f| f.content_from::<Order, Reader>(reader))
-                    .collect::<Result<Vec<_>, _>>()
-                    .map_err(|e| e.to_string())?;
-
-                Err(format!("unknown message: {:?}", m))
+                    .map_err(|_e| "could not read message {{name}}".to_owned())
             },
+{{/each}}
+            MesgNum::UnknownValue(number) => {
+                GenericMessage::new::<Order, Reader>(reader, number, fields)
+                  .map(Message::Unknown)
+                  .map_err(|_e| format!("could not read message number {}", number))
+            },
+            v => {
+              Err(format!("no definition for known message {:?}", v))
+            }
         }
     }
 }
