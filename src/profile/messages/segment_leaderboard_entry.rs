@@ -27,7 +27,7 @@ pub struct SegmentLeaderboardEntry {
     name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    segment_time: Option<u32>,
+    segment_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     type_: Option<crate::profile::enums::SegmentLeaderboardType>,
@@ -48,7 +48,7 @@ impl SegmentLeaderboardEntry {
                 1 => msg.type_ = content.one().map(<crate::profile::enums::SegmentLeaderboardType>::from),
                 2 => msg.group_primary_key = content.one().map(<u32>::from),
                 3 => msg.activity_id = content.one().map(<u32>::from),
-                4 => msg.segment_time = content.one().map(<u32>::from),
+                4 => msg.segment_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 5 => msg.activity_id_string = content.one().map(<String>::from),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),

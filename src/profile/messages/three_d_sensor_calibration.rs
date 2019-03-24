@@ -24,7 +24,7 @@ pub struct ThreeDSensorCalibration {
     offset_cal: Option<Vec<i32>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    orientation_matrix: Option<Vec<i32>>,
+    orientation_matrix: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     sensor_type: Option<crate::profile::enums::SensorType>,
@@ -49,7 +49,7 @@ impl ThreeDSensorCalibration {
                 2 => msg.calibration_divisor = content.one().map(<u32>::from),
                 3 => msg.level_shift = content.one().map(<u32>::from),
                 4 => msg.offset_cal = content.many().map(|vec| vec.into_iter().map(<i32>::from).collect()),
-                5 => msg.orientation_matrix = content.many().map(|vec| vec.into_iter().map(<i32>::from).collect()),
+                5 => msg.orientation_matrix = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i32>::from(v)) / 65535.0 - 0.0 }).collect()),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };

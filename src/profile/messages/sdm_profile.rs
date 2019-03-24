@@ -18,7 +18,7 @@ pub struct SdmProfile {
     message_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    odometer: Option<u32>,
+    odometer: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     odometer_rollover: Option<u8>,
@@ -30,7 +30,7 @@ pub struct SdmProfile {
     sdm_ant_id_trans_type: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sdm_cal_factor: Option<u16>,
+    sdm_cal_factor: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     speed_source: Option<bool>,
@@ -49,8 +49,8 @@ impl SdmProfile {
             match number {
                 0 => msg.enabled = content.one().map(<bool>::from),
                 1 => msg.sdm_ant_id = content.one().map(<u16>::from),
-                2 => msg.sdm_cal_factor = content.one().map(<u16>::from),
-                3 => msg.odometer = content.one().map(<u32>::from),
+                2 => msg.sdm_cal_factor = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
+                3 => msg.odometer = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 100.0 - 0.0 })(v))),
                 4 => msg.speed_source = content.one().map(<bool>::from),
                 5 => msg.sdm_ant_id_trans_type = content.one().map(<u8>::from),
                 7 => msg.odometer_rollover = content.one().map(<u8>::from),

@@ -18,7 +18,7 @@ pub struct Workout {
     num_valid_steps: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pool_length: Option<u16>,
+    pool_length: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pool_length_unit: Option<crate::profile::enums::DisplayMeasure>,
@@ -49,7 +49,7 @@ impl Workout {
                 6 => msg.num_valid_steps = content.one().map(<u16>::from),
                 8 => msg.wkt_name = content.one().map(<String>::from),
                 11 => msg.sub_sport = content.one().map(<crate::profile::enums::SubSport>::from),
-                14 => msg.pool_length = content.one().map(<u16>::from),
+                14 => msg.pool_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 })(v))),
                 15 => msg.pool_length_unit = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
                 _ => (),
             };

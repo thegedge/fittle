@@ -15,7 +15,7 @@ pub struct DiveAlarm {
     alarm_type: Option<crate::profile::enums::DiveAlarmType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    depth: Option<u32>,
+    depth: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     dive_types: Option<Vec<crate::profile::enums::SubSport>>,
@@ -30,7 +30,7 @@ pub struct DiveAlarm {
     sound: Option<crate::profile::enums::Tone>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    time: Option<i32>,
+    time: Option<crate::fields::Time>,
 }
 
 impl DiveAlarm {
@@ -44,8 +44,8 @@ impl DiveAlarm {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.depth = content.one().map(<u32>::from),
-                1 => msg.time = content.one().map(<i32>::from),
+                0 => msg.depth = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
+                1 => msg.time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<i32>::from(v)) / 1.0 - 0.0 })(v))),
                 2 => msg.enabled = content.one().map(<bool>::from),
                 3 => msg.alarm_type = content.one().map(<crate::profile::enums::DiveAlarmType>::from),
                 4 => msg.sound = content.one().map(<crate::profile::enums::Tone>::from),

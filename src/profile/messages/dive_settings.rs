@@ -54,22 +54,22 @@ pub struct DiveSettings {
     name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    po2_critical: Option<u8>,
+    po2_critical: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    po2_deco: Option<u8>,
+    po2_deco: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    po2_warn: Option<u8>,
+    po2_warn: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    repeat_dive_interval: Option<u16>,
+    repeat_dive_interval: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     safety_stop_enabled: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    safety_stop_time: Option<u16>,
+    safety_stop_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     water_density: Option<f32>,
@@ -95,9 +95,9 @@ impl DiveSettings {
                 3 => msg.gf_high = content.one().map(<u8>::from),
                 4 => msg.water_type = content.one().map(<crate::profile::enums::WaterType>::from),
                 5 => msg.water_density = content.one().map(<f32>::from),
-                6 => msg.po2_warn = content.one().map(<u8>::from),
-                7 => msg.po2_critical = content.one().map(<u8>::from),
-                8 => msg.po2_deco = content.one().map(<u8>::from),
+                6 => msg.po2_warn = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 100.0 - 0.0 }),
+                7 => msg.po2_critical = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 100.0 - 0.0 }),
+                8 => msg.po2_deco = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 100.0 - 0.0 }),
                 9 => msg.safety_stop_enabled = content.one().map(<bool>::from),
                 10 => msg.bottom_depth = content.one().map(<f32>::from),
                 11 => msg.bottom_time = content.one().map(<u32>::from),
@@ -106,8 +106,8 @@ impl DiveSettings {
                 14 => msg.backlight_mode = content.one().map(<crate::profile::enums::DiveBacklightMode>::from),
                 15 => msg.backlight_brightness = content.one().map(<u8>::from),
                 16 => msg.backlight_timeout = content.one().map(<crate::profile::enums::BacklightTimeout>::from),
-                17 => msg.repeat_dive_interval = content.one().map(<u16>::from),
-                18 => msg.safety_stop_time = content.one().map(<u16>::from),
+                17 => msg.repeat_dive_interval = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u16>::from(v)) / 1.0 - 0.0 })(v))),
+                18 => msg.safety_stop_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u16>::from(v)) / 1.0 - 0.0 })(v))),
                 19 => msg.heart_rate_source_type = content.one().map(<crate::profile::enums::SourceType>::from),
                 20 => msg.heart_rate_source = content.one().map(<u8>::from),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),

@@ -18,7 +18,7 @@ pub struct BikeProfile {
     auto_wheel_cal: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    auto_wheelsize: Option<u16>,
+    auto_wheelsize: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     bike_cad_ant_id: Option<u16>,
@@ -45,16 +45,16 @@ pub struct BikeProfile {
     bike_spdcad_ant_id_trans_type: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    bike_weight: Option<u16>,
+    bike_weight: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     cad_enabled: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    crank_length: Option<u8>,
+    crank_length: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    custom_wheelsize: Option<u16>,
+    custom_wheelsize: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     enabled: Option<bool>,
@@ -75,13 +75,13 @@ pub struct BikeProfile {
     name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    odometer: Option<u32>,
+    odometer: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     odometer_rollover: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    power_cal_factor: Option<u16>,
+    power_cal_factor: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     power_enabled: Option<bool>,
@@ -122,15 +122,15 @@ impl BikeProfile {
                 0 => msg.name = content.one().map(<String>::from),
                 1 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
                 2 => msg.sub_sport = content.one().map(<crate::profile::enums::SubSport>::from),
-                3 => msg.odometer = content.one().map(<u32>::from),
+                3 => msg.odometer = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 100.0 - 0.0 })(v))),
                 4 => msg.bike_spd_ant_id = content.one().map(<u16>::from),
                 5 => msg.bike_cad_ant_id = content.one().map(<u16>::from),
                 6 => msg.bike_spdcad_ant_id = content.one().map(<u16>::from),
                 7 => msg.bike_power_ant_id = content.one().map(<u16>::from),
-                8 => msg.custom_wheelsize = content.one().map(<u16>::from),
-                9 => msg.auto_wheelsize = content.one().map(<u16>::from),
-                10 => msg.bike_weight = content.one().map(<u16>::from),
-                11 => msg.power_cal_factor = content.one().map(<u16>::from),
+                8 => msg.custom_wheelsize = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
+                9 => msg.auto_wheelsize = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
+                10 => msg.bike_weight = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
+                11 => msg.power_cal_factor = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
                 12 => msg.auto_wheel_cal = content.one().map(<bool>::from),
                 13 => msg.auto_power_zero = content.one().map(<bool>::from),
                 14 => msg.id = content.one().map(<u8>::from),
@@ -138,7 +138,7 @@ impl BikeProfile {
                 16 => msg.cad_enabled = content.one().map(<bool>::from),
                 17 => msg.spdcad_enabled = content.one().map(<bool>::from),
                 18 => msg.power_enabled = content.one().map(<bool>::from),
-                19 => msg.crank_length = content.one().map(<u8>::from),
+                19 => msg.crank_length = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 2.0 - 0.0 }),
                 20 => msg.enabled = content.one().map(<bool>::from),
                 21 => msg.bike_spd_ant_id_trans_type = content.one().map(<u8>::from),
                 22 => msg.bike_cad_ant_id_trans_type = content.one().map(<u8>::from),

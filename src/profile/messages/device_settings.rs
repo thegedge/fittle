@@ -72,10 +72,10 @@ pub struct DeviceSettings {
     time_mode: Option<Vec<crate::profile::enums::TimeMode>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    time_offset: Option<Vec<u32>>,
+    time_offset: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    time_zone_offset: Option<Vec<i8>>,
+    time_zone_offset: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     utc_offset: Option<u32>,
@@ -94,9 +94,9 @@ impl DeviceSettings {
             match number {
                 0 => msg.active_time_zone = content.one().map(<u8>::from),
                 1 => msg.utc_offset = content.one().map(<u32>::from),
-                2 => msg.time_offset = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
+                2 => msg.time_offset = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))).collect()),
                 4 => msg.time_mode = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::TimeMode>::from).collect()),
-                5 => msg.time_zone_offset = content.many().map(|vec| vec.into_iter().map(<i8>::from).collect()),
+                5 => msg.time_zone_offset = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i8>::from(v)) / 4.0 - 0.0 }).collect()),
                 12 => msg.backlight_mode = content.one().map(<crate::profile::enums::BacklightMode>::from),
                 36 => msg.activity_tracker_enabled = content.one().map(<bool>::from),
                 39 => msg.clock_time = content.one().map(<crate::fields::DateTime>::from),

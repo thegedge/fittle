@@ -48,7 +48,7 @@ pub struct UserProfile {
     global_id: Option<Vec<u8>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    height: Option<u8>,
+    height: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     height_setting: Option<crate::profile::enums::DisplayMeasure>,
@@ -84,16 +84,16 @@ pub struct UserProfile {
     temperature_setting: Option<crate::profile::enums::DisplayMeasure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    user_running_step_length: Option<u16>,
+    user_running_step_length: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    user_walking_step_length: Option<u16>,
+    user_walking_step_length: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     wake_time: Option<crate::profile::enums::LocaltimeIntoDay>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    weight: Option<u16>,
+    weight: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     weight_setting: Option<crate::profile::enums::DisplayMeasure>,
@@ -113,8 +113,8 @@ impl UserProfile {
                 0 => msg.friendly_name = content.one().map(<String>::from),
                 1 => msg.gender = content.one().map(<crate::profile::enums::Gender>::from),
                 2 => msg.age = content.one().map(<u8>::from),
-                3 => msg.height = content.one().map(<u8>::from),
-                4 => msg.weight = content.one().map(<u16>::from),
+                3 => msg.height = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u8>::from(v)) / 100.0 - 0.0 })(v))),
+                4 => msg.weight = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
                 5 => msg.language = content.one().map(<crate::profile::enums::Language>::from),
                 6 => msg.elev_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
                 7 => msg.weight_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
@@ -134,8 +134,8 @@ impl UserProfile {
                 28 => msg.wake_time = content.one().map(<crate::profile::enums::LocaltimeIntoDay>::from),
                 29 => msg.sleep_time = content.one().map(<crate::profile::enums::LocaltimeIntoDay>::from),
                 30 => msg.height_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                31 => msg.user_running_step_length = content.one().map(<u16>::from),
-                32 => msg.user_walking_step_length = content.one().map(<u16>::from),
+                31 => msg.user_running_step_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
+                32 => msg.user_walking_step_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
                 47 => msg.depth_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
                 49 => msg.dive_count = content.one().map(<u32>::from),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),

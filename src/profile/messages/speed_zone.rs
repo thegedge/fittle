@@ -12,7 +12,7 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct SpeedZone {
     #[serde(skip_serializing_if = "Option::is_none")]
-    high_value: Option<u16>,
+    high_value: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<crate::profile::enums::MessageIndex>,
@@ -32,7 +32,7 @@ impl SpeedZone {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.high_value = content.one().map(<u16>::from),
+                0 => msg.high_value = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 }),
                 1 => msg.name = content.one().map(<String>::from),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),

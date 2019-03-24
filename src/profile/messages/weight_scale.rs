@@ -12,25 +12,25 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct WeightScale {
     #[serde(skip_serializing_if = "Option::is_none")]
-    active_met: Option<u16>,
+    active_met: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    basal_met: Option<u16>,
+    basal_met: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    bone_mass: Option<u16>,
+    bone_mass: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     metabolic_age: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    muscle_mass: Option<u16>,
+    muscle_mass: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    percent_fat: Option<u16>,
+    percent_fat: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    percent_hydration: Option<u16>,
+    percent_hydration: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     physique_rating: Option<u8>,
@@ -42,13 +42,13 @@ pub struct WeightScale {
     user_profile_index: Option<crate::profile::enums::MessageIndex>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    visceral_fat_mass: Option<u16>,
+    visceral_fat_mass: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     visceral_fat_rating: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    weight: Option<u16>,
+    weight: Option<f64>,
 }
 
 impl WeightScale {
@@ -62,15 +62,15 @@ impl WeightScale {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.weight = content.one().map(<u16>::from),
-                1 => msg.percent_fat = content.one().map(<u16>::from),
-                2 => msg.percent_hydration = content.one().map(<u16>::from),
-                3 => msg.visceral_fat_mass = content.one().map(<u16>::from),
-                4 => msg.bone_mass = content.one().map(<u16>::from),
-                5 => msg.muscle_mass = content.one().map(<u16>::from),
-                7 => msg.basal_met = content.one().map(<u16>::from),
+                0 => msg.weight = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
+                1 => msg.percent_fat = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
+                2 => msg.percent_hydration = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
+                3 => msg.visceral_fat_mass = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
+                4 => msg.bone_mass = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
+                5 => msg.muscle_mass = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
+                7 => msg.basal_met = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 4.0 - 0.0 }),
                 8 => msg.physique_rating = content.one().map(<u8>::from),
-                9 => msg.active_met = content.one().map(<u16>::from),
+                9 => msg.active_met = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 4.0 - 0.0 }),
                 10 => msg.metabolic_age = content.one().map(<u8>::from),
                 11 => msg.visceral_fat_rating = content.one().map(<u8>::from),
                 12 => msg.user_profile_index = content.one().map(<crate::profile::enums::MessageIndex>::from),

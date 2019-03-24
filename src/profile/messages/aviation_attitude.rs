@@ -12,19 +12,19 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct AviationAttitude {
     #[serde(skip_serializing_if = "Option::is_none")]
-    accel_lateral: Option<Vec<i16>>,
+    accel_lateral: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    accel_normal: Option<Vec<i16>>,
+    accel_normal: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     attitude_stage_complete: Option<Vec<u8>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pitch: Option<Vec<i16>>,
+    pitch: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    roll: Option<Vec<i16>>,
+    roll: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     stage: Option<Vec<crate::profile::enums::AttitudeStage>>,
@@ -39,10 +39,10 @@ pub struct AviationAttitude {
     timestamp_ms: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    track: Option<Vec<u16>>,
+    track: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    turn_rate: Option<Vec<i16>>,
+    turn_rate: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     validity: Option<Vec<crate::profile::enums::AttitudeValidity>>,
@@ -61,14 +61,14 @@ impl AviationAttitude {
             match number {
                 0 => msg.timestamp_ms = content.one().map(<u16>::from),
                 1 => msg.system_time = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
-                2 => msg.pitch = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                3 => msg.roll = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                4 => msg.accel_lateral = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                5 => msg.accel_normal = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
-                6 => msg.turn_rate = content.many().map(|vec| vec.into_iter().map(<i16>::from).collect()),
+                2 => msg.pitch = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 10430.0 - 0.0 }).collect()),
+                3 => msg.roll = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 10430.0 - 0.0 }).collect()),
+                4 => msg.accel_lateral = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }).collect()),
+                5 => msg.accel_normal = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }).collect()),
+                6 => msg.turn_rate = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 1024.0 - 0.0 }).collect()),
                 7 => msg.stage = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::AttitudeStage>::from).collect()),
                 8 => msg.attitude_stage_complete = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                9 => msg.track = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                9 => msg.track = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u16>::from(v)) / 10430.0 - 0.0 }).collect()),
                 10 => msg.validity = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::AttitudeValidity>::from).collect()),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),

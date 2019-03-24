@@ -12,16 +12,16 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct Totals {
     #[serde(skip_serializing_if = "Option::is_none")]
-    active_time: Option<u32>,
+    active_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     calories: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    distance: Option<u32>,
+    distance: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    elapsed_time: Option<u32>,
+    elapsed_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<crate::profile::enums::MessageIndex>,
@@ -36,7 +36,7 @@ pub struct Totals {
     sport_index: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timer_time: Option<u32>,
+    timer_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<crate::fields::DateTime>,
@@ -53,13 +53,13 @@ impl Totals {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.timer_time = content.one().map(<u32>::from),
-                1 => msg.distance = content.one().map(<u32>::from),
+                0 => msg.timer_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
+                1 => msg.distance = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, u32>((<u32>::from)(v))),
                 2 => msg.calories = content.one().map(<u32>::from),
                 3 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
-                4 => msg.elapsed_time = content.one().map(<u32>::from),
+                4 => msg.elapsed_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
                 5 => msg.sessions = content.one().map(<u16>::from),
-                6 => msg.active_time = content.one().map(<u32>::from),
+                6 => msg.active_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
                 9 => msg.sport_index = content.one().map(<u8>::from),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),

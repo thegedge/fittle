@@ -12,7 +12,7 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct Length {
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_speed: Option<u16>,
+    avg_speed: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_swimming_cadence: Option<u8>,
@@ -54,13 +54,13 @@ pub struct Length {
     total_calories: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    total_elapsed_time: Option<u32>,
+    total_elapsed_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     total_strokes: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    total_timer_time: Option<u32>,
+    total_timer_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     zone_count: Option<Vec<u16>>,
@@ -80,10 +80,10 @@ impl Length {
                 0 => msg.event = content.one().map(<crate::profile::enums::Event>::from),
                 1 => msg.event_type = content.one().map(<crate::profile::enums::EventType>::from),
                 2 => msg.start_time = content.one().map(<crate::fields::DateTime>::from),
-                3 => msg.total_elapsed_time = content.one().map(<u32>::from),
-                4 => msg.total_timer_time = content.one().map(<u32>::from),
+                3 => msg.total_elapsed_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
+                4 => msg.total_timer_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 5 => msg.total_strokes = content.one().map(<u16>::from),
-                6 => msg.avg_speed = content.one().map(<u16>::from),
+                6 => msg.avg_speed = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 }),
                 7 => msg.swim_stroke = content.one().map(<crate::profile::enums::SwimStroke>::from),
                 9 => msg.avg_swimming_cadence = content.one().map(<u8>::from),
                 10 => msg.event_group = content.one().map(<u8>::from),

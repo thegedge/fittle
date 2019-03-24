@@ -15,10 +15,10 @@ pub struct MonitoringInfo {
     activity_type: Option<Vec<crate::profile::enums::ActivityType>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    cycles_to_calories: Option<Vec<u16>>,
+    cycles_to_calories: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    cycles_to_distance: Option<Vec<u16>>,
+    cycles_to_distance: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     local_timestamp: Option<crate::fields::LocalDateTime>,
@@ -43,8 +43,8 @@ impl MonitoringInfo {
             match number {
                 0 => msg.local_timestamp = content.one().map(<crate::fields::LocalDateTime>::from),
                 1 => msg.activity_type = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::ActivityType>::from).collect()),
-                3 => msg.cycles_to_distance = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                4 => msg.cycles_to_calories = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                3 => msg.cycles_to_distance = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u16>::from(v)) / 5000.0 - 0.0 }).collect()),
+                4 => msg.cycles_to_calories = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u16>::from(v)) / 5000.0 - 0.0 }).collect()),
                 5 => msg.resting_metabolic_rate = content.one().map(<u16>::from),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),

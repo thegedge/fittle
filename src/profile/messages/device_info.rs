@@ -24,10 +24,10 @@ pub struct DeviceInfo {
     battery_status: Option<crate::profile::enums::BatteryStatus>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    battery_voltage: Option<u16>,
+    battery_voltage: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    cum_operating_time: Option<u32>,
+    cum_operating_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     descriptor: Option<String>,
@@ -57,7 +57,7 @@ pub struct DeviceInfo {
     serial_number: Option<u32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    software_version: Option<u16>,
+    software_version: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     source_type: Option<crate::profile::enums::SourceType>,
@@ -82,10 +82,10 @@ impl DeviceInfo {
                 2 => msg.manufacturer = content.one().map(<crate::profile::enums::Manufacturer>::from),
                 3 => msg.serial_number = content.one().map(<u32>::from),
                 4 => msg.product = content.one().map(<u16>::from),
-                5 => msg.software_version = content.one().map(<u16>::from),
+                5 => msg.software_version = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
                 6 => msg.hardware_version = content.one().map(<u8>::from),
-                7 => msg.cum_operating_time = content.one().map(<u32>::from),
-                10 => msg.battery_voltage = content.one().map(<u16>::from),
+                7 => msg.cum_operating_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
+                10 => msg.battery_voltage = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 256.0 - 0.0 }),
                 11 => msg.battery_status = content.one().map(<crate::profile::enums::BatteryStatus>::from),
                 18 => msg.sensor_position = content.one().map(<crate::profile::enums::BodyLocation>::from),
                 19 => msg.descriptor = content.one().map(<String>::from),

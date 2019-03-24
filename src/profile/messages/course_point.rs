@@ -12,7 +12,7 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct CoursePoint {
     #[serde(skip_serializing_if = "Option::is_none")]
-    distance: Option<u32>,
+    distance: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     favorite: Option<bool>,
@@ -50,7 +50,7 @@ impl CoursePoint {
                 1 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 2 => msg.position_lat = content.one().map(<i32>::from),
                 3 => msg.position_long = content.one().map(<i32>::from),
-                4 => msg.distance = content.one().map(<u32>::from),
+                4 => msg.distance = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 100.0 - 0.0 })(v))),
                 5 => msg.type_ = content.one().map(<crate::profile::enums::CoursePoint>::from),
                 6 => msg.name = content.one().map(<String>::from),
                 8 => msg.favorite = content.one().map(<bool>::from),

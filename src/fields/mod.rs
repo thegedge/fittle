@@ -2,6 +2,7 @@
 mod macros;
 
 mod date_time;
+mod units;
 
 use byteorder::{
     ByteOrder,
@@ -11,6 +12,7 @@ use byteorder::{
 use serde::Serialize;
 
 pub use date_time::*;
+pub use units::*;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(untagged)]

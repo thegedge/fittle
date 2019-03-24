@@ -12,13 +12,13 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct SegmentPoint {
     #[serde(skip_serializing_if = "Option::is_none")]
-    altitude: Option<u16>,
+    altitude: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    distance: Option<u32>,
+    distance: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    leader_time: Option<Vec<u32>>,
+    leader_time: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<crate::profile::enums::MessageIndex>,
@@ -43,9 +43,9 @@ impl SegmentPoint {
             match number {
                 1 => msg.position_lat = content.one().map(<i32>::from),
                 2 => msg.position_long = content.one().map(<i32>::from),
-                3 => msg.distance = content.one().map(<u32>::from),
-                4 => msg.altitude = content.one().map(<u16>::from),
-                5 => msg.leader_time = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
+                3 => msg.distance = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 100.0 - 0.0 })(v))),
+                4 => msg.altitude = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 5.0 - 500.0 })(v))),
+                5 => msg.leader_time = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))).collect()),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };

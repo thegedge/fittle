@@ -57,7 +57,7 @@ pub struct WeatherConditions {
     wind_direction: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    wind_speed: Option<u16>,
+    wind_speed: Option<f64>,
 }
 
 impl WeatherConditions {
@@ -75,7 +75,7 @@ impl WeatherConditions {
                 1 => msg.temperature = content.one().map(<i8>::from),
                 2 => msg.condition = content.one().map(<crate::profile::enums::WeatherStatus>::from),
                 3 => msg.wind_direction = content.one().map(<u16>::from),
-                4 => msg.wind_speed = content.one().map(<u16>::from),
+                4 => msg.wind_speed = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 }),
                 5 => msg.precipitation_probability = content.one().map(<u8>::from),
                 6 => msg.temperature_feels_like = content.one().map(<i8>::from),
                 7 => msg.relative_humidity = content.one().map(<u8>::from),

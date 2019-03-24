@@ -18,7 +18,7 @@ pub struct Set {
     category_subtype: Option<Vec<u16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    duration: Option<u32>,
+    duration: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<crate::profile::enums::MessageIndex>,
@@ -36,7 +36,7 @@ pub struct Set {
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    weight: Option<u16>,
+    weight: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     weight_display_unit: Option<crate::profile::enums::FitBaseUnit>,
@@ -56,9 +56,9 @@ impl Set {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.duration = content.one().map(<u32>::from),
+                0 => msg.duration = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 3 => msg.repetitions = content.one().map(<u16>::from),
-                4 => msg.weight = content.one().map(<u16>::from),
+                4 => msg.weight = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 16.0 - 0.0 }),
                 5 => msg.set_type = content.one().map(<crate::profile::enums::SetType>::from),
                 6 => msg.start_time = content.one().map(<crate::fields::DateTime>::from),
                 7 => msg.category = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::ExerciseCategory>::from).collect()),

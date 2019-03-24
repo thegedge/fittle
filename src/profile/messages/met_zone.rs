@@ -12,10 +12,10 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct MetZone {
     #[serde(skip_serializing_if = "Option::is_none")]
-    calories: Option<u16>,
+    calories: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    fat_calories: Option<u8>,
+    fat_calories: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     high_bpm: Option<u8>,
@@ -36,8 +36,8 @@ impl MetZone {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 1 => msg.high_bpm = content.one().map(<u8>::from),
-                2 => msg.calories = content.one().map(<u16>::from),
-                3 => msg.fat_calories = content.one().map(<u8>::from),
+                2 => msg.calories = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
+                3 => msg.fat_calories = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 10.0 - 0.0 }),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),
             };

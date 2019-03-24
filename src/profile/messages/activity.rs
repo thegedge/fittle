@@ -30,7 +30,7 @@ pub struct Activity {
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    total_timer_time: Option<u32>,
+    total_timer_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     type_: Option<crate::profile::enums::Activity>,
@@ -47,7 +47,7 @@ impl Activity {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.total_timer_time = content.one().map(<u32>::from),
+                0 => msg.total_timer_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 1 => msg.num_sessions = content.one().map(<u16>::from),
                 2 => msg.type_ = content.one().map(<crate::profile::enums::Activity>::from),
                 3 => msg.event = content.one().map(<crate::profile::enums::Event>::from),

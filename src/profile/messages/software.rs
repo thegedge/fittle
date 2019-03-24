@@ -18,7 +18,7 @@ pub struct Software {
     part_number: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    version: Option<u16>,
+    version: Option<f64>,
 }
 
 impl Software {
@@ -32,7 +32,7 @@ impl Software {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                3 => msg.version = content.one().map(<u16>::from),
+                3 => msg.version = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
                 5 => msg.part_number = content.one().map(<String>::from),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),

@@ -1,10 +1,10 @@
 #[macro_use]
 extern crate lazy_static;
 
-mod profile;
 mod fields;
 mod message;
 mod parser;
+mod profile;
 
 use std::io::prelude::*;
 use std::io;
