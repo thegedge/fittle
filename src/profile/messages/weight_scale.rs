@@ -48,7 +48,7 @@ pub struct WeightScale {
     visceral_fat_rating: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    weight: Option<crate::profile::enums::Weight>,
+    weight: Option<u16>,
 }
 
 impl WeightScale {
@@ -62,7 +62,7 @@ impl WeightScale {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.weight = content.one().map(<crate::profile::enums::Weight>::from),
+                0 => msg.weight = content.one().map(<u16>::from),
                 1 => msg.percent_fat = content.one().map(<u16>::from),
                 2 => msg.percent_hydration = content.one().map(<u16>::from),
                 3 => msg.visceral_fat_mass = content.one().map(<u16>::from),

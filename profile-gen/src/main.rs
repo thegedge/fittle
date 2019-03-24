@@ -1,5 +1,7 @@
 #![feature(try_trait)]
 
+mod field_data;
+
 use std::convert::From;
 use std::fs::File;
 
@@ -18,6 +20,8 @@ use calamine::{
 
     open_workbook,
 };
+
+use field_data::FieldData;
 
 use handlebars::{
     Handlebars,
@@ -43,9 +47,9 @@ const MESSAGES_SHEET_FIELD_NAME_COLUMN: usize = 2;
 const MESSAGES_SHEET_FIELD_TYPE_COLUMN: usize = 3;
 const MESSAGES_SHEET_ARRAY_COLUMN: usize = 4;
 //const MESSAGES_SHEET_COMPONENTS_COLUMN: usize = 5;
-//const MESSAGES_SHEET_SCALE_COLUMN: usize = 6;
-//const MESSAGES_SHEET_OFFSET_COLUMN: usize = 7;
-//const MESSAGES_SHEET_UNITS_COLUMN: usize = 8;
+const MESSAGES_SHEET_SCALE_COLUMN: usize = 6;
+const MESSAGES_SHEET_OFFSET_COLUMN: usize = 7;
+const MESSAGES_SHEET_UNITS_COLUMN: usize = 8;
 //const MESSAGES_SHEET_BITS_COLUMN: usize = 9;
 //const MESSAGES_SHEET_ACCUMULATE_COLUMN: usize = 10;
 //const MESSAGES_SHEET_REF_FIELD_NAME_COLUMN: usize = 11;
@@ -210,7 +214,8 @@ fn enums<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleEnum>, Erro
             "language_bits_3" => (),
             "language_bits_4" => (),
 
-            // These are not real enums (just specify a min time for basis of value)
+            // These are not real enums (just specify some constraints)
+            "weight" => (),
             "date_time" => (),
             "local_date_time" => (),
 
@@ -259,6 +264,7 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                 None => break,
             };
 
+            // TODO figure out how to handle these
             match &field_data[MESSAGES_SHEET_COMMENT_COLUMN] {
                 DataType::String(v) => {
                     match v.as_str() {
@@ -278,7 +284,7 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
 
             let field_type = match &field_data[MESSAGES_SHEET_FIELD_TYPE_COLUMN] {
                 DataType::Empty => break,
-                DataType::String(v) => v,
+                DataType::String(v) => v.clone(),
                 v => panic!("unexpected type in message field name column: {:?}", v),
             };
 
@@ -293,31 +299,54 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                 v => panic!("unexpected type in message field number column: {:?}", v),
             };
 
-            let is_array = match &field_data[MESSAGES_SHEET_ARRAY_COLUMN] {
-                DataType::Empty => false,
-                DataType::String(_) => true,
+            let field_array_length = match &field_data[MESSAGES_SHEET_ARRAY_COLUMN] {
+                DataType::Empty => None,
+                // TODO parse and get actual number
+                DataType::String(_) => Some(0),
                 v => panic!("unexpected type in message array column: {:?}", v),
             };
 
-            let rust_type = rust_type(&field_type);
-
-            let conversion_function = if is_array {
-                format!("content.many().map(|vec| vec.into_iter().map(<{0}>::from).collect())", rust_type)
-            } else {
-                format!("content.one().map(<{0}>::from)", rust_type)
+            let field_scale = match &field_data[MESSAGES_SHEET_SCALE_COLUMN] {
+                DataType::Empty => None,
+                DataType::Int(v) => Some(*v as u16),
+                DataType::Float(v) => Some(*v as u16),
+                DataType::String(v) => {
+                    let trimmed = v.trim_start_matches("0x");
+                    u16::from_str_radix(trimmed, 10).ok()
+                },
+                v => panic!("unexpected type in message scale column: {:?}", v),
             };
 
-            let rust_field_type = if is_array {
-                format!("Vec<{0}>", rust_type)
-            } else {
-                rust_type
+            let field_offset = match &field_data[MESSAGES_SHEET_OFFSET_COLUMN] {
+                DataType::Empty => None,
+                DataType::Int(v) => Some(*v as u16),
+                DataType::Float(v) => Some(*v as u16),
+                DataType::String(v) => {
+                    let trimmed = v.trim_start_matches("0x");
+                    u16::from_str_radix(trimmed, 10).ok()
+                },
+                v => panic!("unexpected type in message offset column: {:?}", v),
+            };
+
+            let field_unit = match &field_data[MESSAGES_SHEET_UNITS_COLUMN] {
+                DataType::Empty => None,
+                DataType::String(v) => Some(v.clone()),
+                v => panic!("unexpected type in units column: {:?}", v),
+            };
+
+            let field_data = FieldData {
+                base_type: field_type,
+                array_length: field_array_length,
+                scale: field_scale,
+                offset: field_offset,
+                unit: field_unit,
             };
 
             fields.push(FittleMessageField {
                 name: field_name.to_owned(),
                 number: field_number,
-                rust_type: rust_field_type,
-                conversion_function,
+                rust_type: field_data.rust_type(),
+                conversion_function: field_data.conversion_function(),
             })
         }
 
@@ -358,31 +387,6 @@ fn field_content_type(field_type: &str) -> &str {
         "uint64" => "UnsignedInt64",
         "uint64z" => "UnsignedInt64z",
         _ => panic!("unknown field content type: {}", field_type),
-    }
-}
-
-fn rust_type(field_type: &str) -> String {
-    match field_type {
-        // Simple base types
-        "sint8" => "i8".to_owned(),
-        "sint16" => "i16".to_owned(),
-        "sint32" => "i32".to_owned(),
-        "sint64" => "i16".to_owned(),
-        "uint8" | "uint8z" | "byte" => "u8".to_owned(),
-        "uint16" | "uint16z" => "u16".to_owned(),
-        "uint32" | "uint32z" => "u32".to_owned(),
-        "uint64" | "uint64z" => "u64".to_owned(),
-        "float32" => "f32".to_owned(),
-        "float64" => "f64".to_owned(),
-        "bool" => "bool".to_owned(),
-        "string" => "String".to_owned(),
-
-        // Specialized forms
-        "date_time" => "crate::fields::DateTime".to_owned(),
-        "local_date_time" => "crate::fields::LocalDateTime".to_owned(),
-
-        // Everything else will be an enum
-        v => format!("crate::profile::enums::{}", to_pascal_case(v)),
     }
 }
 
