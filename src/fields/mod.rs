@@ -1,7 +1,7 @@
-use chrono::{
-    prelude::*,
-    Duration,
-};
+#[macro_use]
+mod macros;
+
+mod date_time;
 
 use byteorder::{
     ByteOrder,
@@ -10,8 +10,7 @@ use byteorder::{
 
 use serde::Serialize;
 
-pub type DateTime = chrono::DateTime<Utc>;
-pub type LocalDateTime = chrono::DateTime<Local>;
+pub use date_time::*;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(untagged)]
@@ -219,25 +218,6 @@ impl FieldContent {
     }
 }
 
-macro_rules! from_impl {
-    ( $into_type:ty, $( $enums:tt )|+ ) => {
-        from_impl!($into_type, $($enums)|+, |v| <$into_type>::from(v));
-    };
-
-    ( $into_type:ty, $( $enums:tt )|+, $conversion:expr ) => {
-        impl From<FieldContent> for $into_type {
-            fn from(fc: FieldContent) -> $into_type {
-                match fc {
-                    $(
-                        FieldContent::$enums(v) => ($conversion)(v),
-                    )*
-                    v => panic!("cannot convert {:?} into {}", v, stringify!($into_type)),
-                }
-            }
-        }
-    };
-}
-
 from_impl!(u8, UnsignedInt8 | UnsignedInt8z);
 from_impl!(u16, UnsignedInt16 | UnsignedInt16z);
 from_impl!(u32, UnsignedInt32 | UnsignedInt32z);
@@ -250,28 +230,4 @@ from_impl!(f32, Float32);
 from_impl!(f64, Float64);
 from_impl!(String, String);
 from_impl!(Vec<u8>, ByteArray);
-
 from_impl!(bool, Enum, |v| v != 0);
-
-lazy_static! {
-    static ref UTC_BASIS: DateTime = Utc.ymd(1989, 12, 31).and_hms(0, 0, 0);
-    static ref LOCAL_BASIS: LocalDateTime = Local.ymd(1989, 12, 31).and_hms(0, 0, 0);
-}
-
-from_impl!(DateTime, UnsignedInt32, { |v|
-    if v < 0x10000000 {
-        // TODO time since system boot, not UTC_BASIS
-        *UTC_BASIS + Duration::seconds(v as i64)
-    } else {
-        *UTC_BASIS + Duration::seconds(v as i64)
-    }
-});
-
-from_impl!(LocalDateTime, UnsignedInt32, { |v|
-    if v < 0x10000000 {
-        // TODO time since system boot, not LOCAL_BASIS
-        *LOCAL_BASIS + Duration::seconds(v as i64)
-    } else {
-        *LOCAL_BASIS + Duration::seconds(v as i64)
-    }
-});
