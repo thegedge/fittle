@@ -15,31 +15,31 @@ pub struct Session {
     avg_altitude: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_ball_speed: Option<f64>,
+    avg_ball_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_cadence: Option<u8>,
+    avg_cadence: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_cadence_position: Option<Vec<u8>>,
+    avg_cadence_position: Option<Vec<crate::fields::Frequency>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_combined_pedal_smoothness: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_fractional_cadence: Option<f64>,
+    avg_fractional_cadence: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_grade: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_heart_rate: Option<u8>,
+    avg_heart_rate: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_lap_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_left_pco: Option<i8>,
+    avg_left_pco: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_left_pedal_smoothness: Option<f64>,
@@ -54,28 +54,28 @@ pub struct Session {
     avg_left_torque_effectiveness: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_lev_motor_power: Option<u16>,
+    avg_lev_motor_power: Option<crate::fields::Power>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_neg_grade: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_neg_vertical_speed: Option<f64>,
+    avg_neg_vertical_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_pos_grade: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_pos_vertical_speed: Option<f64>,
+    avg_pos_vertical_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_power: Option<u16>,
+    avg_power: Option<crate::fields::Power>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_power_position: Option<Vec<u16>>,
+    avg_power_position: Option<Vec<crate::fields::Power>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_right_pco: Option<i8>,
+    avg_right_pco: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_right_pedal_smoothness: Option<f64>,
@@ -93,10 +93,10 @@ pub struct Session {
     avg_saturated_hemoglobin_percent: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_speed: Option<f64>,
+    avg_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_stance_time: Option<f64>,
+    avg_stance_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_stance_time_balance: Option<f64>,
@@ -105,7 +105,7 @@ pub struct Session {
     avg_stance_time_percent: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_step_length: Option<f64>,
+    avg_step_length: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_stroke_count: Option<f64>,
@@ -114,16 +114,16 @@ pub struct Session {
     avg_stroke_distance: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_temperature: Option<i8>,
+    avg_temperature: Option<crate::fields::ThermodynamicTemperature>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_total_hemoglobin_conc: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_vam: Option<f64>,
+    avg_vam: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_vertical_oscillation: Option<f64>,
+    avg_vertical_oscillation: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     avg_vertical_ratio: Option<f64>,
@@ -135,13 +135,13 @@ pub struct Session {
     enhanced_avg_altitude: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    enhanced_avg_speed: Option<f64>,
+    enhanced_avg_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     enhanced_max_altitude: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    enhanced_max_speed: Option<f64>,
+    enhanced_max_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     enhanced_min_altitude: Option<crate::fields::Length>,
@@ -174,49 +174,49 @@ pub struct Session {
     max_altitude: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_ball_speed: Option<f64>,
+    max_ball_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_cadence: Option<u8>,
+    max_cadence: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_cadence_position: Option<Vec<u8>>,
+    max_cadence_position: Option<Vec<crate::fields::Frequency>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_fractional_cadence: Option<f64>,
+    max_fractional_cadence: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_heart_rate: Option<u8>,
+    max_heart_rate: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_lev_motor_power: Option<u16>,
+    max_lev_motor_power: Option<crate::fields::Power>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     max_neg_grade: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_neg_vertical_speed: Option<f64>,
+    max_neg_vertical_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     max_pos_grade: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_pos_vertical_speed: Option<f64>,
+    max_pos_vertical_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_power: Option<u16>,
+    max_power: Option<crate::fields::Power>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_power_position: Option<Vec<u16>>,
+    max_power_position: Option<Vec<crate::fields::Power>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     max_saturated_hemoglobin_percent: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_speed: Option<f64>,
+    max_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    max_temperature: Option<i8>,
+    max_temperature: Option<crate::fields::ThermodynamicTemperature>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     max_total_hemoglobin_conc: Option<Vec<f64>>,
@@ -228,7 +228,7 @@ pub struct Session {
     min_altitude: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    min_heart_rate: Option<u8>,
+    min_heart_rate: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     min_saturated_hemoglobin_percent: Option<Vec<f64>>,
@@ -243,7 +243,7 @@ pub struct Session {
     nec_long: Option<i32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    normalized_power: Option<u16>,
+    normalized_power: Option<crate::fields::Power>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     num_active_lengths: Option<u16>,
@@ -300,7 +300,7 @@ pub struct Session {
     swim_stroke: Option<crate::profile::enums::SwimStroke>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    threshold_power: Option<u16>,
+    threshold_power: Option<crate::fields::Power>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     time_in_cadence_zone: Option<Vec<crate::fields::Time>>,
@@ -327,7 +327,7 @@ pub struct Session {
     total_ascent: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    total_calories: Option<u16>,
+    total_calories: Option<crate::fields::Energy>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     total_cycles: Option<u32>,
@@ -342,7 +342,7 @@ pub struct Session {
     total_elapsed_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    total_fat_calories: Option<u16>,
+    total_fat_calories: Option<crate::fields::Energy>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     total_fractional_cycles: Option<f64>,
@@ -357,7 +357,7 @@ pub struct Session {
     total_training_effect: Option<f64>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    total_work: Option<u32>,
+    total_work: Option<crate::fields::Energy>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     training_stress_score: Option<f64>,
@@ -391,16 +391,16 @@ impl Session {
                 8 => msg.total_timer_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 9 => msg.total_distance = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 100.0 - 0.0 })(v))),
                 10 => msg.total_cycles = content.one().map(<u32>::from),
-                11 => msg.total_calories = content.one().map(<u16>::from),
-                13 => msg.total_fat_calories = content.one().map(<u16>::from),
-                14 => msg.avg_speed = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 }),
-                15 => msg.max_speed = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 }),
-                16 => msg.avg_heart_rate = content.one().map(<u8>::from),
-                17 => msg.max_heart_rate = content.one().map(<u8>::from),
-                18 => msg.avg_cadence = content.one().map(<u8>::from),
-                19 => msg.max_cadence = content.one().map(<u8>::from),
-                20 => msg.avg_power = content.one().map(<u16>::from),
-                21 => msg.max_power = content.one().map(<u16>::from),
+                11 => msg.total_calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>((<u16>::from)(v))),
+                13 => msg.total_fat_calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>((<u16>::from)(v))),
+                14 => msg.avg_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
+                15 => msg.max_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
+                16 => msg.avg_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
+                17 => msg.max_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
+                18 => msg.avg_cadence = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
+                19 => msg.max_cadence = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
+                20 => msg.avg_power = content.one().map(|v| crate::fields::Power::new::<uom::si::power::watt, u16>((<u16>::from)(v))),
+                21 => msg.max_power = content.one().map(|v| crate::fields::Power::new::<uom::si::power::watt, u16>((<u16>::from)(v))),
                 22 => msg.total_ascent = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, u16>((<u16>::from)(v))),
                 23 => msg.total_descent = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, u16>((<u16>::from)(v))),
                 24 => msg.total_training_effect = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 10.0 - 0.0 }),
@@ -412,7 +412,7 @@ impl Session {
                 30 => msg.nec_long = content.one().map(<i32>::from),
                 31 => msg.swc_lat = content.one().map(<i32>::from),
                 32 => msg.swc_long = content.one().map(<i32>::from),
-                34 => msg.normalized_power = content.one().map(<u16>::from),
+                34 => msg.normalized_power = content.one().map(|v| crate::fields::Power::new::<uom::si::power::watt, u16>((<u16>::from)(v))),
                 35 => msg.training_stress_score = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
                 36 => msg.intensity_factor = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 }),
                 37 => msg.left_right_balance = content.one().map(<crate::profile::enums::LeftRightBalance100>::from),
@@ -420,10 +420,10 @@ impl Session {
                 42 => msg.avg_stroke_distance = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 })(v))),
                 43 => msg.swim_stroke = content.one().map(<crate::profile::enums::SwimStroke>::from),
                 44 => msg.pool_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 })(v))),
-                45 => msg.threshold_power = content.one().map(<u16>::from),
+                45 => msg.threshold_power = content.one().map(|v| crate::fields::Power::new::<uom::si::power::watt, u16>((<u16>::from)(v))),
                 46 => msg.pool_length_unit = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
                 47 => msg.num_active_lengths = content.one().map(<u16>::from),
-                48 => msg.total_work = content.one().map(<u32>::from),
+                48 => msg.total_work = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::joule, u32>((<u32>::from)(v))),
                 49 => msg.avg_altitude = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 5.0 - 500.0 })(v))),
                 50 => msg.max_altitude = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 5.0 - 500.0 })(v))),
                 51 => msg.gps_accuracy = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, u8>((<u8>::from)(v))),
@@ -432,14 +432,14 @@ impl Session {
                 54 => msg.avg_neg_grade = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }),
                 55 => msg.max_pos_grade = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }),
                 56 => msg.max_neg_grade = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }),
-                57 => msg.avg_temperature = content.one().map(<i8>::from),
-                58 => msg.max_temperature = content.one().map(<i8>::from),
+                57 => msg.avg_temperature = content.one().map(|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, i8>((<i8>::from)(v))),
+                58 => msg.max_temperature = content.one().map(|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, i8>((<i8>::from)(v))),
                 59 => msg.total_moving_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                60 => msg.avg_pos_vertical_speed = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 1000.0 - 0.0 }),
-                61 => msg.avg_neg_vertical_speed = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 1000.0 - 0.0 }),
-                62 => msg.max_pos_vertical_speed = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 1000.0 - 0.0 }),
-                63 => msg.max_neg_vertical_speed = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 1000.0 - 0.0 }),
-                64 => msg.min_heart_rate = content.one().map(<u8>::from),
+                60 => msg.avg_pos_vertical_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<i16>::from(v)) / 1000.0 - 0.0 })(v))),
+                61 => msg.avg_neg_vertical_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<i16>::from(v)) / 1000.0 - 0.0 })(v))),
+                62 => msg.max_pos_vertical_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<i16>::from(v)) / 1000.0 - 0.0 })(v))),
+                63 => msg.max_neg_vertical_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<i16>::from(v)) / 1000.0 - 0.0 })(v))),
+                64 => msg.min_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
                 65 => msg.time_in_hr_zone = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))).collect()),
                 66 => msg.time_in_speed_zone = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))).collect()),
                 67 => msg.time_in_cadence_zone = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))).collect()),
@@ -452,13 +452,13 @@ impl Session {
                 84 => msg.opponent_name = content.one().map(<String>::from),
                 85 => msg.stroke_count = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
                 86 => msg.zone_count = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                87 => msg.max_ball_speed = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
-                88 => msg.avg_ball_speed = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
-                89 => msg.avg_vertical_oscillation = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
+                87 => msg.max_ball_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 })(v))),
+                88 => msg.avg_ball_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 })(v))),
+                89 => msg.avg_vertical_oscillation = content.one().map(|v| crate::fields::Length::new::<uom::si::length::millimeter, f64>((|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 })(v))),
                 90 => msg.avg_stance_time_percent = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
-                91 => msg.avg_stance_time = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
-                92 => msg.avg_fractional_cadence = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 128.0 - 0.0 }),
-                93 => msg.max_fractional_cadence = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 128.0 - 0.0 }),
+                91 => msg.avg_stance_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, f64>((|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 })(v))),
+                92 => msg.avg_fractional_cadence = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, f64>((|v| { <f64>::from(<u8>::from(v)) / 128.0 - 0.0 })(v))),
+                93 => msg.max_fractional_cadence = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, f64>((|v| { <f64>::from(<u8>::from(v)) / 128.0 - 0.0 })(v))),
                 94 => msg.total_fractional_cycles = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 128.0 - 0.0 }),
                 95 => msg.avg_total_hemoglobin_conc = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }).collect()),
                 96 => msg.min_total_hemoglobin_conc = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }).collect()),
@@ -474,29 +474,29 @@ impl Session {
                 111 => msg.sport_index = content.one().map(<u8>::from),
                 112 => msg.time_standing = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 113 => msg.stand_count = content.one().map(<u16>::from),
-                114 => msg.avg_left_pco = content.one().map(<i8>::from),
-                115 => msg.avg_right_pco = content.one().map(<i8>::from),
+                114 => msg.avg_left_pco = content.one().map(|v| crate::fields::Length::new::<uom::si::length::millimeter, i8>((<i8>::from)(v))),
+                115 => msg.avg_right_pco = content.one().map(|v| crate::fields::Length::new::<uom::si::length::millimeter, i8>((<i8>::from)(v))),
                 116 => msg.avg_left_power_phase = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u8>::from(v)) / 0.0 - 0.0 }).collect()),
                 117 => msg.avg_left_power_phase_peak = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u8>::from(v)) / 0.0 - 0.0 }).collect()),
                 118 => msg.avg_right_power_phase = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u8>::from(v)) / 0.0 - 0.0 }).collect()),
                 119 => msg.avg_right_power_phase_peak = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u8>::from(v)) / 0.0 - 0.0 }).collect()),
-                120 => msg.avg_power_position = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                121 => msg.max_power_position = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                122 => msg.avg_cadence_position = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                123 => msg.max_cadence_position = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                124 => msg.enhanced_avg_speed = content.one().map(|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 }),
-                125 => msg.enhanced_max_speed = content.one().map(|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 }),
+                120 => msg.avg_power_position = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Power::new::<uom::si::power::watt, u16>((<u16>::from)(v))).collect()),
+                121 => msg.max_power_position = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Power::new::<uom::si::power::watt, u16>((<u16>::from)(v))).collect()),
+                122 => msg.avg_cadence_position = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))).collect()),
+                123 => msg.max_cadence_position = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))).collect()),
+                124 => msg.enhanced_avg_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
+                125 => msg.enhanced_max_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 126 => msg.enhanced_avg_altitude = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 5.0 - 500.0 })(v))),
                 127 => msg.enhanced_min_altitude = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 5.0 - 500.0 })(v))),
                 128 => msg.enhanced_max_altitude = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 5.0 - 500.0 })(v))),
-                129 => msg.avg_lev_motor_power = content.one().map(<u16>::from),
-                130 => msg.max_lev_motor_power = content.one().map(<u16>::from),
+                129 => msg.avg_lev_motor_power = content.one().map(|v| crate::fields::Power::new::<uom::si::power::watt, u16>((<u16>::from)(v))),
+                130 => msg.max_lev_motor_power = content.one().map(|v| crate::fields::Power::new::<uom::si::power::watt, u16>((<u16>::from)(v))),
                 131 => msg.lev_battery_consumption = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 2.0 - 0.0 }),
                 132 => msg.avg_vertical_ratio = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
                 133 => msg.avg_stance_time_balance = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
-                134 => msg.avg_step_length = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
+                134 => msg.avg_step_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::millimeter, f64>((|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 })(v))),
                 137 => msg.total_anaerobic_training_effect = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 10.0 - 0.0 }),
-                139 => msg.avg_vam = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 }),
+                139 => msg.avg_vam = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),

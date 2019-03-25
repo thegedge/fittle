@@ -18,7 +18,7 @@ pub struct NmeaSentence {
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp_ms: Option<u16>,
+    timestamp_ms: Option<crate::fields::Time>,
 }
 
 impl NmeaSentence {
@@ -32,7 +32,7 @@ impl NmeaSentence {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.timestamp_ms = content.one().map(<u16>::from),
+                0 => msg.timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
                 1 => msg.sentence = content.one().map(<String>::from),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),

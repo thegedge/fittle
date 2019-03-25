@@ -45,13 +45,13 @@ pub struct BikeProfile {
     bike_spdcad_ant_id_trans_type: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    bike_weight: Option<f64>,
+    bike_weight: Option<crate::fields::Mass>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     cad_enabled: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    crank_length: Option<f64>,
+    crank_length: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     custom_wheelsize: Option<crate::fields::Length>,
@@ -129,7 +129,7 @@ impl BikeProfile {
                 7 => msg.bike_power_ant_id = content.one().map(<u16>::from),
                 8 => msg.custom_wheelsize = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
                 9 => msg.auto_wheelsize = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
-                10 => msg.bike_weight = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
+                10 => msg.bike_weight = content.one().map(|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 })(v))),
                 11 => msg.power_cal_factor = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
                 12 => msg.auto_wheel_cal = content.one().map(<bool>::from),
                 13 => msg.auto_power_zero = content.one().map(<bool>::from),
@@ -138,7 +138,7 @@ impl BikeProfile {
                 16 => msg.cad_enabled = content.one().map(<bool>::from),
                 17 => msg.spdcad_enabled = content.one().map(<bool>::from),
                 18 => msg.power_enabled = content.one().map(<bool>::from),
-                19 => msg.crank_length = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 2.0 - 0.0 }),
+                19 => msg.crank_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::millimeter, f64>((|v| { <f64>::from(<u8>::from(v)) / 2.0 - 0.0 })(v))),
                 20 => msg.enabled = content.one().map(<bool>::from),
                 21 => msg.bike_spd_ant_id_trans_type = content.one().map(<u8>::from),
                 22 => msg.bike_cad_ant_id_trans_type = content.one().map(<u8>::from),

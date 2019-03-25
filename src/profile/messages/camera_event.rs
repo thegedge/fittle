@@ -24,7 +24,7 @@ pub struct CameraEvent {
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp_ms: Option<u16>,
+    timestamp_ms: Option<crate::fields::Time>,
 }
 
 impl CameraEvent {
@@ -38,7 +38,7 @@ impl CameraEvent {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.timestamp_ms = content.one().map(<u16>::from),
+                0 => msg.timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
                 1 => msg.camera_event_type = content.one().map(<crate::profile::enums::CameraEventType>::from),
                 2 => msg.camera_file_uuid = content.one().map(<String>::from),
                 3 => msg.camera_orientation = content.one().map(<crate::profile::enums::CameraOrientationType>::from),

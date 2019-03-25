@@ -12,10 +12,10 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct AviationAttitude {
     #[serde(skip_serializing_if = "Option::is_none")]
-    accel_lateral: Option<Vec<f64>>,
+    accel_lateral: Option<Vec<crate::fields::Acceleration>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    accel_normal: Option<Vec<f64>>,
+    accel_normal: Option<Vec<crate::fields::Acceleration>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     attitude_stage_complete: Option<Vec<u8>>,
@@ -30,19 +30,19 @@ pub struct AviationAttitude {
     stage: Option<Vec<crate::profile::enums::AttitudeStage>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    system_time: Option<Vec<u32>>,
+    system_time: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp_ms: Option<u16>,
+    timestamp_ms: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     track: Option<Vec<f64>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    turn_rate: Option<Vec<f64>>,
+    turn_rate: Option<Vec<crate::fields::Frequency>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     validity: Option<Vec<crate::profile::enums::AttitudeValidity>>,
@@ -59,13 +59,13 @@ impl AviationAttitude {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.timestamp_ms = content.one().map(<u16>::from),
-                1 => msg.system_time = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
+                0 => msg.timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
+                1 => msg.system_time = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u32>((<u32>::from)(v))).collect()),
                 2 => msg.pitch = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 10430.0 - 0.0 }).collect()),
                 3 => msg.roll = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 10430.0 - 0.0 }).collect()),
-                4 => msg.accel_lateral = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }).collect()),
-                5 => msg.accel_normal = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }).collect()),
-                6 => msg.turn_rate = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 1024.0 - 0.0 }).collect()),
+                4 => msg.accel_lateral = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Acceleration::new::<uom::si::acceleration::meter_per_second_squared, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))).collect()),
+                5 => msg.accel_normal = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Acceleration::new::<uom::si::acceleration::meter_per_second_squared, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))).collect()),
+                6 => msg.turn_rate = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Frequency::new::<uom::si::frequency::hertz, f64>((|v| { <f64>::from(<i16>::from(v)) / 1024.0 - 0.0 })(v))).collect()),
                 7 => msg.stage = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::AttitudeStage>::from).collect()),
                 8 => msg.attitude_stage_complete = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 9 => msg.track = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u16>::from(v)) / 10430.0 - 0.0 }).collect()),

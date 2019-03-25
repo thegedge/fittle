@@ -15,16 +15,16 @@ pub struct UserProfile {
     activity_class: Option<crate::profile::enums::ActivityClass>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    age: Option<u8>,
+    age: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    default_max_biking_heart_rate: Option<u8>,
+    default_max_biking_heart_rate: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    default_max_heart_rate: Option<u8>,
+    default_max_heart_rate: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    default_max_running_heart_rate: Option<u8>,
+    default_max_running_heart_rate: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     depth_setting: Option<crate::profile::enums::DisplayMeasure>,
@@ -72,7 +72,7 @@ pub struct UserProfile {
     power_setting: Option<crate::profile::enums::DisplayPower>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    resting_heart_rate: Option<u8>,
+    resting_heart_rate: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     sleep_time: Option<crate::profile::enums::LocaltimeIntoDay>,
@@ -93,7 +93,7 @@ pub struct UserProfile {
     wake_time: Option<crate::profile::enums::LocaltimeIntoDay>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    weight: Option<f64>,
+    weight: Option<crate::fields::Mass>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     weight_setting: Option<crate::profile::enums::DisplayMeasure>,
@@ -112,16 +112,16 @@ impl UserProfile {
             match number {
                 0 => msg.friendly_name = content.one().map(<String>::from),
                 1 => msg.gender = content.one().map(<crate::profile::enums::Gender>::from),
-                2 => msg.age = content.one().map(<u8>::from),
+                2 => msg.age = content.one().map(|v| crate::fields::Time::new::<uom::si::time::year, u8>((<u8>::from)(v))),
                 3 => msg.height = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u8>::from(v)) / 100.0 - 0.0 })(v))),
-                4 => msg.weight = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
+                4 => msg.weight = content.one().map(|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 })(v))),
                 5 => msg.language = content.one().map(<crate::profile::enums::Language>::from),
                 6 => msg.elev_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
                 7 => msg.weight_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                8 => msg.resting_heart_rate = content.one().map(<u8>::from),
-                9 => msg.default_max_running_heart_rate = content.one().map(<u8>::from),
-                10 => msg.default_max_biking_heart_rate = content.one().map(<u8>::from),
-                11 => msg.default_max_heart_rate = content.one().map(<u8>::from),
+                8 => msg.resting_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
+                9 => msg.default_max_running_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
+                10 => msg.default_max_biking_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
+                11 => msg.default_max_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
                 12 => msg.hr_setting = content.one().map(<crate::profile::enums::DisplayHeart>::from),
                 13 => msg.speed_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
                 14 => msg.dist_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),

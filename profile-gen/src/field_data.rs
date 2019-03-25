@@ -124,50 +124,28 @@ impl FieldData {
     fn unit_type_and_base(&self) -> Option<(&str, &str, &str)> {
         match self.unit {
             Some(ref unit) => match unit.as_str() {
-                "%" => None,
-                "% or bpm" => None,
-                "% or watts" => None,
-                "2 * cycles (steps)" => None,
-                "C" => None,
-                "G" => None,
-                "J" => None,
-                "OTUs" => None,
-                "Pa" => None,
-                "Units" => None,
-                "V" => None,
-                "bpm" => None,
-                "bytes" => None,
-                "calories" => None,
-                "counts" => None,
-                "cycles" => None,
-                "deg/s" => None,
-                "degrees" => None,
-                "g" => None,
-                "g/dL" => None,
-                "hr" => None,
-                "kcal" => None,
-                "kcal / day" => None,
-                "kcal / min" => None,
-                "kcal/cycle" => None,
-                "kcal/day" => None,
-                "kg" => None,
-                "kg/m^3" => None,
-                "lengths" => None,
-                "m" => Some(("Length", "length", "meter")),
-                "100 * m" => Some(("Length", "length", "meter")),
-                "m/cycle" => None,
-                "m/s" => None,
-                "m/s^2" => None,
-                "mG" => None,
-                "min" => None,
-                "minutes" => None,
-                "mm" => None,
-                "mmHg" => None,
-                "ms" => None,
-                "percent" => None,
-                "radians" => None,
-                "radians/second" => None,
-                "rpm" => None,
+                "C" => Some(("ThermodynamicTemperature", "thermodynamic_temperature", "degree_celsius")),
+                "G" => Some(("MagneticFluxDensity", "magnetic_flux_density", "gauss")),
+                "J" => Some(("Energy", "energy", "joule")),
+                "Pa" => Some(("Pressure", "pressure", "pascal")),
+                "V" => Some(("ElectricPotential", "electric_potential", "volt")),
+                // TODO would be nice to emit the unit or some other descriptor as "bpm"
+                "bpm" => Some(("Frequency", "frequency", "cycle_per_minute")),
+                "calories" => Some(("Energy", "energy", "calorie")),
+                "deg/s" => Some(("Frequency", "frequency", "hertz")),
+                "hr" => Some(("Time", "time", "hour")),
+                "kcal" => Some(("Energy", "energy", "kilocalorie")),
+                "kg" => Some(("Mass", "mass", "kilogram")),
+                "kg/m^3" => Some(("Density", "density", "kilogram_per_cubic_meter")),
+                "m" | "100 * m" => Some(("Length", "length", "meter")),
+                "m/s" => Some(("Velocity", "velocity", "meter_per_second")),
+                "m/s^2" => Some(("Acceleration", "acceleration", "meter_per_second_squared")),
+                "min" | "minutes" => Some(("Time", "time", "minute")),
+                "mm" => Some(("Length", "length", "millimeter")),
+                "mmHg" => Some(("Pressure", "pressure", "millimeter_of_mercury")),
+                "ms" => Some(("Time", "time", "millisecond")),
+                "radians/second" => Some(("Frequency", "frequency", "hertz")),
+                "rpm" => Some(("Frequency", "frequency", "cycle_per_minute")),
                 "s" => {
                     match self.base_type.as_str() {
                         "date_time" => None,
@@ -175,17 +153,61 @@ impl FieldData {
                         _ => Some(("Time", "time", "second")),
                     }
                 },
+                "strides/min" => Some(("Frequency", "frequency", "cycle_per_minute")),
+                "strokes/min" => Some(("Frequency", "frequency", "cycle_per_minute")),
+                "watts" => Some(("Power", "power", "watt")),
+                "years" => Some(("Time", "time", "year")),
+
+                // TODO power, but uom doesn't have the unit
+                "kcal / day" | "kcal/day" => None,
+                "kcal / min" => None,
+
+                // TODO can express this one, but need to adjust the scale
+                "g/dL" => None,
+
+                // Energy, but not quite
+                "kcal/cycle" => None,
+
+                // Distance, but not quite
+                "m/cycle" => None,
+
+                // A frequency, but not including time
+                "strokes/lap" => None,
+
+                // These are a little more complicated. Need to be an enum :/
+                "% or bpm" => None,
+                "% or watts" => None,
+
+                // Enum, not a unit...
+                "swim_stroke" => None,
+
+                // These are just values, but it would be nice to annotate them in the output
+                "%" => None,
+                "2 * cycles (steps)" => None,
+                "bytes" => None,
+                "counts" => None,
+                "cycles" => None,
+                "degrees" => None,
+                "lengths" => None,
+                "percent" => None,
+                "radians" => None,
                 "semicircles" => None,
                 "steps" => None,
                 "strides" => None,
-                "strides/min" => None,
                 "strokes" => None,
-                "strokes/lap" => None,
-                "strokes/min" => None,
-                "swim_stroke" => None,
+
+                // calibrated_accel_{x,y,z}
+                "g" => None,
+                // compressed_calibrated_accel_{x,y,z}
+                "mG" => None,
+                // oxygen toxicity unit
+                "OTUs" => None,
+                // intensity factor
+                "if" => None,
+                // training stress score
                 "tss" => None,
-                "watts" => None,
-                "years" => None,
+
+                // TODO report new units
                 _ => None,
             },
             None => None,

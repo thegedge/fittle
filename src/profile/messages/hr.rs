@@ -18,7 +18,7 @@ pub struct Hr {
     event_timestamp_12: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    filtered_bpm: Option<Vec<u8>>,
+    filtered_bpm: Option<Vec<crate::fields::Frequency>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     fractional_timestamp: Option<crate::fields::Time>,
@@ -43,7 +43,7 @@ impl Hr {
             match number {
                 0 => msg.fractional_timestamp = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u16>::from(v)) / 32768.0 - 0.0 })(v))),
                 1 => msg.time256 = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u8>::from(v)) / 256.0 - 0.0 })(v))),
-                6 => msg.filtered_bpm = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
+                6 => msg.filtered_bpm = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))).collect()),
                 9 => msg.event_timestamp = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1024.0 - 0.0 })(v))).collect()),
                 10 => msg.event_timestamp_12 = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::second, u8>((<u8>::from)(v))).collect()),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),

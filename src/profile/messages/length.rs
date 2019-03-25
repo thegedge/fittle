@@ -12,10 +12,10 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct Length {
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_speed: Option<f64>,
+    avg_speed: Option<crate::fields::Velocity>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    avg_swimming_cadence: Option<u8>,
+    avg_swimming_cadence: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     event: Option<crate::profile::enums::Event>,
@@ -51,7 +51,7 @@ pub struct Length {
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    total_calories: Option<u16>,
+    total_calories: Option<crate::fields::Energy>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     total_elapsed_time: Option<crate::fields::Time>,
@@ -83,11 +83,11 @@ impl Length {
                 3 => msg.total_elapsed_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 4 => msg.total_timer_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 5 => msg.total_strokes = content.one().map(<u16>::from),
-                6 => msg.avg_speed = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 }),
+                6 => msg.avg_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
                 7 => msg.swim_stroke = content.one().map(<crate::profile::enums::SwimStroke>::from),
-                9 => msg.avg_swimming_cadence = content.one().map(<u8>::from),
+                9 => msg.avg_swimming_cadence = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
                 10 => msg.event_group = content.one().map(<u8>::from),
-                11 => msg.total_calories = content.one().map(<u16>::from),
+                11 => msg.total_calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>((<u16>::from)(v))),
                 12 => msg.length_type = content.one().map(<crate::profile::enums::LengthType>::from),
                 18 => msg.player_score = content.one().map(<u16>::from),
                 19 => msg.opponent_score = content.one().map(<u16>::from),

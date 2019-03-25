@@ -12,13 +12,13 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct VideoClip {
     #[serde(skip_serializing_if = "Option::is_none")]
-    clip_end: Option<u32>,
+    clip_end: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     clip_number: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    clip_start: Option<u32>,
+    clip_start: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     end_timestamp: Option<crate::fields::DateTime>,
@@ -49,8 +49,8 @@ impl VideoClip {
                 2 => msg.start_timestamp_ms = content.one().map(<u16>::from),
                 3 => msg.end_timestamp = content.one().map(<crate::fields::DateTime>::from),
                 4 => msg.end_timestamp_ms = content.one().map(<u16>::from),
-                6 => msg.clip_start = content.one().map(<u32>::from),
-                7 => msg.clip_end = content.one().map(<u32>::from),
+                6 => msg.clip_start = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u32>((<u32>::from)(v))),
+                7 => msg.clip_end = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u32>((<u32>::from)(v))),
                 _ => (),
             };
         }

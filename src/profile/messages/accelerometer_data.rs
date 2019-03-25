@@ -39,13 +39,13 @@ pub struct AccelerometerData {
     compressed_calibrated_accel_z: Option<Vec<i16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sample_time_offset: Option<Vec<u16>>,
+    sample_time_offset: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp_ms: Option<u16>,
+    timestamp_ms: Option<crate::fields::Time>,
 }
 
 impl AccelerometerData {
@@ -59,8 +59,8 @@ impl AccelerometerData {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.timestamp_ms = content.one().map(<u16>::from),
-                1 => msg.sample_time_offset = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                0 => msg.timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
+                1 => msg.sample_time_offset = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))).collect()),
                 2 => msg.accel_x = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
                 3 => msg.accel_y = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
                 4 => msg.accel_z = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),

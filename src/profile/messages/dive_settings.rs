@@ -72,7 +72,7 @@ pub struct DiveSettings {
     safety_stop_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    water_density: Option<f32>,
+    water_density: Option<crate::fields::Density>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     water_type: Option<crate::profile::enums::WaterType>,
@@ -94,7 +94,7 @@ impl DiveSettings {
                 2 => msg.gf_low = content.one().map(<u8>::from),
                 3 => msg.gf_high = content.one().map(<u8>::from),
                 4 => msg.water_type = content.one().map(<crate::profile::enums::WaterType>::from),
-                5 => msg.water_density = content.one().map(<f32>::from),
+                5 => msg.water_density = content.one().map(|v| crate::fields::Density::new::<uom::si::density::kilogram_per_cubic_meter, f32>((<f32>::from)(v))),
                 6 => msg.po2_warn = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 100.0 - 0.0 }),
                 7 => msg.po2_critical = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 100.0 - 0.0 }),
                 8 => msg.po2_deco = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 100.0 - 0.0 }),

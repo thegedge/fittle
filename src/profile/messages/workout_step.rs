@@ -33,7 +33,7 @@ pub struct WorkoutStep {
     exercise_name: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    exercise_weight: Option<f64>,
+    exercise_weight: Option<crate::fields::Mass>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     intensity: Option<crate::profile::enums::Intensity>,
@@ -80,7 +80,7 @@ impl WorkoutStep {
                 9 => msg.equipment = content.one().map(<crate::profile::enums::WorkoutEquipment>::from),
                 10 => msg.exercise_category = content.one().map(<crate::profile::enums::ExerciseCategory>::from),
                 11 => msg.exercise_name = content.one().map(<u16>::from),
-                12 => msg.exercise_weight = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
+                12 => msg.exercise_weight = content.one().map(|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 })(v))),
                 13 => msg.weight_display_unit = content.one().map(<crate::profile::enums::FitBaseUnit>::from),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),

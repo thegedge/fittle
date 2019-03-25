@@ -12,7 +12,7 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct PowerZone {
     #[serde(skip_serializing_if = "Option::is_none")]
-    high_value: Option<u16>,
+    high_value: Option<crate::fields::Power>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     message_index: Option<crate::profile::enums::MessageIndex>,
@@ -32,7 +32,7 @@ impl PowerZone {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                1 => msg.high_value = content.one().map(<u16>::from),
+                1 => msg.high_value = content.one().map(|v| crate::fields::Power::new::<uom::si::power::watt, u16>((<u16>::from)(v))),
                 2 => msg.name = content.one().map(<String>::from),
                 254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
                 _ => (),

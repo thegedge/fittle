@@ -24,19 +24,19 @@ pub struct ObdiiData {
     start_timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    start_timestamp_ms: Option<u16>,
+    start_timestamp_ms: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     system_time: Option<Vec<u32>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    time_offset: Option<Vec<u16>>,
+    time_offset: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp_ms: Option<u16>,
+    timestamp_ms: Option<crate::fields::Time>,
 }
 
 impl ObdiiData {
@@ -50,14 +50,14 @@ impl ObdiiData {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.timestamp_ms = content.one().map(<u16>::from),
-                1 => msg.time_offset = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                0 => msg.timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
+                1 => msg.time_offset = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))).collect()),
                 2 => msg.pid = content.one().map(<u8>::from),
                 3 => msg.raw_data = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 4 => msg.pid_data_size = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
                 5 => msg.system_time = content.many().map(|vec| vec.into_iter().map(<u32>::from).collect()),
                 6 => msg.start_timestamp = content.one().map(<crate::fields::DateTime>::from),
-                7 => msg.start_timestamp_ms = content.one().map(<u16>::from),
+                7 => msg.start_timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };

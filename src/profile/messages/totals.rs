@@ -15,7 +15,7 @@ pub struct Totals {
     active_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    calories: Option<u32>,
+    calories: Option<crate::fields::Energy>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     distance: Option<crate::fields::Length>,
@@ -55,7 +55,7 @@ impl Totals {
             match number {
                 0 => msg.timer_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
                 1 => msg.distance = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, u32>((<u32>::from)(v))),
-                2 => msg.calories = content.one().map(<u32>::from),
+                2 => msg.calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u32>((<u32>::from)(v))),
                 3 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
                 4 => msg.elapsed_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
                 5 => msg.sessions = content.one().map(<u16>::from),

@@ -24,13 +24,13 @@ pub struct TimestampCorrelation {
     system_timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    system_timestamp_ms: Option<u16>,
+    system_timestamp_ms: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp_ms: Option<u16>,
+    timestamp_ms: Option<crate::fields::Time>,
 }
 
 impl TimestampCorrelation {
@@ -48,8 +48,8 @@ impl TimestampCorrelation {
                 1 => msg.system_timestamp = content.one().map(<crate::fields::DateTime>::from),
                 2 => msg.fractional_system_timestamp = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u16>::from(v)) / 32768.0 - 0.0 })(v))),
                 3 => msg.local_timestamp = content.one().map(<crate::fields::LocalDateTime>::from),
-                4 => msg.timestamp_ms = content.one().map(<u16>::from),
-                5 => msg.system_timestamp_ms = content.one().map(<u16>::from),
+                4 => msg.timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
+                5 => msg.system_timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };

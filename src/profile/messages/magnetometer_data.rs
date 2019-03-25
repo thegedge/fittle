@@ -12,13 +12,13 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct MagnetometerData {
     #[serde(skip_serializing_if = "Option::is_none")]
-    calibrated_mag_x: Option<Vec<f32>>,
+    calibrated_mag_x: Option<Vec<crate::fields::MagneticFluxDensity>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    calibrated_mag_y: Option<Vec<f32>>,
+    calibrated_mag_y: Option<Vec<crate::fields::MagneticFluxDensity>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    calibrated_mag_z: Option<Vec<f32>>,
+    calibrated_mag_z: Option<Vec<crate::fields::MagneticFluxDensity>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     mag_x: Option<Vec<u16>>,
@@ -30,13 +30,13 @@ pub struct MagnetometerData {
     mag_z: Option<Vec<u16>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    sample_time_offset: Option<Vec<u16>>,
+    sample_time_offset: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<crate::fields::DateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp_ms: Option<u16>,
+    timestamp_ms: Option<crate::fields::Time>,
 }
 
 impl MagnetometerData {
@@ -50,14 +50,14 @@ impl MagnetometerData {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.timestamp_ms = content.one().map(<u16>::from),
-                1 => msg.sample_time_offset = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
+                0 => msg.timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
+                1 => msg.sample_time_offset = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))).collect()),
                 2 => msg.mag_x = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
                 3 => msg.mag_y = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
                 4 => msg.mag_z = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                5 => msg.calibrated_mag_x = content.many().map(|vec| vec.into_iter().map(<f32>::from).collect()),
-                6 => msg.calibrated_mag_y = content.many().map(|vec| vec.into_iter().map(<f32>::from).collect()),
-                7 => msg.calibrated_mag_z = content.many().map(|vec| vec.into_iter().map(<f32>::from).collect()),
+                5 => msg.calibrated_mag_x = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::MagneticFluxDensity::new::<uom::si::magnetic_flux_density::gauss, f32>((<f32>::from)(v))).collect()),
+                6 => msg.calibrated_mag_y = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::MagneticFluxDensity::new::<uom::si::magnetic_flux_density::gauss, f32>((<f32>::from)(v))).collect()),
+                7 => msg.calibrated_mag_z = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::MagneticFluxDensity::new::<uom::si::magnetic_flux_density::gauss, f32>((<f32>::from)(v))).collect()),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };

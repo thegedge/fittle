@@ -12,7 +12,7 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct Monitoring {
     #[serde(skip_serializing_if = "Option::is_none")]
-    active_calories: Option<u16>,
+    active_calories: Option<crate::fields::Energy>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     active_time: Option<crate::fields::Time>,
@@ -27,7 +27,7 @@ pub struct Monitoring {
     activity_subtype: Option<crate::profile::enums::ActivitySubtype>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    activity_time: Option<Vec<u16>>,
+    activity_time: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     activity_type: Option<crate::profile::enums::ActivityType>,
@@ -36,7 +36,7 @@ pub struct Monitoring {
     ascent: Option<crate::fields::Length>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    calories: Option<u16>,
+    calories: Option<crate::fields::Energy>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     current_activity_type_intensity: Option<u8>,
@@ -63,10 +63,10 @@ pub struct Monitoring {
     duration: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    duration_min: Option<u16>,
+    duration_min: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    heart_rate: Option<u8>,
+    heart_rate: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     intensity: Option<f64>,
@@ -75,16 +75,16 @@ pub struct Monitoring {
     local_timestamp: Option<crate::fields::LocalDateTime>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    moderate_activity_minutes: Option<u16>,
+    moderate_activity_minutes: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    temperature: Option<f64>,
+    temperature: Option<crate::fields::ThermodynamicTemperature>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    temperature_max: Option<f64>,
+    temperature_max: Option<crate::fields::ThermodynamicTemperature>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    temperature_min: Option<f64>,
+    temperature_min: Option<crate::fields::ThermodynamicTemperature>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<crate::fields::DateTime>,
@@ -93,10 +93,10 @@ pub struct Monitoring {
     timestamp_16: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    timestamp_min_8: Option<u8>,
+    timestamp_min_8: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    vigorous_activity_minutes: Option<u16>,
+    vigorous_activity_minutes: Option<crate::fields::Time>,
 }
 
 impl Monitoring {
@@ -111,7 +111,7 @@ impl Monitoring {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
                 0 => msg.device_index = content.one().map(<crate::profile::enums::DeviceIndex>::from),
-                1 => msg.calories = content.one().map(<u16>::from),
+                1 => msg.calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>((<u16>::from)(v))),
                 2 => msg.distance = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 100.0 - 0.0 })(v))),
                 3 => msg.cycles = content.one().map(|v| { <f64>::from(<u32>::from(v)) / 2.0 - 0.0 }),
                 4 => msg.active_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
@@ -122,22 +122,22 @@ impl Monitoring {
                 9 => msg.cycles_16 = content.one().map(<u16>::from),
                 10 => msg.active_time_16 = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u16>((<u16>::from)(v))),
                 11 => msg.local_timestamp = content.one().map(<crate::fields::LocalDateTime>::from),
-                12 => msg.temperature = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }),
-                14 => msg.temperature_min = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }),
-                15 => msg.temperature_max = content.one().map(|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 }),
-                16 => msg.activity_time = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                19 => msg.active_calories = content.one().map(<u16>::from),
+                12 => msg.temperature = content.one().map(|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))),
+                14 => msg.temperature_min = content.one().map(|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))),
+                15 => msg.temperature_max = content.one().map(|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))),
+                16 => msg.activity_time = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))).collect()),
+                19 => msg.active_calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>((<u16>::from)(v))),
                 24 => msg.current_activity_type_intensity = content.one().map(<u8>::from),
-                25 => msg.timestamp_min_8 = content.one().map(<u8>::from),
+                25 => msg.timestamp_min_8 = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u8>((<u8>::from)(v))),
                 26 => msg.timestamp_16 = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u16>((<u16>::from)(v))),
-                27 => msg.heart_rate = content.one().map(<u8>::from),
+                27 => msg.heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
                 28 => msg.intensity = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 10.0 - 0.0 }),
-                29 => msg.duration_min = content.one().map(<u16>::from),
+                29 => msg.duration_min = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))),
                 30 => msg.duration = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
                 31 => msg.ascent = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
                 32 => msg.descent = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                33 => msg.moderate_activity_minutes = content.one().map(<u16>::from),
-                34 => msg.vigorous_activity_minutes = content.one().map(<u16>::from),
+                33 => msg.moderate_activity_minutes = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))),
+                34 => msg.vigorous_activity_minutes = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))),
                 253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
                 _ => (),
             };

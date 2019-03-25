@@ -12,31 +12,31 @@ use crate::fields::FieldDefinition;
 #[derive(Debug, Default, Serialize)]
 pub struct BloodPressure {
     #[serde(skip_serializing_if = "Option::is_none")]
-    diastolic_pressure: Option<u16>,
+    diastolic_pressure: Option<crate::fields::Pressure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    heart_rate: Option<u8>,
+    heart_rate: Option<crate::fields::Frequency>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     heart_rate_type: Option<crate::profile::enums::HrType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    map_3_sample_mean: Option<u16>,
+    map_3_sample_mean: Option<crate::fields::Pressure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    map_evening_values: Option<u16>,
+    map_evening_values: Option<crate::fields::Pressure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    map_morning_values: Option<u16>,
+    map_morning_values: Option<crate::fields::Pressure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    mean_arterial_pressure: Option<u16>,
+    mean_arterial_pressure: Option<crate::fields::Pressure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     status: Option<crate::profile::enums::BpStatus>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    systolic_pressure: Option<u16>,
+    systolic_pressure: Option<crate::fields::Pressure>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     timestamp: Option<crate::fields::DateTime>,
@@ -56,13 +56,13 @@ impl BloodPressure {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-                0 => msg.systolic_pressure = content.one().map(<u16>::from),
-                1 => msg.diastolic_pressure = content.one().map(<u16>::from),
-                2 => msg.mean_arterial_pressure = content.one().map(<u16>::from),
-                3 => msg.map_3_sample_mean = content.one().map(<u16>::from),
-                4 => msg.map_morning_values = content.one().map(<u16>::from),
-                5 => msg.map_evening_values = content.one().map(<u16>::from),
-                6 => msg.heart_rate = content.one().map(<u8>::from),
+                0 => msg.systolic_pressure = content.one().map(|v| crate::fields::Pressure::new::<uom::si::pressure::millimeter_of_mercury, u16>((<u16>::from)(v))),
+                1 => msg.diastolic_pressure = content.one().map(|v| crate::fields::Pressure::new::<uom::si::pressure::millimeter_of_mercury, u16>((<u16>::from)(v))),
+                2 => msg.mean_arterial_pressure = content.one().map(|v| crate::fields::Pressure::new::<uom::si::pressure::millimeter_of_mercury, u16>((<u16>::from)(v))),
+                3 => msg.map_3_sample_mean = content.one().map(|v| crate::fields::Pressure::new::<uom::si::pressure::millimeter_of_mercury, u16>((<u16>::from)(v))),
+                4 => msg.map_morning_values = content.one().map(|v| crate::fields::Pressure::new::<uom::si::pressure::millimeter_of_mercury, u16>((<u16>::from)(v))),
+                5 => msg.map_evening_values = content.one().map(|v| crate::fields::Pressure::new::<uom::si::pressure::millimeter_of_mercury, u16>((<u16>::from)(v))),
+                6 => msg.heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
                 7 => msg.heart_rate_type = content.one().map(<crate::profile::enums::HrType>::from),
                 8 => msg.status = content.one().map(<crate::profile::enums::BpStatus>::from),
                 9 => msg.user_profile_index = content.one().map(<crate::profile::enums::MessageIndex>::from),

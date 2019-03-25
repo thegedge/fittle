@@ -27,7 +27,7 @@ pub struct DeviceSettings {
     autosync_min_steps: Option<u16>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    autosync_min_time: Option<u16>,
+    autosync_min_time: Option<crate::fields::Time>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     backlight_mode: Option<crate::profile::enums::BacklightMode>,
@@ -75,7 +75,7 @@ pub struct DeviceSettings {
     time_offset: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    time_zone_offset: Option<Vec<f64>>,
+    time_zone_offset: Option<Vec<crate::fields::Time>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     utc_offset: Option<u32>,
@@ -96,7 +96,7 @@ impl DeviceSettings {
                 1 => msg.utc_offset = content.one().map(<u32>::from),
                 2 => msg.time_offset = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))).collect()),
                 4 => msg.time_mode = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::TimeMode>::from).collect()),
-                5 => msg.time_zone_offset = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i8>::from(v)) / 4.0 - 0.0 }).collect()),
+                5 => msg.time_zone_offset = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::hour, f64>((|v| { <f64>::from(<i8>::from(v)) / 4.0 - 0.0 })(v))).collect()),
                 12 => msg.backlight_mode = content.one().map(<crate::profile::enums::BacklightMode>::from),
                 36 => msg.activity_tracker_enabled = content.one().map(<bool>::from),
                 39 => msg.clock_time = content.one().map(<crate::fields::DateTime>::from),
@@ -107,7 +107,7 @@ impl DeviceSettings {
                 56 => msg.mounting_side = content.one().map(<crate::profile::enums::Side>::from),
                 57 => msg.default_page = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
                 58 => msg.autosync_min_steps = content.one().map(<u16>::from),
-                59 => msg.autosync_min_time = content.one().map(<u16>::from),
+                59 => msg.autosync_min_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))),
                 80 => msg.lactate_threshold_autodetect_enabled = content.one().map(<bool>::from),
                 86 => msg.ble_auto_upload_enabled = content.one().map(<bool>::from),
                 89 => msg.auto_sync_frequency = content.one().map(<crate::profile::enums::AutoSyncFrequency>::from),
