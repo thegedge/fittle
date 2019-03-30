@@ -64,13 +64,13 @@ pub struct Error {
     wrapped: String
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Serialize)]
 struct FittleEnumVariant {
     name: String,
     value: u64,
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Serialize)]
 struct FittleEnum {
     name: String,
     module: String,
@@ -78,15 +78,16 @@ struct FittleEnum {
     variants: Vec<FittleEnumVariant>,
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Serialize)]
 struct FittleMessageField {
     name: String,
     number: u64,
-    rust_type: String,
-    conversion_function: String,
+
+    #[serde(flatten)]
+    field_data: FieldData,
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Serialize)]
 struct FittleMessage {
     name: String,
     module: String,
@@ -335,19 +336,17 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                 v => panic!("unexpected type in units column: {:?}", v),
             };
 
-            let field_data = FieldData {
-                base_type: field_type,
-                array_length: field_array_length,
-                scale: field_scale,
-                offset: field_offset,
-                unit: field_unit,
-            };
 
             fields.insert(field_number, FittleMessageField {
                 name: field_name.to_owned(),
                 number: field_number,
-                rust_type: field_data.rust_type(),
-                conversion_function: field_data.conversion_function(),
+                field_data: FieldData {
+                    base_type: field_type,
+                    array_length: field_array_length,
+                    scale: field_scale,
+                    offset: field_offset,
+                    unit: field_unit,
+                },
             });
         }
 

@@ -1,5 +1,12 @@
 use inflector::cases::pascalcase::to_pascal_case;
 
+use serde::{
+    Serialize,
+    Serializer,
+
+    ser::SerializeStruct,
+};
+
 pub struct FieldData {
     pub base_type: String,
     pub array_length: Option<u8>,
@@ -210,5 +217,17 @@ impl FieldData {
             },
             None => None,
         }
+    }
+}
+
+impl Serialize for FieldData {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("FieldData", 2)?;
+        state.serialize_field("rust_type", &self.rust_type())?;
+        state.serialize_field("conversion_function", &self.conversion_function())?;
+        state.end()
     }
 }

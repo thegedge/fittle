@@ -28,9 +28,9 @@ impl {{name}} {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-            {{~#sorted fields "number"}}
+{{~#sorted fields "number"}}
                 {{number}} => msg.{{name}} = {{conversion_function}},
-            {{~/sorted}}
+{{~/sorted}}
                 _ => (),
             };
         }
