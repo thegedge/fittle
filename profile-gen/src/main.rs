@@ -1,13 +1,16 @@
 #![feature(try_trait)]
 
 mod field_data;
+mod helpers;
 
-use std::convert::From;
-use std::fs::File;
-
-use std::io::{
-    Read,
-    Seek,
+use std::{
+    collections::BTreeMap,
+    convert::From,
+    fs::File,
+    io::{
+        Read,
+        Seek,
+    },
 };
 
 use calamine::{
@@ -73,7 +76,6 @@ struct FittleEnum {
     module: String,
     base_type: String,
     variants: Vec<FittleEnumVariant>,
-    variants_sorted_by_value: Vec<FittleEnumVariant>,
 }
 
 #[derive(Clone, Serialize)]
@@ -88,8 +90,7 @@ struct FittleMessageField {
 struct FittleMessage {
     name: String,
     module: String,
-    fields: Vec<FittleMessageField>,
-    fields_sorted_by_number: Vec<FittleMessageField>,
+    fields: BTreeMap<u64, FittleMessageField>,
 }
 
 fn main() -> Result<(), Error> {
@@ -100,6 +101,8 @@ fn main() -> Result<(), Error> {
     renderer.register_template_string("enums_mod", include_str!("../templates/enums_mod.handlebars"))?;
     renderer.register_template_string("message", include_str!("../templates/message.handlebars"))?;
     renderer.register_template_string("messages_mod", include_str!("../templates/messages_mod.handlebars"))?;
+
+    renderer.register_helper("sorted", Box::new(helpers::sorted));
 
     let mut workbook = open_workbook(env!("FIT_PROFILE_PATH")).expect("cannot open fit profile xlsx");
 
@@ -193,12 +196,6 @@ fn enums<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleEnum>, Erro
             variants.push(FittleEnumVariant { name: to_pascal_case(name), value });
         }
 
-        // TODO perhaps have a handlebars helper to do this
-        let mut variants_sorted_by_value = variants.clone();
-
-        variants.sort_by(|a, b| a.name.cmp(&b.name));
-        variants_sorted_by_value.sort_by(|a, b| a.value.cmp(&b.value));
-
         match type_name.as_str() {
             // TODO these have to be implemented differently
             "sport_bits_0" => (),
@@ -225,7 +222,6 @@ fn enums<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleEnum>, Erro
                     module: v.to_owned(),
                     base_type: field_content_type(base_type).to_owned(),
                     variants,
-                    variants_sorted_by_value,
                 });
             },
         }
@@ -251,7 +247,7 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
 
         // We use a peekable iterator because sometimes there's no empty line between messages
         // in the spreadsheet
-        let mut fields = Vec::new();
+        let mut fields = BTreeMap::new();
         loop {
             if let Some(field_data) = iter.peek() {
                 if field_data[MESSAGES_SHEET_FIELD_NAME_COLUMN].is_empty() {
@@ -342,23 +338,18 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                 unit: field_unit,
             };
 
-            fields.push(FittleMessageField {
+            fields.insert(field_number, FittleMessageField {
                 name: field_name.to_owned(),
                 number: field_number,
                 rust_type: field_data.rust_type(),
                 conversion_function: field_data.conversion_function(),
-            })
+            });
         }
-
-        let mut fields_sorted_by_number = fields.clone();
-        fields.sort_by(|a, b| a.name.cmp(&b.name));
-        fields_sorted_by_number.sort_by(|a, b| a.number.cmp(&b.number));
 
         messages.push(FittleMessage {
             name: to_pascal_case(message_name),
             module: message_name.clone(),
             fields,
-            fields_sorted_by_number,
          });
     }
 
@@ -434,12 +425,12 @@ impl From<std::option::NoneError> for Error {
 
 impl From<RenderError> for Error {
     fn from(err: RenderError) -> Self {
-        Error { wrapped: format!("{}", err) }
+        Error { wrapped: format!("{} (in template `{}`)", err, err.template_name.as_ref().unwrap_or(&"unknown".to_string())) }
     }
 }
 
 impl From<TemplateError> for Error {
     fn from(err: TemplateError) -> Self {
-        Error { wrapped: format!("{}", err) }
+        Error { wrapped: format!("{} (in template `{}`)", err, err.template_name.as_ref().unwrap_or(&"unknown".to_string())) }
     }
 }

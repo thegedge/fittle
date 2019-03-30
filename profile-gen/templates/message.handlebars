@@ -11,10 +11,10 @@ use crate::fields::FieldDefinition;
 
 #[derive(Debug, Default, Serialize)]
 pub struct {{name}} {
-{{~#each fields}}
+{{~#sorted fields "name"}}
     #[serde(skip_serializing_if = "Option::is_none")]
     {{name}}: Option<{{rust_type}}>,
-{{/each~}}
+{{/sorted~}}
 }
 
 impl {{name}} {
@@ -28,9 +28,9 @@ impl {{name}} {
         for field in fields {
             let (number, content) = field.content_from::<Order, Reader>(reader)?;
             match number {
-            {{~#each fields_sorted_by_number}}
+            {{~#sorted fields "number"}}
                 {{number}} => msg.{{name}} = {{conversion_function}},
-            {{~/each}}
+            {{~/sorted}}
                 _ => (),
             };
         }
