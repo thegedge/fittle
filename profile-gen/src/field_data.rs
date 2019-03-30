@@ -18,10 +18,9 @@ impl FieldData {
             self.adjusted_rust_base_type()
         };
 
-        if self.array_length.is_some() {
-            format!("Vec<{0}>", rust_type)
-        } else {
-            rust_type
+        match self.array_length {
+            Some(_n) => format!("Vec<{0}>", rust_type),
+            _ => rust_type,
         }
     }
 
@@ -48,10 +47,9 @@ impl FieldData {
             },
         };
 
-        if self.array_length.is_some() {
-            format!("content.many().map(|vec| vec.into_iter().map({0}).collect())", constructor)
-        } else {
-            format!("content.one().map({0})", constructor)
+        match self.array_length {
+            Some(_n) => format!("content.many().map(|vec| vec.into_iter().map({0}).collect())", constructor),
+            None => format!("content.one().map({0})", constructor),
         }
     }
 

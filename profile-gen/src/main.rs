@@ -297,8 +297,13 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
 
             let field_array_length = match &field_data[MESSAGES_SHEET_ARRAY_COLUMN] {
                 DataType::Empty => None,
-                // TODO parse and get actual number
-                DataType::String(_) => Some(0),
+                DataType::String(s) => {
+                    let without_brackets = &s[1..s.len()-1];
+                    match without_brackets {
+                        "N" => Some(0),
+                        v => u8::from_str_radix(v, 10).ok(),
+                    }
+                },
                 v => panic!("unexpected type in message array column: {:?}", v),
             };
 
