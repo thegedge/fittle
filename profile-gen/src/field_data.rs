@@ -7,22 +7,32 @@ use serde::{
     ser::SerializeStruct,
 };
 
+#[derive(Default, Serialize)]
+pub struct FieldComponent {
+    pub scale: Option<u16>,
+    pub offset: Option<i16>,
+    pub unit: Option<String>,
+    pub bits: Option<u8>,
+}
+
+pub enum Components {
+    Some(Vec<FieldComponent>),
+    None(FieldComponent),
+}
+
 pub struct FieldData {
     pub base_type: String,
     pub array_length: Option<u8>,
-    pub scale: Option<u16>,
-    pub offset: Option<u16>,
-    pub unit: Option<String>,
+    pub components: Components,
 }
 
 // TODO memoize things that get called several times
 
 impl FieldData {
     pub fn rust_type(&self) -> String {
-        let rust_type = if let Some((unit_type, _, _)) = self.unit_type_and_base() {
-            format!("crate::fields::{0}", unit_type)
-        } else {
-            self.adjusted_rust_base_type()
+        let rust_type = match self.unit_type_and_base() {
+            Some((unit_type, _, _)) => format!("crate::fields::{0}", unit_type),
+            None => self.adjusted_rust_base_type(),
         };
 
         match self.array_length {
@@ -34,13 +44,13 @@ impl FieldData {
     pub fn conversion_function(&self) -> String {
         let rust_base_type = self.adjusted_rust_base_type();
         let default_constructor = self.default_constructor();
-        let constructor = match self.base_type.as_str() {
-            // These are always annotated with a time unit, but we're using chrono instead of uom
-            "date_time" => default_constructor,
-            "local_date_time" => default_constructor,
+        let constructor = self.single_component().and_then(|comp| {
+            match self.base_type.as_str() {
+                // These are always annotated with a time unit, but we're using chrono instead of uom
+                "date_time" => None,
+                "local_date_time" => None,
 
-            _ => match self.unit_type_and_base() {
-                Some((unit_type, uom_base, unit_base)) => {
+                _ => comp.unit_type_and_base().map(|(unit_type, uom_base, unit_base)| {
                     format!(
                         "|v| crate::fields::{0}::new::<uom::si::{1}::{2}, {3}>(({4})(v))",
                         unit_type,
@@ -49,10 +59,9 @@ impl FieldData {
                         rust_base_type,
                         default_constructor,
                     )
-                },
-                None => default_constructor,
-            },
-        };
+                })
+            }
+        }).unwrap_or(default_constructor);
 
         match self.array_length {
             Some(_n) => format!("content.many().map(|vec| vec.into_iter().map({0}).collect())", constructor),
@@ -62,7 +71,7 @@ impl FieldData {
 
     // The rust_base_type adjusted for scale, offsets, etc
     fn adjusted_rust_base_type(&self) -> String {
-        if self.scale.is_some() || self.offset.is_some() {
+        if self.scale_and_offset().is_some() {
             "f64".to_string()
         } else {
             self.rust_base_type()
@@ -99,11 +108,10 @@ impl FieldData {
     fn default_constructor(&self) -> String {
         let rust_base_type = self.rust_base_type();
         if let Some((scale, offset)) = self.scale_and_offset() {
-            let adjusted_rust_base_type = self.adjusted_rust_base_type();
             format!(
                 "|v| {{ <{1}>::from(<{0}>::from(v)) / {2}.0 - {3}.0 }}",
                 rust_base_type,
-                adjusted_rust_base_type,
+                self.adjusted_rust_base_type(),
                 scale,
                 offset,
             )
@@ -112,8 +120,36 @@ impl FieldData {
         }
     }
 
-    fn scale_and_offset(&self) -> Option<(u16, u16)> {
-        let adjusted_scale = match self.unit.as_ref().map(AsRef::as_ref) {
+    fn scale_and_offset(&self) -> Option<(u16, i16)> {
+        self.single_component().and_then(FieldComponent::scale_and_offset)
+    }
+
+    fn unit_type_and_base(&self) -> Option<(&str, &str, &str)> {
+        match self.base_type.as_str() {
+            "date_time" => None,
+            "local_date_time" => None,
+            _ => self.single_component()
+        }.and_then(FieldComponent::unit_type_and_base)
+    }
+
+    fn single_component(&self) -> Option<&FieldComponent> {
+        match &self.components {
+            Components::None(comp) => Some(comp),
+            Components::Some(comps) => {
+                // If only a single component, have this field mimic it
+                if comps.len() == 1 {
+                    Some(&comps[0])
+                } else {
+                    None
+                }
+            },
+        }
+    }
+}
+
+impl FieldComponent {
+    pub fn scale_and_offset(&self) -> Option<(u16, i16)> {
+        let adjusted_scale = match self.unit.as_ref().map(String::as_ref) {
             Some("100 * m") => 100,
             _ => 1,
         };
@@ -126,7 +162,7 @@ impl FieldData {
         }
     }
 
-    fn unit_type_and_base(&self) -> Option<(&str, &str, &str)> {
+    pub fn unit_type_and_base(&self) -> Option<(&str, &str, &str)> {
         match self.unit {
             Some(ref unit) => match unit.as_str() {
                 "C" => Some(("ThermodynamicTemperature", "thermodynamic_temperature", "degree_celsius")),
@@ -151,13 +187,7 @@ impl FieldData {
                 "ms" => Some(("Time", "time", "millisecond")),
                 "radians/second" => Some(("Frequency", "frequency", "hertz")),
                 "rpm" => Some(("Frequency", "frequency", "cycle_per_minute")),
-                "s" => {
-                    match self.base_type.as_str() {
-                        "date_time" => None,
-                        "local_date_time" => None,
-                        _ => Some(("Time", "time", "second")),
-                    }
-                },
+                "s" => Some(("Time", "time", "second")),
                 "strides/min" => Some(("Frequency", "frequency", "cycle_per_minute")),
                 "strokes/min" => Some(("Frequency", "frequency", "cycle_per_minute")),
                 "watts" => Some(("Power", "power", "watt")),
@@ -225,9 +255,15 @@ impl Serialize for FieldData {
         where
             S: Serializer,
     {
-        let mut state = serializer.serialize_struct("FieldData", 2)?;
-        state.serialize_field("rust_type", &self.rust_type())?;
-        state.serialize_field("conversion_function", &self.conversion_function())?;
+        let mut state = serializer.serialize_struct("FieldData", 3)?;
+        {
+            state.serialize_field("rust_type", &self.rust_type())?;
+            state.serialize_field("conversion_function", &self.conversion_function())?;
+            match &self.components {
+                Components::Some(c) => state.serialize_field("components", &c)?,
+                Components::None(c) => state.serialize_field("field_data", &c)?,
+            };
+        }
         state.end()
     }
 }

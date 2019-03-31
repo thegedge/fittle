@@ -138,7 +138,7 @@ impl BikeProfile {
                 16 => msg.cad_enabled = content.one().map(<bool>::from),
                 17 => msg.spdcad_enabled = content.one().map(<bool>::from),
                 18 => msg.power_enabled = content.one().map(<bool>::from),
-                19 => msg.crank_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::millimeter, f64>((|v| { <f64>::from(<u8>::from(v)) / 2.0 - 0.0 })(v))),
+                19 => msg.crank_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::millimeter, f64>((|v| { <f64>::from(<u8>::from(v)) / 2.0 - -110.0 })(v))),
                 20 => msg.enabled = content.one().map(<bool>::from),
                 21 => msg.bike_spd_ant_id_trans_type = content.one().map(<u8>::from),
                 22 => msg.bike_cad_ant_id_trans_type = content.one().map(<u8>::from),

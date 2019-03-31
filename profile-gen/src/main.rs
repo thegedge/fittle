@@ -24,7 +24,11 @@ use calamine::{
     open_workbook,
 };
 
-use field_data::FieldData;
+use field_data::{
+    Components,
+    FieldComponent,
+    FieldData,
+};
 
 use handlebars::{
     Handlebars,
@@ -33,7 +37,7 @@ use handlebars::{
 };
 
 use inflector::cases::pascalcase::to_pascal_case;
-
+use itertools::izip;
 use serde::Serialize;
 
 const OUTPUT_DIR: &'static str = "src/profile";
@@ -49,11 +53,11 @@ const MESSAGES_SHEET_FIELD_NUMBER_COLUMN: usize = 1;
 const MESSAGES_SHEET_FIELD_NAME_COLUMN: usize = 2;
 const MESSAGES_SHEET_FIELD_TYPE_COLUMN: usize = 3;
 const MESSAGES_SHEET_ARRAY_COLUMN: usize = 4;
-//const MESSAGES_SHEET_COMPONENTS_COLUMN: usize = 5;
+const MESSAGES_SHEET_COMPONENTS_COLUMN: usize = 5;
 const MESSAGES_SHEET_SCALE_COLUMN: usize = 6;
 const MESSAGES_SHEET_OFFSET_COLUMN: usize = 7;
 const MESSAGES_SHEET_UNITS_COLUMN: usize = 8;
-//const MESSAGES_SHEET_BITS_COLUMN: usize = 9;
+const MESSAGES_SHEET_BITS_COLUMN: usize = 9;
 //const MESSAGES_SHEET_ACCUMULATE_COLUMN: usize = 10;
 //const MESSAGES_SHEET_REF_FIELD_NAME_COLUMN: usize = 11;
 //const MESSAGES_SHEET_REF_FIELD_VALUE_COLUMN: usize = 12;
@@ -299,7 +303,7 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
             let field_array_length = match &field_data[MESSAGES_SHEET_ARRAY_COLUMN] {
                 DataType::Empty => None,
                 DataType::String(s) => {
-                    let without_brackets = &s[1..s.len()-1];
+                    let without_brackets = &s.trim()[1..s.len()-1];
                     match without_brackets {
                         "N" => Some(0),
                         v => u8::from_str_radix(v, 10).ok(),
@@ -308,34 +312,90 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                 v => panic!("unexpected type in message array column: {:?}", v),
             };
 
-            let field_scale = match &field_data[MESSAGES_SHEET_SCALE_COLUMN] {
+            let field_components = match &field_data[MESSAGES_SHEET_COMPONENTS_COLUMN] {
                 DataType::Empty => None,
-                DataType::Int(v) => Some(*v as u16),
-                DataType::Float(v) => Some(*v as u16),
+                DataType::String(v) => Some(v.split(",").collect::<Vec<_>>()),
+                v => panic!("unexpected type in message components column: {:?}", v),
+            };
+
+            let field_component_bits = match &field_data[MESSAGES_SHEET_BITS_COLUMN] {
+                DataType::Empty => vec![],
+                DataType::Int(v) => vec![*v as u8],
+                DataType::Float(v) => vec![*v as u8],
                 DataType::String(v) => {
-                    let trimmed = v.trim_start_matches("0x");
-                    u16::from_str_radix(trimmed, 10).ok()
+                    v.split(",")
+                        .map(str::trim)
+                        .map(<u8 as std::str::FromStr>::from_str)
+                        .collect::<Result<Vec<_>, _>>()
+                        .map_err(|_| Error { wrapped: format!("failed to parse bits for {}", field_name) })?
+                },
+                v => panic!("unexpected type in message component bits column: {:?}", v),
+            };
+
+            let components_len = field_component_bits.len().max(1);
+
+            let field_scales = match &field_data[MESSAGES_SHEET_SCALE_COLUMN] {
+                DataType::Empty => vec![None; components_len],
+                DataType::Int(v) => vec![Some(*v as u16); components_len],
+                DataType::Float(v) => vec![Some(*v as u16); components_len],
+                DataType::String(v) => {
+                    v.split(",")
+                        .map(str::trim)
+                        .map(<u16 as std::str::FromStr>::from_str)
+                        .collect::<Result<Vec<_>, _>>()
+                        .map_err(|_| Error { wrapped: format!("failed to parse scales for {}", field_name) })?
+                        .into_iter()
+                        .map(|v| Some(v))
+                        .collect::<Vec<_>>()
                 },
                 v => panic!("unexpected type in message scale column: {:?}", v),
             };
 
-            let field_offset = match &field_data[MESSAGES_SHEET_OFFSET_COLUMN] {
-                DataType::Empty => None,
-                DataType::Int(v) => Some(*v as u16),
-                DataType::Float(v) => Some(*v as u16),
+            let field_offsets = match &field_data[MESSAGES_SHEET_OFFSET_COLUMN] {
+                DataType::Empty => vec![None; components_len],
+                DataType::Int(v) => vec![Some(*v as i16)],
+                DataType::Float(v) => vec![Some(*v as i16)],
                 DataType::String(v) => {
-                    let trimmed = v.trim_start_matches("0x");
-                    u16::from_str_radix(trimmed, 10).ok()
+                    v.split(",")
+                        .map(str::trim)
+                        .map(<i16 as std::str::FromStr>::from_str)
+                        .collect::<Result<Vec<_>, _>>()
+                        .map_err(|_| Error { wrapped: format!("failed to parse offsets for {}", field_name) })?
+                        .into_iter()
+                        .map(|v| Some(v))
+                        .collect::<Vec<_>>()
                 },
                 v => panic!("unexpected type in message offset column: {:?}", v),
             };
 
-            let field_unit = match &field_data[MESSAGES_SHEET_UNITS_COLUMN] {
-                DataType::Empty => None,
-                DataType::String(v) => Some(v.clone()),
+            let field_units = match &field_data[MESSAGES_SHEET_UNITS_COLUMN] {
+                DataType::Empty => vec![None; components_len],
+                DataType::String(v) => {
+                    if v.find(',').is_some() {
+                        v.split(",")
+                            .map(|v| Some(v.trim().to_string()))
+                            .collect::<Vec<_>>()
+                    } else {
+                        vec![Some(v.clone()); components_len]
+                    }
+                },
                 v => panic!("unexpected type in units column: {:?}", v),
             };
 
+            let components = if field_components.is_none() {
+                Components::None(
+                    izip!(field_scales, field_offsets, field_units)
+                        .map(|(scale, offset, unit)| FieldComponent { scale, offset, unit, bits: None })
+                        .next()
+                        .unwrap_or_else(|| Default::default())
+                )
+            } else {
+                Components::Some(
+                    izip!(field_scales, field_offsets, field_units, field_component_bits)
+                        .map(|(scale, offset, unit, bits)| FieldComponent { scale, offset, unit, bits: Some(bits) })
+                        .collect::<Vec<_>>()
+                )
+            };
 
             fields.insert(field_number, FittleMessageField {
                 name: field_name.to_owned(),
@@ -343,9 +403,7 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                 field_data: FieldData {
                     base_type: field_type,
                     array_length: field_array_length,
-                    scale: field_scale,
-                    offset: field_offset,
-                    unit: field_unit,
+                    components,
                 },
             });
         }
