@@ -25,7 +25,7 @@ macro_rules! unit {
             pub fn new<U, V>(v: V) -> $type
                 where
                     V: Into<QuantityValueType>,
-                    U: $uom_module::Unit + $uom_module::Conversion<QuantityValueType>, 
+                    U: $uom_module::Unit + $uom_module::Conversion<QuantityValueType>,
             {
                 $type($uom_module::$type::new::<U>(v.into()))
             }

@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct Monitoring {
@@ -100,49 +108,239 @@ pub struct Monitoring {
 }
 
 impl Monitoring {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.device_index = content.one().map(<crate::profile::enums::DeviceIndex>::from),
-                1 => msg.calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>((<u16>::from)(v))),
-                2 => msg.distance = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 100.0 - 0.0 })(v))),
-                3 => msg.cycles = content.one().map(|v| { <f64>::from(<u32>::from(v)) / 2.0 - 0.0 }),
-                4 => msg.active_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                5 => msg.activity_type = content.one().map(<crate::profile::enums::ActivityType>::from),
-                6 => msg.activity_subtype = content.one().map(<crate::profile::enums::ActivitySubtype>::from),
-                7 => msg.activity_level = content.one().map(<crate::profile::enums::ActivityLevel>::from),
-                8 => msg.distance_16 = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, u16>((<u16>::from)(v))),
-                9 => msg.cycles_16 = content.one().map(<u16>::from),
-                10 => msg.active_time_16 = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u16>((<u16>::from)(v))),
-                11 => msg.local_timestamp = content.one().map(<crate::fields::LocalDateTime>::from),
-                12 => msg.temperature = content.one().map(|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))),
-                14 => msg.temperature_min = content.one().map(|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))),
-                15 => msg.temperature_max = content.one().map(|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))),
-                16 => msg.activity_time = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))).collect()),
-                19 => msg.active_calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>((<u16>::from)(v))),
-                24 => msg.current_activity_type_intensity = content.one().map(<u8>::from),
-                25 => msg.timestamp_min_8 = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u8>((<u8>::from)(v))),
-                26 => msg.timestamp_16 = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u16>((<u16>::from)(v))),
-                27 => msg.heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
-                28 => msg.intensity = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 10.0 - 0.0 }),
-                29 => msg.duration_min = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))),
-                30 => msg.duration = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
-                31 => msg.ascent = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                32 => msg.descent = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                33 => msg.moderate_activity_minutes = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))),
-                34 => msg.vigorous_activity_minutes = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.device_index =field.one().map(|v| {
+                    let value = crate::profile::enums::DeviceIndex::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.calories =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>)(value)
+                })
+            },
+
+            2 => {
+                self.distance =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            3 => {
+                self.cycles =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| { f64::from(v) / 2.0 - 0.0 })(value)
+                })
+            },
+
+            4 => {
+                self.active_time =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            5 => {
+                self.activity_type =field.one().map(|v| {
+                    let value = crate::profile::enums::ActivityType::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.activity_subtype =field.one().map(|v| {
+                    let value = crate::profile::enums::ActivitySubtype::from(v);
+                    value
+                })
+            },
+
+            7 => {
+                self.activity_level =field.one().map(|v| {
+                    let value = crate::profile::enums::ActivityLevel::from(v);
+                    value
+                })
+            },
+
+            8 => {
+                self.distance_16 =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Length::new::<uom::si::length::meter, u16>)(value)
+                })
+            },
+
+            9 => {
+                self.cycles_16 =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            10 => {
+                self.active_time_16 =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Time::new::<uom::si::time::second, u16>)(value)
+                })
+            },
+
+            11 => {
+                self.local_timestamp =field.one().map(|v| {
+                    let value = crate::fields::LocalDateTime::from(v);
+                    value
+                })
+            },
+
+            12 => {
+                self.temperature =field.one().map(|v| {
+                    let value = i16::from(v);
+                    (|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            14 => {
+                self.temperature_min =field.one().map(|v| {
+                    let value = i16::from(v);
+                    (|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            15 => {
+                self.temperature_max =field.one().map(|v| {
+                    let value = i16::from(v);
+                    (|v| crate::fields::ThermodynamicTemperature::new::<uom::si::thermodynamic_temperature::degree_celsius, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            16 => {
+                self.activity_time =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value.into_iter().map(crate::fields::Time::new::<uom::si::time::minute, u16>).collect()
+                })
+            },
+
+            19 => {
+                self.active_calories =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>)(value)
+                })
+            },
+
+            24 => {
+                self.current_activity_type_intensity =field.one().map(|v| {
+                    let value = u8::from(v);
+                    let bits = value.to_le_bytes();
+                    let mut bit_reader = BitReader::new(&bits);
+                    {
+                        bit_reader.read::<u8>(5).map(|bits_value| {
+                            self.from_content(5, Field::One(FieldContent::Enum(bits_value)));
+                        });
+                    }
+                    {
+                        bit_reader.read::<u8>(3).map(|bits_value| {
+                            self.from_content(28, Field::One(FieldContent::UnsignedInt8(bits_value)));
+                        });
+                    }
+                    value
+                })
+            },
+
+            25 => {
+                self.timestamp_min_8 =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (crate::fields::Time::new::<uom::si::time::minute, u8>)(value)
+                })
+            },
+
+            26 => {
+                self.timestamp_16 =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Time::new::<uom::si::time::second, u16>)(value)
+                })
+            },
+
+            27 => {
+                self.heart_rate =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>)(value)
+                })
+            },
+
+            28 => {
+                self.intensity =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (|v| { f64::from(v) / 10.0 - 0.0 })(value)
+                })
+            },
+
+            29 => {
+                self.duration_min =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Time::new::<uom::si::time::minute, u16>)(value)
+                })
+            },
+
+            30 => {
+                self.duration =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (crate::fields::Time::new::<uom::si::time::second, u32>)(value)
+                })
+            },
+
+            31 => {
+                self.ascent =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            32 => {
+                self.descent =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            33 => {
+                self.moderate_activity_minutes =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Time::new::<uom::si::time::minute, u16>)(value)
+                })
+            },
+
+            34 => {
+                self.vigorous_activity_minutes =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Time::new::<uom::si::time::minute, u16>)(value)
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

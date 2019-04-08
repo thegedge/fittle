@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct SegmentId {
@@ -40,29 +48,87 @@ pub struct SegmentId {
 }
 
 impl SegmentId {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.name = content.one().map(<String>::from),
-                1 => msg.uuid = content.one().map(<String>::from),
-                2 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
-                3 => msg.enabled = content.one().map(<bool>::from),
-                4 => msg.user_profile_primary_key = content.one().map(<u32>::from),
-                5 => msg.device_id = content.one().map(<u32>::from),
-                6 => msg.default_race_leader = content.one().map(<u8>::from),
-                7 => msg.delete_status = content.one().map(<crate::profile::enums::SegmentDeleteStatus>::from),
-                8 => msg.selection_type = content.one().map(<crate::profile::enums::SegmentSelectionType>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.name =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.uuid =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.sport =field.one().map(|v| {
+                    let value = crate::profile::enums::Sport::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.user_profile_primary_key =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            5 => {
+                self.device_id =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.default_race_leader =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            7 => {
+                self.delete_status =field.one().map(|v| {
+                    let value = crate::profile::enums::SegmentDeleteStatus::from(v);
+                    value
+                })
+            },
+
+            8 => {
+                self.selection_type =field.one().map(|v| {
+                    let value = crate::profile::enums::SegmentSelectionType::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

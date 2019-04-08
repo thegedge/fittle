@@ -59,13 +59,18 @@ const MESSAGES_SHEET_OFFSET_COLUMN: usize = 7;
 const MESSAGES_SHEET_UNITS_COLUMN: usize = 8;
 const MESSAGES_SHEET_BITS_COLUMN: usize = 9;
 //const MESSAGES_SHEET_ACCUMULATE_COLUMN: usize = 10;
-//const MESSAGES_SHEET_REF_FIELD_NAME_COLUMN: usize = 11;
+const MESSAGES_SHEET_REF_FIELD_NAME_COLUMN: usize = 11;
 //const MESSAGES_SHEET_REF_FIELD_VALUE_COLUMN: usize = 12;
 const MESSAGES_SHEET_COMMENT_COLUMN: usize = 13;
 
-#[derive(Debug)]
 pub struct Error {
-    wrapped: String
+    message: String
+}
+
+impl std::fmt::Debug for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.message)
+    }
 }
 
 #[derive(Serialize)]
@@ -95,7 +100,7 @@ struct FittleMessageField {
 struct FittleMessage {
     name: String,
     module: String,
-    fields: BTreeMap<u64, FittleMessageField>,
+    fields: BTreeMap<String, FittleMessageField>,
 }
 
 fn main() -> Result<(), Error> {
@@ -108,6 +113,7 @@ fn main() -> Result<(), Error> {
     renderer.register_template_string("messages_mod", include_str!("../templates/messages_mod.handlebars"))?;
 
     renderer.register_helper("sorted", Box::new(helpers::sorted));
+    renderer.register_helper("with_lookup", Box::new(helpers::with_lookup));
 
     let mut workbook = open_workbook(env!("FIT_PROFILE_PATH")).expect("cannot open fit profile xlsx");
 
@@ -289,6 +295,13 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                 v => panic!("unexpected type in message field name column: {:?}", v),
             };
 
+            // TODO eventually make use of these
+            let _field_ref_field_name = match &field_data[MESSAGES_SHEET_REF_FIELD_NAME_COLUMN] {
+                DataType::Empty => (),
+                DataType::String(_v) => continue,
+                v => panic!("unexpected type in message ref field name column: {:?}", v),
+            };
+
             let field_number = match &field_data[MESSAGES_SHEET_FIELD_NUMBER_COLUMN] {
                 DataType::Empty => continue,
                 DataType::Int(v) => *v as u64,
@@ -312,12 +325,6 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                 v => panic!("unexpected type in message array column: {:?}", v),
             };
 
-            let field_components = match &field_data[MESSAGES_SHEET_COMPONENTS_COLUMN] {
-                DataType::Empty => None,
-                DataType::String(v) => Some(v.split(",").collect::<Vec<_>>()),
-                v => panic!("unexpected type in message components column: {:?}", v),
-            };
-
             let field_component_bits = match &field_data[MESSAGES_SHEET_BITS_COLUMN] {
                 DataType::Empty => vec![],
                 DataType::Int(v) => vec![*v as u8],
@@ -327,12 +334,20 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                         .map(str::trim)
                         .map(<u8 as std::str::FromStr>::from_str)
                         .collect::<Result<Vec<_>, _>>()
-                        .map_err(|_| Error { wrapped: format!("failed to parse bits for {}", field_name) })?
+                        .map_err(|_| Error { message: format!("failed to parse bits for {}", field_name) })?
                 },
                 v => panic!("unexpected type in message component bits column: {:?}", v),
             };
 
             let components_len = field_component_bits.len().max(1);
+
+            let field_components = match &field_data[MESSAGES_SHEET_COMPONENTS_COLUMN] {
+                DataType::Empty => vec![],
+                DataType::String(v) => v.split(",").map(|v| Some(v.to_string())).collect::<Vec<_>>(),
+                v => panic!("unexpected type in message components column: {:?}", v),
+            };
+
+            // TODO check if field_components is same len and return error otherwise
 
             let field_scales = match &field_data[MESSAGES_SHEET_SCALE_COLUMN] {
                 DataType::Empty => vec![None; components_len],
@@ -343,9 +358,9 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                         .map(str::trim)
                         .map(<u16 as std::str::FromStr>::from_str)
                         .collect::<Result<Vec<_>, _>>()
-                        .map_err(|_| Error { wrapped: format!("failed to parse scales for {}", field_name) })?
+                        .map_err(|_| Error { message: format!("failed to parse scales for {}", field_name) })?
                         .into_iter()
-                        .map(|v| Some(v))
+                        .map(Option::Some)
                         .collect::<Vec<_>>()
                 },
                 v => panic!("unexpected type in message scale column: {:?}", v),
@@ -360,9 +375,9 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                         .map(str::trim)
                         .map(<i16 as std::str::FromStr>::from_str)
                         .collect::<Result<Vec<_>, _>>()
-                        .map_err(|_| Error { wrapped: format!("failed to parse offsets for {}", field_name) })?
+                        .map_err(|_| Error { message: format!("failed to parse offsets for {}", field_name) })?
                         .into_iter()
-                        .map(|v| Some(v))
+                        .map(Option::Some)
                         .collect::<Vec<_>>()
                 },
                 v => panic!("unexpected type in message offset column: {:?}", v),
@@ -382,22 +397,26 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                 v => panic!("unexpected type in units column: {:?}", v),
             };
 
-            let components = if field_components.is_none() {
+            let components = if field_components.is_empty() {
                 Components::None(
                     izip!(field_scales, field_offsets, field_units)
-                        .map(|(scale, offset, unit)| FieldComponent { scale, offset, unit, bits: None })
+                        .map(|(scale, offset, unit)| {
+                            FieldComponent { field: None, scale, offset, unit, bits: None }
+                        })
                         .next()
                         .unwrap_or_else(|| Default::default())
                 )
             } else {
                 Components::Some(
-                    izip!(field_scales, field_offsets, field_units, field_component_bits)
-                        .map(|(scale, offset, unit, bits)| FieldComponent { scale, offset, unit, bits: Some(bits) })
+                    izip!(field_components, field_scales, field_offsets, field_units, field_component_bits)
+                        .map(|(field, scale, offset, unit, bits)| {
+                            FieldComponent { field, scale, offset, unit, bits: Some(bits) }
+                        })
                         .collect::<Vec<_>>()
                 )
             };
 
-            fields.insert(field_number, FittleMessageField {
+            let field = FittleMessageField {
                 name: field_name.to_owned(),
                 number: field_number,
                 field_data: FieldData {
@@ -405,7 +424,9 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
                     array_length: field_array_length,
                     components,
                 },
-            });
+            };
+
+            fields.insert(field_name.to_string(), field);
         }
 
         messages.push(FittleMessage {
@@ -443,8 +464,8 @@ fn field_content_type(field_type: &str) -> &str {
     }
 }
 
+// Handle exceptions in names that can't be converted directly into an identifier
 fn message_name(name: &str) -> Option<&str> {
-    // Handle exceptions in names that can't be converted directly into an identifier
     match name {
         // Ignore these two, since they represent a custom range
         "mfg_range_min" => None,
@@ -469,30 +490,30 @@ fn message_name(name: &str) -> Option<&str> {
 
 impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Self {
-        Error { wrapped: format!("{}", err) }
+        Error { message: format!("{}", err) }
     }
 }
 
 impl From<XlsxError> for Error {
     fn from(err: XlsxError) -> Self {
-        Error { wrapped: format!("{}", err) }
+        Error { message: format!("{}", err) }
     }
 }
 
 impl From<std::option::NoneError> for Error {
     fn from(_: std::option::NoneError) -> Self {
-        Error { wrapped: "unwrapped a None value".to_owned() }
+        Error { message: "unwrapped a None value".to_string() }
     }
 }
 
 impl From<RenderError> for Error {
     fn from(err: RenderError) -> Self {
-        Error { wrapped: format!("{} (in template `{}`)", err, err.template_name.as_ref().unwrap_or(&"unknown".to_string())) }
+        Error { message: format!("{}", err) }
     }
 }
 
 impl From<TemplateError> for Error {
     fn from(err: TemplateError) -> Self {
-        Error { wrapped: format!("{} (in template `{}`)", err, err.template_name.as_ref().unwrap_or(&"unknown".to_string())) }
+        Error { message: format!("{}", err) }
     }
 }

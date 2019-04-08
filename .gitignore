@@ -1,4 +1,6 @@
 /target
+/profile-gen/target
+
 **/*.rs.bk
 
 /profile-gen/Cargo.lock

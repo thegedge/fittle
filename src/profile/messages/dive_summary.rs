@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct DiveSummary {
@@ -52,33 +60,115 @@ pub struct DiveSummary {
 }
 
 impl DiveSummary {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.reference_mesg = content.one().map(<crate::profile::enums::MesgNum>::from),
-                1 => msg.reference_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                2 => msg.avg_depth = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                3 => msg.max_depth = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                4 => msg.surface_interval = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1.0 - 0.0 })(v))),
-                5 => msg.start_cns = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 1.0 - 0.0 }),
-                6 => msg.end_cns = content.one().map(|v| { <f64>::from(<u8>::from(v)) / 1.0 - 0.0 }),
-                7 => msg.start_n2 = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1.0 - 0.0 }),
-                8 => msg.end_n2 = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 1.0 - 0.0 }),
-                9 => msg.o2_toxicity = content.one().map(<u16>::from),
-                10 => msg.dive_number = content.one().map(<u32>::from),
-                11 => msg.bottom_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.reference_mesg =field.one().map(|v| {
+                    let value = crate::profile::enums::MesgNum::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.reference_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.avg_depth =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            3 => {
+                self.max_depth =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            4 => {
+                self.surface_interval =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { f64::from(v) / 1.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            5 => {
+                self.start_cns =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (|v| { f64::from(v) / 1.0 - 0.0 })(value)
+                })
+            },
+
+            6 => {
+                self.end_cns =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (|v| { f64::from(v) / 1.0 - 0.0 })(value)
+                })
+            },
+
+            7 => {
+                self.start_n2 =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| { f64::from(v) / 1.0 - 0.0 })(value)
+                })
+            },
+
+            8 => {
+                self.end_n2 =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| { f64::from(v) / 1.0 - 0.0 })(value)
+                })
+            },
+
+            9 => {
+                self.o2_toxicity =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            10 => {
+                self.dive_number =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            11 => {
+                self.bottom_time =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct Activity {
@@ -37,28 +45,80 @@ pub struct Activity {
 }
 
 impl Activity {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.total_timer_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                1 => msg.num_sessions = content.one().map(<u16>::from),
-                2 => msg.type_ = content.one().map(<crate::profile::enums::Activity>::from),
-                3 => msg.event = content.one().map(<crate::profile::enums::Event>::from),
-                4 => msg.event_type = content.one().map(<crate::profile::enums::EventType>::from),
-                5 => msg.local_timestamp = content.one().map(<crate::fields::LocalDateTime>::from),
-                6 => msg.event_group = content.one().map(<u8>::from),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.total_timer_time =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            1 => {
+                self.num_sessions =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.type_ =field.one().map(|v| {
+                    let value = crate::profile::enums::Activity::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.event =field.one().map(|v| {
+                    let value = crate::profile::enums::Event::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.event_type =field.one().map(|v| {
+                    let value = crate::profile::enums::EventType::from(v);
+                    value
+                })
+            },
+
+            5 => {
+                self.local_timestamp =field.one().map(|v| {
+                    let value = crate::fields::LocalDateTime::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.event_group =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

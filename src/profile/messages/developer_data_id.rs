@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct DeveloperDataId {
@@ -28,25 +36,59 @@ pub struct DeveloperDataId {
 }
 
 impl DeveloperDataId {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.developer_id = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                1 => msg.application_id = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                2 => msg.manufacturer_id = content.one().map(<crate::profile::enums::Manufacturer>::from),
-                3 => msg.developer_data_index = content.one().map(<u8>::from),
-                4 => msg.application_version = content.one().map(<u32>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.developer_id =field.many().map(|v| {
+                    let value = v.into_iter().map(u8::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            1 => {
+                self.application_id =field.many().map(|v| {
+                    let value = v.into_iter().map(u8::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            2 => {
+                self.manufacturer_id =field.one().map(|v| {
+                    let value = crate::profile::enums::Manufacturer::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.developer_data_index =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.application_version =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

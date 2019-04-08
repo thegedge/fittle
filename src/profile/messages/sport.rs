@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct Sport {
@@ -22,23 +30,45 @@ pub struct Sport {
 }
 
 impl Sport {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
-                1 => msg.sub_sport = content.one().map(<crate::profile::enums::SubSport>::from),
-                3 => msg.name = content.one().map(<String>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.sport =field.one().map(|v| {
+                    let value = crate::profile::enums::Sport::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.sub_sport =field.one().map(|v| {
+                    let value = crate::profile::enums::SubSport::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.name =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

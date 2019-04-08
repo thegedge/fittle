@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct WorkoutStep {
@@ -58,35 +66,129 @@ pub struct WorkoutStep {
 }
 
 impl WorkoutStep {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.wkt_step_name = content.one().map(<String>::from),
-                1 => msg.duration_type = content.one().map(<crate::profile::enums::WktStepDuration>::from),
-                2 => msg.duration_value = content.one().map(<u32>::from),
-                3 => msg.target_type = content.one().map(<crate::profile::enums::WktStepTarget>::from),
-                4 => msg.target_value = content.one().map(<u32>::from),
-                5 => msg.custom_target_value_low = content.one().map(<u32>::from),
-                6 => msg.custom_target_value_high = content.one().map(<u32>::from),
-                7 => msg.intensity = content.one().map(<crate::profile::enums::Intensity>::from),
-                8 => msg.notes = content.one().map(<String>::from),
-                9 => msg.equipment = content.one().map(<crate::profile::enums::WorkoutEquipment>::from),
-                10 => msg.exercise_category = content.one().map(<crate::profile::enums::ExerciseCategory>::from),
-                11 => msg.exercise_name = content.one().map(<u16>::from),
-                12 => msg.exercise_weight = content.one().map(|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 })(v))),
-                13 => msg.weight_display_unit = content.one().map(<crate::profile::enums::FitBaseUnit>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.wkt_step_name =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.duration_type =field.one().map(|v| {
+                    let value = crate::profile::enums::WktStepDuration::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.duration_value =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.target_type =field.one().map(|v| {
+                    let value = crate::profile::enums::WktStepTarget::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.target_value =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            5 => {
+                self.custom_target_value_low =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.custom_target_value_high =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            7 => {
+                self.intensity =field.one().map(|v| {
+                    let value = crate::profile::enums::Intensity::from(v);
+                    value
+                })
+            },
+
+            8 => {
+                self.notes =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            9 => {
+                self.equipment =field.one().map(|v| {
+                    let value = crate::profile::enums::WorkoutEquipment::from(v);
+                    value
+                })
+            },
+
+            10 => {
+                self.exercise_category =field.one().map(|v| {
+                    let value = crate::profile::enums::ExerciseCategory::from(v);
+                    value
+                })
+            },
+
+            11 => {
+                self.exercise_name =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            12 => {
+                self.exercise_weight =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            13 => {
+                self.weight_display_unit =field.one().map(|v| {
+                    let value = crate::profile::enums::FitBaseUnit::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

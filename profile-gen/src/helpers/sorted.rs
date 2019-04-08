@@ -72,8 +72,7 @@ fn sort_by_key<'a, I, T>(iter: I, sort_key: &str) -> Vec<(T, &'a Json)>
     sorted
 }
 
-
-pub fn sorted_content<'a, K>(
+fn sorted_content<'a, K>(
         sorted: Vec<(K, &'a Json)>,
         container: &PathAndJson,
         h: &Helper,

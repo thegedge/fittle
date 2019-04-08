@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct MonitoringInfo {
@@ -31,26 +39,66 @@ pub struct MonitoringInfo {
 }
 
 impl MonitoringInfo {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.local_timestamp = content.one().map(<crate::fields::LocalDateTime>::from),
-                1 => msg.activity_type = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::ActivityType>::from).collect()),
-                3 => msg.cycles_to_distance = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u16>::from(v)) / 5000.0 - 0.0 }).collect()),
-                4 => msg.cycles_to_calories = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u16>::from(v)) / 5000.0 - 0.0 }).collect()),
-                5 => msg.resting_metabolic_rate = content.one().map(<u16>::from),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.local_timestamp =field.one().map(|v| {
+                    let value = crate::fields::LocalDateTime::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.activity_type =field.many().map(|v| {
+                    let value = v.into_iter().map(crate::profile::enums::ActivityType::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            3 => {
+                self.cycles_to_distance =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| { f64::from(v) / 5000.0 - 0.0 }).collect()
+                })
+            },
+
+            4 => {
+                self.cycles_to_calories =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| { f64::from(v) / 5000.0 - 0.0 }).collect()
+                })
+            },
+
+            5 => {
+                self.resting_metabolic_rate =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

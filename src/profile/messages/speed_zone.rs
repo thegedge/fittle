@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct SpeedZone {
@@ -22,23 +30,45 @@ pub struct SpeedZone {
 }
 
 impl SpeedZone {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.high_value = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
-                1 => msg.name = content.one().map(<String>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.high_value =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            1 => {
+                self.name =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

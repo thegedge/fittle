@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct UserProfile {
@@ -100,49 +108,227 @@ pub struct UserProfile {
 }
 
 impl UserProfile {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.friendly_name = content.one().map(<String>::from),
-                1 => msg.gender = content.one().map(<crate::profile::enums::Gender>::from),
-                2 => msg.age = content.one().map(|v| crate::fields::Time::new::<uom::si::time::year, u8>((<u8>::from)(v))),
-                3 => msg.height = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u8>::from(v)) / 100.0 - 0.0 })(v))),
-                4 => msg.weight = content.one().map(|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 })(v))),
-                5 => msg.language = content.one().map(<crate::profile::enums::Language>::from),
-                6 => msg.elev_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                7 => msg.weight_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                8 => msg.resting_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
-                9 => msg.default_max_running_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
-                10 => msg.default_max_biking_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
-                11 => msg.default_max_heart_rate = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
-                12 => msg.hr_setting = content.one().map(<crate::profile::enums::DisplayHeart>::from),
-                13 => msg.speed_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                14 => msg.dist_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                16 => msg.power_setting = content.one().map(<crate::profile::enums::DisplayPower>::from),
-                17 => msg.activity_class = content.one().map(<crate::profile::enums::ActivityClass>::from),
-                18 => msg.position_setting = content.one().map(<crate::profile::enums::DisplayPosition>::from),
-                21 => msg.temperature_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                22 => msg.local_id = content.one().map(<crate::profile::enums::UserLocalId>::from),
-                23 => msg.global_id = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                28 => msg.wake_time = content.one().map(<crate::profile::enums::LocaltimeIntoDay>::from),
-                29 => msg.sleep_time = content.one().map(<crate::profile::enums::LocaltimeIntoDay>::from),
-                30 => msg.height_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                31 => msg.user_running_step_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
-                32 => msg.user_walking_step_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
-                47 => msg.depth_setting = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                49 => msg.dive_count = content.one().map(<u32>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.friendly_name =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.gender =field.one().map(|v| {
+                    let value = crate::profile::enums::Gender::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.age =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (crate::fields::Time::new::<uom::si::time::year, u8>)(value)
+                })
+            },
+
+            3 => {
+                self.height =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            4 => {
+                self.weight =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { f64::from(v) / 10.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            5 => {
+                self.language =field.one().map(|v| {
+                    let value = crate::profile::enums::Language::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.elev_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayMeasure::from(v);
+                    value
+                })
+            },
+
+            7 => {
+                self.weight_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayMeasure::from(v);
+                    value
+                })
+            },
+
+            8 => {
+                self.resting_heart_rate =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>)(value)
+                })
+            },
+
+            9 => {
+                self.default_max_running_heart_rate =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>)(value)
+                })
+            },
+
+            10 => {
+                self.default_max_biking_heart_rate =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>)(value)
+                })
+            },
+
+            11 => {
+                self.default_max_heart_rate =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>)(value)
+                })
+            },
+
+            12 => {
+                self.hr_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayHeart::from(v);
+                    value
+                })
+            },
+
+            13 => {
+                self.speed_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayMeasure::from(v);
+                    value
+                })
+            },
+
+            14 => {
+                self.dist_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayMeasure::from(v);
+                    value
+                })
+            },
+
+            16 => {
+                self.power_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayPower::from(v);
+                    value
+                })
+            },
+
+            17 => {
+                self.activity_class =field.one().map(|v| {
+                    let value = crate::profile::enums::ActivityClass::from(v);
+                    value
+                })
+            },
+
+            18 => {
+                self.position_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayPosition::from(v);
+                    value
+                })
+            },
+
+            21 => {
+                self.temperature_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayMeasure::from(v);
+                    value
+                })
+            },
+
+            22 => {
+                self.local_id =field.one().map(|v| {
+                    let value = crate::profile::enums::UserLocalId::from(v);
+                    value
+                })
+            },
+
+            23 => {
+                self.global_id =field.many().map(|v| {
+                    let value = v.into_iter().map(u8::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            28 => {
+                self.wake_time =field.one().map(|v| {
+                    let value = crate::profile::enums::LocaltimeIntoDay::from(v);
+                    value
+                })
+            },
+
+            29 => {
+                self.sleep_time =field.one().map(|v| {
+                    let value = crate::profile::enums::LocaltimeIntoDay::from(v);
+                    value
+                })
+            },
+
+            30 => {
+                self.height_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayMeasure::from(v);
+                    value
+                })
+            },
+
+            31 => {
+                self.user_running_step_length =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            32 => {
+                self.user_walking_step_length =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            47 => {
+                self.depth_setting =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayMeasure::from(v);
+                    value
+                })
+            },
+
+            49 => {
+                self.dive_count =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

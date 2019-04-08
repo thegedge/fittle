@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct WorkoutSession {
@@ -34,27 +42,73 @@ pub struct WorkoutSession {
 }
 
 impl WorkoutSession {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
-                1 => msg.sub_sport = content.one().map(<crate::profile::enums::SubSport>::from),
-                2 => msg.num_valid_steps = content.one().map(<u16>::from),
-                3 => msg.first_step_index = content.one().map(<u16>::from),
-                4 => msg.pool_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 })(v))),
-                5 => msg.pool_length_unit = content.one().map(<crate::profile::enums::DisplayMeasure>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.sport =field.one().map(|v| {
+                    let value = crate::profile::enums::Sport::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.sub_sport =field.one().map(|v| {
+                    let value = crate::profile::enums::SubSport::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.num_valid_steps =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.first_step_index =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.pool_length =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            5 => {
+                self.pool_length_unit =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayMeasure::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

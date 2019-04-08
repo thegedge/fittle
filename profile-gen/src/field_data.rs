@@ -9,6 +9,7 @@ use serde::{
 
 #[derive(Default, Serialize)]
 pub struct FieldComponent {
+    pub field: Option<String>,
     pub scale: Option<u16>,
     pub offset: Option<i16>,
     pub unit: Option<String>,
@@ -29,57 +30,120 @@ pub struct FieldData {
 // TODO memoize things that get called several times
 
 impl FieldData {
-    pub fn rust_type(&self) -> String {
-        let rust_type = match self.unit_type_and_base() {
+    fn field_type(&self) -> String {
+        let field_type = match self.unit_type_and_base() {
             Some((unit_type, _, _)) => format!("crate::fields::{0}", unit_type),
             None => self.adjusted_rust_base_type(),
         };
 
         match self.array_length {
-            Some(_n) => format!("Vec<{0}>", rust_type),
-            _ => rust_type,
+            Some(_n) => format!("Vec<{0}>", field_type),
+            _ => field_type,
         }
     }
 
-    pub fn conversion_function(&self) -> String {
-        let rust_base_type = self.adjusted_rust_base_type();
-        let default_constructor = self.default_constructor();
-        let constructor = self.single_component().and_then(|comp| {
+    fn conversion_function(&self) -> Option<String> {
+        self.single_component().and_then(|comp| {
             match self.base_type.as_str() {
                 // These are always annotated with a time unit, but we're using chrono instead of uom
                 "date_time" => None,
                 "local_date_time" => None,
 
-                _ => comp.unit_type_and_base().map(|(unit_type, uom_base, unit_base)| {
-                    format!(
-                        "|v| crate::fields::{0}::new::<uom::si::{1}::{2}, {3}>(({4})(v))",
-                        unit_type,
-                        uom_base,
-                        unit_base,
-                        rust_base_type,
-                        default_constructor,
-                    )
+                _ => comp.unit_type_and_base().and_then(|(unit_type, uom_base, unit_base)| {
+                    self.scale_conversion_function().map(|conv|
+                        format!(
+                            "|v| crate::fields::{0}::new::<uom::si::{1}::{2}, {3}>(({4})(v))",
+                            unit_type,
+                            uom_base,
+                            unit_base,
+                            self.adjusted_rust_base_type(),
+                            conv,
+                        )
+                    ).or_else(|| Some(
+                        format!(
+                            "crate::fields::{0}::new::<uom::si::{1}::{2}, {3}>",
+                            unit_type,
+                            uom_base,
+                            unit_base,
+                            self.adjusted_rust_base_type(),
+                        )
+                    ))
                 })
             }
-        }).unwrap_or(default_constructor);
-
-        match self.array_length {
-            Some(_n) => format!("content.many().map(|vec| vec.into_iter().map({0}).collect())", constructor),
-            None => format!("content.one().map({0})", constructor),
-        }
+        }).or_else(|| self.scale_conversion_function())
     }
 
-    // The rust_base_type adjusted for scale, offsets, etc
+    fn scale_conversion_function(&self) -> Option<String> {
+        self.scale_and_offset().map(|(scale, offset)| {
+            format!(
+                "|v| {{ f64::from(v) / {0}.0 - {1}.0 }}",
+                scale,
+                offset,
+            )
+        })
+    }
+
+    // The base type adjusted for scale, offsets, etc
     fn adjusted_rust_base_type(&self) -> String {
         if self.scale_and_offset().is_some() {
             "f64".to_string()
         } else {
-            self.rust_base_type()
+            self.field_base_type()
         }
     }
 
-    // The base type based on what was in the profile spreadsheet
-    fn rust_base_type(&self) -> String {
+    fn field_content(&self) -> &str {
+        match self.base_type.as_str() {
+            "sint8" => "SignedInt8",
+            "sint16" => "SignedInt16",
+            "sint32" => "SignedInt32",
+            "sint64" => "SignedInt16",
+            "uint8" => "UnsignedInt8",
+            "uint8z" => "UnsignedInt8z",
+            "byte" => "UnsignedInt8",
+            "uint16" => "UnsignedInt16",
+            "uint16z" => "UnsignedInt16z",
+            "uint32" => "UnsignedInt32",
+            "uint32z" => "UnsignedInt32z",
+            "uint64" => "UnsignedInt64",
+            "uint64z" => "UnsignedInt64z",
+            "float32" => "Float32",
+            "float64" => "Float64",
+            "bool" => "Boolean",
+            "string" => "String",
+            _ => "Enum", // anything else we will assume is an enum
+        }
+    }
+
+    fn field_storage_type(&self) -> &str {
+        match self.base_type.as_str() {
+            // Simple base types
+            "sint8" => "i8",
+            "sint16" => "i16",
+            "sint32" => "i32",
+            "sint64" => "i16",
+            "uint8" | "uint8z" | "byte" => "u8",
+            "uint16" | "uint16z" => "u16",
+            "uint32" | "uint32z" => "u32",
+            "uint64" | "uint64z" => "u64",
+            "float32" => "f32",
+            "float64" => "f64",
+            "bool" => "bool",
+            "string" => "String",
+
+            // Specialized forms
+            // TODO these are technically in the "Types" sheet, so could provide field data with
+            //      both the storage type and the base type
+            "date_time" => "u32",
+            "local_date_time" => "u32",
+            "weight" => "u16",
+
+            // Everything else will assume an enum
+            _ => "u8",
+        }
+    }
+
+    fn field_base_type(&self) -> String {
         match self.base_type.as_str() {
             // Simple base types
             "sint8" => "i8".to_string(),
@@ -105,18 +169,10 @@ impl FieldData {
         }
     }
 
-    fn default_constructor(&self) -> String {
-        let rust_base_type = self.rust_base_type();
-        if let Some((scale, offset)) = self.scale_and_offset() {
-            format!(
-                "|v| {{ <{1}>::from(<{0}>::from(v)) / {2}.0 - {3}.0 }}",
-                rust_base_type,
-                self.adjusted_rust_base_type(),
-                scale,
-                offset,
-            )
-        } else {
-            format!("<{0}>::from", rust_base_type)
+    fn to_bits_function(&self) -> Option<&str> {
+        match self.array_length {
+            Some(_) => Some("as_slice"),
+            _ => Some("to_le_bytes"),
         }
     }
 
@@ -128,6 +184,7 @@ impl FieldData {
         match self.base_type.as_str() {
             "date_time" => None,
             "local_date_time" => None,
+            "timestamp_ms" => None,
             _ => self.single_component()
         }.and_then(FieldComponent::unit_type_and_base)
     }
@@ -255,13 +312,30 @@ impl Serialize for FieldData {
         where
             S: Serializer,
     {
-        let mut state = serializer.serialize_struct("FieldData", 3)?;
+        let null = ();
+        let mut state = serializer.serialize_struct("FieldData", 9)?;
         {
-            state.serialize_field("rust_type", &self.rust_type())?;
+            let field_class = match self.array_length {
+                Some(_) => "many",
+                _ => "one",
+            };
+
+            state.serialize_field("field_type", &self.field_type())?;
+            state.serialize_field("field_base_type", &self.field_base_type())?;
+            state.serialize_field("field_storage_type", &self.field_storage_type())?;
+            state.serialize_field("field_class", &field_class)?;
+            state.serialize_field("field_content", self.field_content())?;
             state.serialize_field("conversion_function", &self.conversion_function())?;
+            state.serialize_field("to_bits_function", &self.to_bits_function())?;
             match &self.components {
-                Components::Some(c) => state.serialize_field("components", &c)?,
-                Components::None(c) => state.serialize_field("field_data", &c)?,
+                Components::Some(c) => {
+                    state.serialize_field("components", c)?;
+                    state.serialize_field("field_data", &null)?;
+                },
+                Components::None(c) => {
+                    state.serialize_field("components", &null)?;
+                    state.serialize_field("field_data", c)?;
+                },
             };
         }
         state.end()

@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct Set {
@@ -46,31 +54,101 @@ pub struct Set {
 }
 
 impl Set {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.duration = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                3 => msg.repetitions = content.one().map(<u16>::from),
-                4 => msg.weight = content.one().map(|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { <f64>::from(<u16>::from(v)) / 16.0 - 0.0 })(v))),
-                5 => msg.set_type = content.one().map(<crate::profile::enums::SetType>::from),
-                6 => msg.start_time = content.one().map(<crate::fields::DateTime>::from),
-                7 => msg.category = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::ExerciseCategory>::from).collect()),
-                8 => msg.category_subtype = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                9 => msg.weight_display_unit = content.one().map(<crate::profile::enums::FitBaseUnit>::from),
-                10 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                11 => msg.wkt_step_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                254 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.duration =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            3 => {
+                self.repetitions =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.weight =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { f64::from(v) / 16.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            5 => {
+                self.set_type =field.one().map(|v| {
+                    let value = crate::profile::enums::SetType::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.start_time =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            7 => {
+                self.category =field.many().map(|v| {
+                    let value = v.into_iter().map(crate::profile::enums::ExerciseCategory::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            8 => {
+                self.category_subtype =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            9 => {
+                self.weight_display_unit =field.one().map(|v| {
+                    let value = crate::profile::enums::FitBaseUnit::from(v);
+                    value
+                })
+            },
+
+            10 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            11 => {
+                self.wkt_step_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

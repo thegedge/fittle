@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct BikeProfile {
@@ -109,52 +117,248 @@ pub struct BikeProfile {
 }
 
 impl BikeProfile {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.name = content.one().map(<String>::from),
-                1 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
-                2 => msg.sub_sport = content.one().map(<crate::profile::enums::SubSport>::from),
-                3 => msg.odometer = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u32>::from(v)) / 100.0 - 0.0 })(v))),
-                4 => msg.bike_spd_ant_id = content.one().map(<u16>::from),
-                5 => msg.bike_cad_ant_id = content.one().map(<u16>::from),
-                6 => msg.bike_spdcad_ant_id = content.one().map(<u16>::from),
-                7 => msg.bike_power_ant_id = content.one().map(<u16>::from),
-                8 => msg.custom_wheelsize = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
-                9 => msg.auto_wheelsize = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
-                10 => msg.bike_weight = content.one().map(|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 })(v))),
-                11 => msg.power_cal_factor = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 10.0 - 0.0 }),
-                12 => msg.auto_wheel_cal = content.one().map(<bool>::from),
-                13 => msg.auto_power_zero = content.one().map(<bool>::from),
-                14 => msg.id = content.one().map(<u8>::from),
-                15 => msg.spd_enabled = content.one().map(<bool>::from),
-                16 => msg.cad_enabled = content.one().map(<bool>::from),
-                17 => msg.spdcad_enabled = content.one().map(<bool>::from),
-                18 => msg.power_enabled = content.one().map(<bool>::from),
-                19 => msg.crank_length = content.one().map(|v| crate::fields::Length::new::<uom::si::length::millimeter, f64>((|v| { <f64>::from(<u8>::from(v)) / 2.0 - -110.0 })(v))),
-                20 => msg.enabled = content.one().map(<bool>::from),
-                21 => msg.bike_spd_ant_id_trans_type = content.one().map(<u8>::from),
-                22 => msg.bike_cad_ant_id_trans_type = content.one().map(<u8>::from),
-                23 => msg.bike_spdcad_ant_id_trans_type = content.one().map(<u8>::from),
-                24 => msg.bike_power_ant_id_trans_type = content.one().map(<u8>::from),
-                37 => msg.odometer_rollover = content.one().map(<u8>::from),
-                38 => msg.front_gear_num = content.one().map(<u8>::from),
-                39 => msg.front_gear = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                40 => msg.rear_gear_num = content.one().map(<u8>::from),
-                41 => msg.rear_gear = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                44 => msg.shimano_di2_enabled = content.one().map(<bool>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.name =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.sport =field.one().map(|v| {
+                    let value = crate::profile::enums::Sport::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.sub_sport =field.one().map(|v| {
+                    let value = crate::profile::enums::SubSport::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.odometer =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            4 => {
+                self.bike_spd_ant_id =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            5 => {
+                self.bike_cad_ant_id =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.bike_spdcad_ant_id =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            7 => {
+                self.bike_power_ant_id =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            8 => {
+                self.custom_wheelsize =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            9 => {
+                self.auto_wheelsize =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::meter, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            10 => {
+                self.bike_weight =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Mass::new::<uom::si::mass::kilogram, f64>((|v| { f64::from(v) / 10.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            11 => {
+                self.power_cal_factor =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| { f64::from(v) / 10.0 - 0.0 })(value)
+                })
+            },
+
+            12 => {
+                self.auto_wheel_cal =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            13 => {
+                self.auto_power_zero =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            14 => {
+                self.id =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            15 => {
+                self.spd_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            16 => {
+                self.cad_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            17 => {
+                self.spdcad_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            18 => {
+                self.power_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            19 => {
+                self.crank_length =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (|v| crate::fields::Length::new::<uom::si::length::millimeter, f64>((|v| { f64::from(v) / 2.0 - -110.0 })(v)))(value)
+                })
+            },
+
+            20 => {
+                self.enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            21 => {
+                self.bike_spd_ant_id_trans_type =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            22 => {
+                self.bike_cad_ant_id_trans_type =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            23 => {
+                self.bike_spdcad_ant_id_trans_type =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            24 => {
+                self.bike_power_ant_id_trans_type =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            37 => {
+                self.odometer_rollover =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            38 => {
+                self.front_gear_num =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            39 => {
+                self.front_gear =field.many().map(|v| {
+                    let value = v.into_iter().map(u8::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            40 => {
+                self.rear_gear_num =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            41 => {
+                self.rear_gear =field.many().map(|v| {
+                    let value = v.into_iter().map(u8::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            44 => {
+                self.shimano_di2_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct AviationAttitude {
@@ -49,32 +57,108 @@ pub struct AviationAttitude {
 }
 
 impl AviationAttitude {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
-                1 => msg.system_time = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u32>((<u32>::from)(v))).collect()),
-                2 => msg.pitch = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 10430.0 - 0.0 }).collect()),
-                3 => msg.roll = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i16>::from(v)) / 10430.0 - 0.0 }).collect()),
-                4 => msg.accel_lateral = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Acceleration::new::<uom::si::acceleration::meter_per_second_squared, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))).collect()),
-                5 => msg.accel_normal = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Acceleration::new::<uom::si::acceleration::meter_per_second_squared, f64>((|v| { <f64>::from(<i16>::from(v)) / 100.0 - 0.0 })(v))).collect()),
-                6 => msg.turn_rate = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Frequency::new::<uom::si::frequency::hertz, f64>((|v| { <f64>::from(<i16>::from(v)) / 1024.0 - 0.0 })(v))).collect()),
-                7 => msg.stage = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::AttitudeStage>::from).collect()),
-                8 => msg.attitude_stage_complete = content.many().map(|vec| vec.into_iter().map(<u8>::from).collect()),
-                9 => msg.track = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<u16>::from(v)) / 10430.0 - 0.0 }).collect()),
-                10 => msg.validity = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::AttitudeValidity>::from).collect()),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.timestamp_ms =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Time::new::<uom::si::time::millisecond, u16>)(value)
+                })
+            },
+
+            1 => {
+                self.system_time =field.many().map(|v| {
+                    let value = v.into_iter().map(u32::from).collect::<Vec<_>>();
+                    value.into_iter().map(crate::fields::Time::new::<uom::si::time::millisecond, u32>).collect()
+                })
+            },
+
+            2 => {
+                self.pitch =field.many().map(|v| {
+                    let value = v.into_iter().map(i16::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| { f64::from(v) / 10430.0 - 0.0 }).collect()
+                })
+            },
+
+            3 => {
+                self.roll =field.many().map(|v| {
+                    let value = v.into_iter().map(i16::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| { f64::from(v) / 10430.0 - 0.0 }).collect()
+                })
+            },
+
+            4 => {
+                self.accel_lateral =field.many().map(|v| {
+                    let value = v.into_iter().map(i16::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| crate::fields::Acceleration::new::<uom::si::acceleration::meter_per_second_squared, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v))).collect()
+                })
+            },
+
+            5 => {
+                self.accel_normal =field.many().map(|v| {
+                    let value = v.into_iter().map(i16::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| crate::fields::Acceleration::new::<uom::si::acceleration::meter_per_second_squared, f64>((|v| { f64::from(v) / 100.0 - 0.0 })(v))).collect()
+                })
+            },
+
+            6 => {
+                self.turn_rate =field.many().map(|v| {
+                    let value = v.into_iter().map(i16::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| crate::fields::Frequency::new::<uom::si::frequency::hertz, f64>((|v| { f64::from(v) / 1024.0 - 0.0 })(v))).collect()
+                })
+            },
+
+            7 => {
+                self.stage =field.many().map(|v| {
+                    let value = v.into_iter().map(crate::profile::enums::AttitudeStage::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            8 => {
+                self.attitude_stage_complete =field.many().map(|v| {
+                    let value = v.into_iter().map(u8::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            9 => {
+                self.track =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| { f64::from(v) / 10430.0 - 0.0 }).collect()
+                })
+            },
+
+            10 => {
+                self.validity =field.many().map(|v| {
+                    let value = v.into_iter().map(crate::profile::enums::AttitudeValidity::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

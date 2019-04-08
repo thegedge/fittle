@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct HrmProfile {
@@ -28,25 +36,59 @@ pub struct HrmProfile {
 }
 
 impl HrmProfile {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.enabled = content.one().map(<bool>::from),
-                1 => msg.hrm_ant_id = content.one().map(<u16>::from),
-                2 => msg.log_hrv = content.one().map(<bool>::from),
-                3 => msg.hrm_ant_id_trans_type = content.one().map(<u8>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.hrm_ant_id =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.log_hrv =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.hrm_ant_id_trans_type =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

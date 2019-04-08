@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct ExdDataConceptConfiguration {
@@ -46,31 +54,113 @@ pub struct ExdDataConceptConfiguration {
 }
 
 impl ExdDataConceptConfiguration {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.screen_index = content.one().map(<u8>::from),
-                1 => msg.concept_field = content.one().map(<u8>::from),
-                2 => msg.field_id = content.one().map(<u8>::from),
-                3 => msg.concept_index = content.one().map(<u8>::from),
-                4 => msg.data_page = content.one().map(<u8>::from),
-                5 => msg.concept_key = content.one().map(<u8>::from),
-                6 => msg.scaling = content.one().map(<u8>::from),
-                8 => msg.data_units = content.one().map(<crate::profile::enums::ExdDataUnits>::from),
-                9 => msg.qualifier = content.one().map(<crate::profile::enums::ExdQualifiers>::from),
-                10 => msg.descriptor = content.one().map(<crate::profile::enums::ExdDescriptors>::from),
-                11 => msg.is_signed = content.one().map(<bool>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.screen_index =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.concept_field =field.one().map(|v| {
+                    let value = u8::from(v);
+                    let bits = value.to_le_bytes();
+                    let mut bit_reader = BitReader::new(&bits);
+                    {
+                        bit_reader.read::<u8>(4).map(|bits_value| {
+                            self.from_content(2, Field::One(FieldContent::UnsignedInt8(bits_value)));
+                        });
+                    }
+                    {
+                        bit_reader.read::<u8>(4).map(|bits_value| {
+                            self.from_content(3, Field::One(FieldContent::UnsignedInt8(bits_value)));
+                        });
+                    }
+                    value
+                })
+            },
+
+            2 => {
+                self.field_id =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.concept_index =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.data_page =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            5 => {
+                self.concept_key =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.scaling =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            8 => {
+                self.data_units =field.one().map(|v| {
+                    let value = crate::profile::enums::ExdDataUnits::from(v);
+                    value
+                })
+            },
+
+            9 => {
+                self.qualifier =field.one().map(|v| {
+                    let value = crate::profile::enums::ExdQualifiers::from(v);
+                    value
+                })
+            },
+
+            10 => {
+                self.descriptor =field.one().map(|v| {
+                    let value = crate::profile::enums::ExdDescriptors::from(v);
+                    value
+                })
+            },
+
+            11 => {
+                self.is_signed =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

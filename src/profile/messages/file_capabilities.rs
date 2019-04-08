@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct FileCapabilities {
@@ -31,26 +39,66 @@ pub struct FileCapabilities {
 }
 
 impl FileCapabilities {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.type_ = content.one().map(<crate::profile::enums::File>::from),
-                1 => msg.flags = content.one().map(<crate::profile::enums::FileFlags>::from),
-                2 => msg.directory = content.one().map(<String>::from),
-                3 => msg.max_count = content.one().map(<u16>::from),
-                4 => msg.max_size = content.one().map(<u32>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.type_ =field.one().map(|v| {
+                    let value = crate::profile::enums::File::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.flags =field.one().map(|v| {
+                    let value = crate::profile::enums::FileFlags::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.directory =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.max_count =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.max_size =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

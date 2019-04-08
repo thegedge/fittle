@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct DeviceInfo {
@@ -67,38 +75,150 @@ pub struct DeviceInfo {
 }
 
 impl DeviceInfo {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.device_index = content.one().map(<crate::profile::enums::DeviceIndex>::from),
-                1 => msg.device_type = content.one().map(<u8>::from),
-                2 => msg.manufacturer = content.one().map(<crate::profile::enums::Manufacturer>::from),
-                3 => msg.serial_number = content.one().map(<u32>::from),
-                4 => msg.product = content.one().map(<u16>::from),
-                5 => msg.software_version = content.one().map(|v| { <f64>::from(<u16>::from(v)) / 100.0 - 0.0 }),
-                6 => msg.hardware_version = content.one().map(<u8>::from),
-                7 => msg.cum_operating_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
-                10 => msg.battery_voltage = content.one().map(|v| crate::fields::ElectricPotential::new::<uom::si::electric_potential::volt, f64>((|v| { <f64>::from(<u16>::from(v)) / 256.0 - 0.0 })(v))),
-                11 => msg.battery_status = content.one().map(<crate::profile::enums::BatteryStatus>::from),
-                18 => msg.sensor_position = content.one().map(<crate::profile::enums::BodyLocation>::from),
-                19 => msg.descriptor = content.one().map(<String>::from),
-                20 => msg.ant_transmission_type = content.one().map(<u8>::from),
-                21 => msg.ant_device_number = content.one().map(<u16>::from),
-                22 => msg.ant_network = content.one().map(<crate::profile::enums::AntNetwork>::from),
-                25 => msg.source_type = content.one().map(<crate::profile::enums::SourceType>::from),
-                27 => msg.product_name = content.one().map(<String>::from),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.device_index =field.one().map(|v| {
+                    let value = crate::profile::enums::DeviceIndex::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.device_type =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.manufacturer =field.one().map(|v| {
+                    let value = crate::profile::enums::Manufacturer::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.serial_number =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.product =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            5 => {
+                self.software_version =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| { f64::from(v) / 100.0 - 0.0 })(value)
+                })
+            },
+
+            6 => {
+                self.hardware_version =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            7 => {
+                self.cum_operating_time =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (crate::fields::Time::new::<uom::si::time::second, u32>)(value)
+                })
+            },
+
+            10 => {
+                self.battery_voltage =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::ElectricPotential::new::<uom::si::electric_potential::volt, f64>((|v| { f64::from(v) / 256.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            11 => {
+                self.battery_status =field.one().map(|v| {
+                    let value = crate::profile::enums::BatteryStatus::from(v);
+                    value
+                })
+            },
+
+            18 => {
+                self.sensor_position =field.one().map(|v| {
+                    let value = crate::profile::enums::BodyLocation::from(v);
+                    value
+                })
+            },
+
+            19 => {
+                self.descriptor =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            20 => {
+                self.ant_transmission_type =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            21 => {
+                self.ant_device_number =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            22 => {
+                self.ant_network =field.one().map(|v| {
+                    let value = crate::profile::enums::AntNetwork::from(v);
+                    value
+                })
+            },
+
+            25 => {
+                self.source_type =field.one().map(|v| {
+                    let value = crate::profile::enums::SourceType::from(v);
+                    value
+                })
+            },
+
+            27 => {
+                self.product_name =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

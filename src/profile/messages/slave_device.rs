@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct SlaveDevice {
@@ -19,22 +27,38 @@ pub struct SlaveDevice {
 }
 
 impl SlaveDevice {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.manufacturer = content.one().map(<crate::profile::enums::Manufacturer>::from),
-                1 => msg.product = content.one().map(<u16>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.manufacturer =field.one().map(|v| {
+                    let value = crate::profile::enums::Manufacturer::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.product =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

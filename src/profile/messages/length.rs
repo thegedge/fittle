@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct Length {
@@ -67,38 +75,150 @@ pub struct Length {
 }
 
 impl Length {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.event = content.one().map(<crate::profile::enums::Event>::from),
-                1 => msg.event_type = content.one().map(<crate::profile::enums::EventType>::from),
-                2 => msg.start_time = content.one().map(<crate::fields::DateTime>::from),
-                3 => msg.total_elapsed_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                4 => msg.total_timer_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { <f64>::from(<u32>::from(v)) / 1000.0 - 0.0 })(v))),
-                5 => msg.total_strokes = content.one().map(<u16>::from),
-                6 => msg.avg_speed = content.one().map(|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { <f64>::from(<u16>::from(v)) / 1000.0 - 0.0 })(v))),
-                7 => msg.swim_stroke = content.one().map(<crate::profile::enums::SwimStroke>::from),
-                9 => msg.avg_swimming_cadence = content.one().map(|v| crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>((<u8>::from)(v))),
-                10 => msg.event_group = content.one().map(<u8>::from),
-                11 => msg.total_calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>((<u16>::from)(v))),
-                12 => msg.length_type = content.one().map(<crate::profile::enums::LengthType>::from),
-                18 => msg.player_score = content.one().map(<u16>::from),
-                19 => msg.opponent_score = content.one().map(<u16>::from),
-                20 => msg.stroke_count = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                21 => msg.zone_count = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.event =field.one().map(|v| {
+                    let value = crate::profile::enums::Event::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.event_type =field.one().map(|v| {
+                    let value = crate::profile::enums::EventType::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.start_time =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.total_elapsed_time =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            4 => {
+                self.total_timer_time =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (|v| crate::fields::Time::new::<uom::si::time::second, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            5 => {
+                self.total_strokes =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.avg_speed =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (|v| crate::fields::Velocity::new::<uom::si::velocity::meter_per_second, f64>((|v| { f64::from(v) / 1000.0 - 0.0 })(v)))(value)
+                })
+            },
+
+            7 => {
+                self.swim_stroke =field.one().map(|v| {
+                    let value = crate::profile::enums::SwimStroke::from(v);
+                    value
+                })
+            },
+
+            9 => {
+                self.avg_swimming_cadence =field.one().map(|v| {
+                    let value = u8::from(v);
+                    (crate::fields::Frequency::new::<uom::si::frequency::cycle_per_minute, u8>)(value)
+                })
+            },
+
+            10 => {
+                self.event_group =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            11 => {
+                self.total_calories =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Energy::new::<uom::si::energy::kilocalorie, u16>)(value)
+                })
+            },
+
+            12 => {
+                self.length_type =field.one().map(|v| {
+                    let value = crate::profile::enums::LengthType::from(v);
+                    value
+                })
+            },
+
+            18 => {
+                self.player_score =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            19 => {
+                self.opponent_score =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            20 => {
+                self.stroke_count =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            21 => {
+                self.zone_count =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

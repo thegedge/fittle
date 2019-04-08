@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct Goal {
@@ -52,33 +60,115 @@ pub struct Goal {
 }
 
 impl Goal {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
-                1 => msg.sub_sport = content.one().map(<crate::profile::enums::SubSport>::from),
-                2 => msg.start_date = content.one().map(<crate::fields::DateTime>::from),
-                3 => msg.end_date = content.one().map(<crate::fields::DateTime>::from),
-                4 => msg.type_ = content.one().map(<crate::profile::enums::Goal>::from),
-                5 => msg.value = content.one().map(<u32>::from),
-                6 => msg.repeat = content.one().map(<bool>::from),
-                7 => msg.target_value = content.one().map(<u32>::from),
-                8 => msg.recurrence = content.one().map(<crate::profile::enums::GoalRecurrence>::from),
-                9 => msg.recurrence_value = content.one().map(<u16>::from),
-                10 => msg.enabled = content.one().map(<bool>::from),
-                11 => msg.source = content.one().map(<crate::profile::enums::GoalSource>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.sport =field.one().map(|v| {
+                    let value = crate::profile::enums::Sport::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.sub_sport =field.one().map(|v| {
+                    let value = crate::profile::enums::SubSport::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.start_date =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.end_date =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.type_ =field.one().map(|v| {
+                    let value = crate::profile::enums::Goal::from(v);
+                    value
+                })
+            },
+
+            5 => {
+                self.value =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.repeat =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            7 => {
+                self.target_value =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            8 => {
+                self.recurrence =field.one().map(|v| {
+                    let value = crate::profile::enums::GoalRecurrence::from(v);
+                    value
+                })
+            },
+
+            9 => {
+                self.recurrence_value =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            10 => {
+                self.enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            11 => {
+                self.source =field.one().map(|v| {
+                    let value = crate::profile::enums::GoalSource::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

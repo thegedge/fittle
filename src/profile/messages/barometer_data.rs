@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct BarometerData {
@@ -25,24 +33,52 @@ pub struct BarometerData {
 }
 
 impl BarometerData {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.timestamp_ms = content.one().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))),
-                1 => msg.sample_time_offset = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::millisecond, u16>((<u16>::from)(v))).collect()),
-                2 => msg.baro_pres = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Pressure::new::<uom::si::pressure::pascal, u32>((<u32>::from)(v))).collect()),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.timestamp_ms =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Time::new::<uom::si::time::millisecond, u16>)(value)
+                })
+            },
+
+            1 => {
+                self.sample_time_offset =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value.into_iter().map(crate::fields::Time::new::<uom::si::time::millisecond, u16>).collect()
+                })
+            },
+
+            2 => {
+                self.baro_pres =field.many().map(|v| {
+                    let value = v.into_iter().map(u32::from).collect::<Vec<_>>();
+                    value.into_iter().map(crate::fields::Pressure::new::<uom::si::pressure::pascal, u32>).collect()
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

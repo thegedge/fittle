@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct Connectivity {
@@ -52,33 +60,115 @@ pub struct Connectivity {
 }
 
 impl Connectivity {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.bluetooth_enabled = content.one().map(<bool>::from),
-                1 => msg.bluetooth_le_enabled = content.one().map(<bool>::from),
-                2 => msg.ant_enabled = content.one().map(<bool>::from),
-                3 => msg.name = content.one().map(<String>::from),
-                4 => msg.live_tracking_enabled = content.one().map(<bool>::from),
-                5 => msg.weather_conditions_enabled = content.one().map(<bool>::from),
-                6 => msg.weather_alerts_enabled = content.one().map(<bool>::from),
-                7 => msg.auto_activity_upload_enabled = content.one().map(<bool>::from),
-                8 => msg.course_download_enabled = content.one().map(<bool>::from),
-                9 => msg.workout_download_enabled = content.one().map(<bool>::from),
-                10 => msg.gps_ephemeris_download_enabled = content.one().map(<bool>::from),
-                11 => msg.incident_detection_enabled = content.one().map(<bool>::from),
-                12 => msg.grouptrack_enabled = content.one().map(<bool>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.bluetooth_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.bluetooth_le_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.ant_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.name =field.one().map(|v| {
+                    let value = String::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.live_tracking_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            5 => {
+                self.weather_conditions_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.weather_alerts_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            7 => {
+                self.auto_activity_upload_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            8 => {
+                self.course_download_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            9 => {
+                self.workout_download_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            10 => {
+                self.gps_ephemeris_download_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            11 => {
+                self.incident_detection_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            12 => {
+                self.grouptrack_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

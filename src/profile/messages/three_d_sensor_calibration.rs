@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct ThreeDSensorCalibration {
@@ -34,27 +42,73 @@ pub struct ThreeDSensorCalibration {
 }
 
 impl ThreeDSensorCalibration {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.sensor_type = content.one().map(<crate::profile::enums::SensorType>::from),
-                1 => msg.calibration_factor = content.one().map(<u32>::from),
-                2 => msg.calibration_divisor = content.one().map(<u32>::from),
-                3 => msg.level_shift = content.one().map(<u32>::from),
-                4 => msg.offset_cal = content.many().map(|vec| vec.into_iter().map(<i32>::from).collect()),
-                5 => msg.orientation_matrix = content.many().map(|vec| vec.into_iter().map(|v| { <f64>::from(<i32>::from(v)) / 65535.0 - 0.0 }).collect()),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.sensor_type =field.one().map(|v| {
+                    let value = crate::profile::enums::SensorType::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.calibration_factor =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.calibration_divisor =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            3 => {
+                self.level_shift =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.offset_cal =field.many().map(|v| {
+                    let value = v.into_iter().map(i32::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            5 => {
+                self.orientation_matrix =field.many().map(|v| {
+                    let value = v.into_iter().map(i32::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| { f64::from(v) / 65535.0 - 0.0 }).collect()
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

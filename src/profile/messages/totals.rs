@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct Totals {
@@ -43,30 +51,94 @@ pub struct Totals {
 }
 
 impl Totals {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.timer_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
-                1 => msg.distance = content.one().map(|v| crate::fields::Length::new::<uom::si::length::meter, u32>((<u32>::from)(v))),
-                2 => msg.calories = content.one().map(|v| crate::fields::Energy::new::<uom::si::energy::kilocalorie, u32>((<u32>::from)(v))),
-                3 => msg.sport = content.one().map(<crate::profile::enums::Sport>::from),
-                4 => msg.elapsed_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
-                5 => msg.sessions = content.one().map(<u16>::from),
-                6 => msg.active_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))),
-                9 => msg.sport_index = content.one().map(<u8>::from),
-                253 => msg.timestamp = content.one().map(<crate::fields::DateTime>::from),
-                254 => msg.message_index = content.one().map(<crate::profile::enums::MessageIndex>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.timer_time =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (crate::fields::Time::new::<uom::si::time::second, u32>)(value)
+                })
+            },
+
+            1 => {
+                self.distance =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (crate::fields::Length::new::<uom::si::length::meter, u32>)(value)
+                })
+            },
+
+            2 => {
+                self.calories =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (crate::fields::Energy::new::<uom::si::energy::kilocalorie, u32>)(value)
+                })
+            },
+
+            3 => {
+                self.sport =field.one().map(|v| {
+                    let value = crate::profile::enums::Sport::from(v);
+                    value
+                })
+            },
+
+            4 => {
+                self.elapsed_time =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (crate::fields::Time::new::<uom::si::time::second, u32>)(value)
+                })
+            },
+
+            5 => {
+                self.sessions =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            6 => {
+                self.active_time =field.one().map(|v| {
+                    let value = u32::from(v);
+                    (crate::fields::Time::new::<uom::si::time::second, u32>)(value)
+                })
+            },
+
+            9 => {
+                self.sport_index =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            253 => {
+                self.timestamp =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            254 => {
+                self.message_index =field.one().map(|v| {
+                    let value = crate::profile::enums::MessageIndex::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }

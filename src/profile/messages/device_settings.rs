@@ -7,7 +7,15 @@ use byteorder::{
 
 use serde::Serialize;
 
-use crate::fields::FieldDefinition;
+#[allow(unused_imports)]
+use crate::bits::BitReader;
+
+#[allow(unused_imports)]
+use crate::fields::{
+    Field,
+    FieldContent,
+    FieldDefinition,
+};
 
 #[derive(Debug, Default, Serialize)]
 pub struct DeviceSettings {
@@ -82,43 +90,185 @@ pub struct DeviceSettings {
 }
 
 impl DeviceSettings {
-    pub fn from_fields<Order, Reader>(reader: &mut Reader, fields: &Vec<FieldDefinition>)
+    pub fn from_fields<Order, Reader>(reader: &mut Reader, field_defs: &Vec<FieldDefinition>)
         -> Result<Self, std::io::Error>
         where
             Order: ByteOrder,
             Reader: ReadBytesExt,
     {
         let mut msg: Self = Default::default();
-        for field in fields {
-            let (number, content) = field.content_from::<Order, Reader>(reader)?;
-            match number {
-                0 => msg.active_time_zone = content.one().map(<u8>::from),
-                1 => msg.utc_offset = content.one().map(<u32>::from),
-                2 => msg.time_offset = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::second, u32>((<u32>::from)(v))).collect()),
-                4 => msg.time_mode = content.many().map(|vec| vec.into_iter().map(<crate::profile::enums::TimeMode>::from).collect()),
-                5 => msg.time_zone_offset = content.many().map(|vec| vec.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::hour, f64>((|v| { <f64>::from(<i8>::from(v)) / 4.0 - 0.0 })(v))).collect()),
-                12 => msg.backlight_mode = content.one().map(<crate::profile::enums::BacklightMode>::from),
-                36 => msg.activity_tracker_enabled = content.one().map(<bool>::from),
-                39 => msg.clock_time = content.one().map(<crate::fields::DateTime>::from),
-                40 => msg.pages_enabled = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                46 => msg.move_alert_enabled = content.one().map(<bool>::from),
-                47 => msg.date_mode = content.one().map(<crate::profile::enums::DateMode>::from),
-                55 => msg.display_orientation = content.one().map(<crate::profile::enums::DisplayOrientation>::from),
-                56 => msg.mounting_side = content.one().map(<crate::profile::enums::Side>::from),
-                57 => msg.default_page = content.many().map(|vec| vec.into_iter().map(<u16>::from).collect()),
-                58 => msg.autosync_min_steps = content.one().map(<u16>::from),
-                59 => msg.autosync_min_time = content.one().map(|v| crate::fields::Time::new::<uom::si::time::minute, u16>((<u16>::from)(v))),
-                80 => msg.lactate_threshold_autodetect_enabled = content.one().map(<bool>::from),
-                86 => msg.ble_auto_upload_enabled = content.one().map(<bool>::from),
-                89 => msg.auto_sync_frequency = content.one().map(<crate::profile::enums::AutoSyncFrequency>::from),
-                90 => msg.auto_activity_detect = content.one().map(<crate::profile::enums::AutoActivityDetect>::from),
-                94 => msg.number_of_screens = content.one().map(<u8>::from),
-                95 => msg.smart_notification_display_orientation = content.one().map(<crate::profile::enums::DisplayOrientation>::from),
-                134 => msg.tap_interface = content.one().map(<crate::profile::enums::Switch>::from),
-                _ => (),
-            };
+        for field_def in field_defs {
+            let (number, field) = field_def.content_from::<Order, Reader>(reader)?;
+            msg.from_content(number, field);
         }
 
         Ok(msg)
+    }
+
+    fn from_content(&mut self, number: u8, field: Field) {
+        match number {
+            0 => {
+                self.active_time_zone =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            1 => {
+                self.utc_offset =field.one().map(|v| {
+                    let value = u32::from(v);
+                    value
+                })
+            },
+
+            2 => {
+                self.time_offset =field.many().map(|v| {
+                    let value = v.into_iter().map(u32::from).collect::<Vec<_>>();
+                    value.into_iter().map(crate::fields::Time::new::<uom::si::time::second, u32>).collect()
+                })
+            },
+
+            4 => {
+                self.time_mode =field.many().map(|v| {
+                    let value = v.into_iter().map(crate::profile::enums::TimeMode::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            5 => {
+                self.time_zone_offset =field.many().map(|v| {
+                    let value = v.into_iter().map(i8::from).collect::<Vec<_>>();
+                    value.into_iter().map(|v| crate::fields::Time::new::<uom::si::time::hour, f64>((|v| { f64::from(v) / 4.0 - 0.0 })(v))).collect()
+                })
+            },
+
+            12 => {
+                self.backlight_mode =field.one().map(|v| {
+                    let value = crate::profile::enums::BacklightMode::from(v);
+                    value
+                })
+            },
+
+            36 => {
+                self.activity_tracker_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            39 => {
+                self.clock_time =field.one().map(|v| {
+                    let value = crate::fields::DateTime::from(v);
+                    value
+                })
+            },
+
+            40 => {
+                self.pages_enabled =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            46 => {
+                self.move_alert_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            47 => {
+                self.date_mode =field.one().map(|v| {
+                    let value = crate::profile::enums::DateMode::from(v);
+                    value
+                })
+            },
+
+            55 => {
+                self.display_orientation =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayOrientation::from(v);
+                    value
+                })
+            },
+
+            56 => {
+                self.mounting_side =field.one().map(|v| {
+                    let value = crate::profile::enums::Side::from(v);
+                    value
+                })
+            },
+
+            57 => {
+                self.default_page =field.many().map(|v| {
+                    let value = v.into_iter().map(u16::from).collect::<Vec<_>>();
+                    value
+                })
+            },
+
+            58 => {
+                self.autosync_min_steps =field.one().map(|v| {
+                    let value = u16::from(v);
+                    value
+                })
+            },
+
+            59 => {
+                self.autosync_min_time =field.one().map(|v| {
+                    let value = u16::from(v);
+                    (crate::fields::Time::new::<uom::si::time::minute, u16>)(value)
+                })
+            },
+
+            80 => {
+                self.lactate_threshold_autodetect_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            86 => {
+                self.ble_auto_upload_enabled =field.one().map(|v| {
+                    let value = bool::from(v);
+                    value
+                })
+            },
+
+            89 => {
+                self.auto_sync_frequency =field.one().map(|v| {
+                    let value = crate::profile::enums::AutoSyncFrequency::from(v);
+                    value
+                })
+            },
+
+            90 => {
+                self.auto_activity_detect =field.one().map(|v| {
+                    let value = crate::profile::enums::AutoActivityDetect::from(v);
+                    value
+                })
+            },
+
+            94 => {
+                self.number_of_screens =field.one().map(|v| {
+                    let value = u8::from(v);
+                    value
+                })
+            },
+
+            95 => {
+                self.smart_notification_display_orientation =field.one().map(|v| {
+                    let value = crate::profile::enums::DisplayOrientation::from(v);
+                    value
+                })
+            },
+
+            134 => {
+                self.tap_interface =field.one().map(|v| {
+                    let value = crate::profile::enums::Switch::from(v);
+                    value
+                })
+            },
+
+            _ => (),
+        }
     }
 }
