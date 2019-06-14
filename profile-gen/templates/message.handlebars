@@ -1,13 +1,20 @@
 // DO NOT EDIT -- generated code
+{{~#*inline "conversion"~}}
+    {{~#if conversion_function~}}
+                    {{> @partial-block}}
+    {{~else}}
+                    value
+    {{~/if}}
+{{~/inline~}}
 
 {{~#*inline "components"}}
     {{~#if components}}
                     let bits = value.{{to_bits_function}}();
                     let mut bit_reader = BitReader::new(&bits);
-        {{~#each components}}
-            {{~#with_lookup ../../fields field as |name field|}}
+        {{~#each components as |component|}}
+            {{~#with_lookup @root.fields field as |field name|}}
                     {
-                        bit_reader.read::<{{field.field_storage_type}}>({{bits}}).map(|bits_value| {
+                        bit_reader.read::<{{field.field_storage_type}}>({{component.bits}}).map(|bits_value| {
                             self.from_content({{field.number}}, Field::One(FieldContent::{{field.field_content}}(bits_value)));
                         });
                     }
@@ -20,11 +27,9 @@
                 field.one().map(|v| {
                     let value = {{field_base_type}}::from(v);
                     {{~> components}}
-    {{~#if conversion_function}}
+    {{~#> conversion}}
                     ({{conversion_function}})(value)
-    {{~else}}
-                    value
-    {{~/if}}
+    {{~/conversion}}
                 })
 {{~/inline~}}
 
@@ -32,13 +37,31 @@
                 field.many().map(|v| {
                     let value = v.into_iter().map({{field_base_type}}::from).collect::<Vec<_>>();
                     {{~> components}}
-    {{~#if conversion_function}}
+    {{~#> conversion}}
                     value.into_iter().map({{conversion_function}}).collect()
-    {{~else}}
-                    value
-    {{~/if}}
+    {{~/conversion}}
                 })
 {{~/inline}}
+
+{{~#*inline "dynamic_fields"~}}
+{{~#each dynamic_fields as |dfields ref_field_name|}}
+    {{~#each this.dfields as |dfield|}}
+                match self.{{ref_field_name}} {
+        {{~#each dfield.ref_field_values as |ref_field_value|}}
+                    {{ref_field_value}} => {
+                        self.{{dfield.name}} = {{> one dfield fields=@root.fields}},
+                    },
+        {{~/each}}
+                    _ => (),
+                }
+    {{~/each}}
+{{~/each}}
+{{~/inline}}
+
+{{~#*inline "field_declaration"}}
+    #[serde(skip_serializing_if = "Option::is_none")]
+    {{name}}: Option<{{field_type}}>,
+{{/inline}}
 
 use byteorder::{
     ByteOrder,
@@ -59,10 +82,20 @@ use crate::fields::{
 
 #[derive(Debug, Default, Serialize)]
 pub struct {{name}} {
-{{~#sorted fields "name"}}
-    #[serde(skip_serializing_if = "Option::is_none")]
-    {{name}}: Option<{{field_type}}>,
-{{/sorted~}}
+{{~#sorted fields "name"~}}
+    {{~> field_declaration~}}
+{{~/sorted~}}
+
+{{~#each fields~}}
+    {{~#if dynamic_fields}}
+    // Dynamic fields for {{name}}
+    {{~/if~}}
+    {{~#each dynamic_fields}}
+        {{~#each this~}}
+            {{~> field_declaration~}}
+        {{~/each~}}
+    {{~/each~}}
+{{~/each~}}
 }
 
 impl {{name}} {
@@ -84,9 +117,15 @@ impl {{name}} {
     fn from_content(&mut self, number: u8, field: Field) {
         match number {
 {{~#sorted fields "number"}}
+    {{~#if number includeZero=true}}
             {{number}} => {
-                self.{{name}} = {{~> (field_class) .}}
+                self.{{name}} = {{> (field_class)}};
+        {{~#if dynamic_fields}}
+
+            {{~> dynamic_fields}}
+        {{~/if}}
             },
+    {{~/if}}
 {{/sorted}}
             _ => (),
         }

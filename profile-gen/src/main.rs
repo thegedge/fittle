@@ -60,7 +60,7 @@ const MESSAGES_SHEET_UNITS_COLUMN: usize = 8;
 const MESSAGES_SHEET_BITS_COLUMN: usize = 9;
 //const MESSAGES_SHEET_ACCUMULATE_COLUMN: usize = 10;
 const MESSAGES_SHEET_REF_FIELD_NAME_COLUMN: usize = 11;
-//const MESSAGES_SHEET_REF_FIELD_VALUE_COLUMN: usize = 12;
+const MESSAGES_SHEET_REF_FIELD_VALUE_COLUMN: usize = 12;
 const MESSAGES_SHEET_COMMENT_COLUMN: usize = 13;
 
 pub struct Error {
@@ -88,19 +88,51 @@ struct FittleEnum {
 }
 
 #[derive(Serialize)]
-struct FittleMessageField {
+struct FittleFieldBase {
     name: String,
-    number: u64,
+    number: Option<u8>,
 
     #[serde(flatten)]
     field_data: FieldData,
 }
 
 #[derive(Serialize)]
+struct FittleDynamicField {
+    #[serde(flatten)]
+    base: FittleFieldBase,
+
+    ref_field_values: Vec<String>,
+}
+
+#[derive(Serialize)]
+struct FittleField {
+    #[serde(flatten)]
+    base: FittleFieldBase,
+
+    // Maps the ref field name to all the dynamic fields that depend on it
+    dynamic_fields: BTreeMap<String, Vec<FittleDynamicField>>,
+}
+
+#[derive(Serialize)]
 struct FittleMessage {
     name: String,
     module: String,
-    fields: BTreeMap<String, FittleMessageField>,
+    fields: BTreeMap<String, FittleField>,
+}
+
+// TODO removeme once things are working
+fn json<'reg: 'rc, 'rc>(
+    h: &handlebars::Helper,
+    _: &handlebars::Handlebars,
+    _: &handlebars::Context,
+    _: &mut handlebars::RenderContext,
+    _: &mut dyn handlebars::Output,
+) -> handlebars::HelperResult {
+    let param = h
+        .param(0)
+        .ok_or_else(|| RenderError::new("Param not found for helper \"log\""))?;
+    println!("{}\n--------\n", param.value());
+    Ok(())
 }
 
 fn main() -> Result<(), Error> {
@@ -114,6 +146,8 @@ fn main() -> Result<(), Error> {
 
     renderer.register_helper("sorted", Box::new(helpers::sorted));
     renderer.register_helper("with_lookup", Box::new(helpers::with_lookup));
+
+    renderer.register_helper("json", Box::new(json));
 
     let mut workbook = open_workbook(env!("FIT_PROFILE_PATH")).expect("cannot open fit profile xlsx");
 
@@ -259,186 +293,252 @@ fn messages<D: Seek + Read>(workbook: &mut Xlsx<D>) -> Result<Vec<FittleMessage>
         // We use a peekable iterator because sometimes there's no empty line between messages
         // in the spreadsheet
         let mut fields = BTreeMap::new();
+        let mut dynamic_fields = Vec::new();
         loop {
             if let Some(field_data) = iter.peek() {
                 if field_data[MESSAGES_SHEET_FIELD_NAME_COLUMN].is_empty() {
                     break
                 }
+            } else {
+                break
             }
 
-            let field_data = match iter.next() {
-                Some(d) => d,
-                None => break,
+            let field_base = match read_field_base(iter.next()?)? {
+                ReadFieldResult::NewMessage => break,
+                ReadFieldResult::Ignore => continue,
+                ReadFieldResult::Success(v) => v,
             };
 
-            // TODO figure out how to handle these
-            match &field_data[MESSAGES_SHEET_COMMENT_COLUMN] {
-                DataType::String(v) => {
-                    match v.as_str() {
-                        "Use language_bits_x types where x is index of array." => continue,
-                        "Use sport_bits_x types where x is index of array." => continue,
-                        _ => (),
+            // Check for and read dynamic components. We defer processing to after the message is
+            // read because sometimes the reference field comes after the dynamic field, and we
+            // need to know the reference field type to make the appropriate references.
+            loop {
+                if let Some(field_data) = iter.peek() {
+                    if field_data[MESSAGES_SHEET_REF_FIELD_NAME_COLUMN].is_empty() {
+                        break
                     }
-                },
-                _ => (),
-            };
+                } else {
+                    break
+                }
 
-            let field_name = match &field_data[MESSAGES_SHEET_FIELD_NAME_COLUMN] {
-                DataType::Empty => break,
-                DataType::String(v) => if v == "type" { "type_" } else { v },
-                v => panic!("unexpected type in message field name column: {:?}", v),
-            };
+                let dynamic_field_data = iter.next()?;
+                match read_field_base(dynamic_field_data)? {
+                    ReadFieldResult::NewMessage => unreachable!("new message impossible when reading dynamic fields"),
+                    ReadFieldResult::Ignore => continue,
+                    ReadFieldResult::Success(v) => {
+                        let ref_field_name = match &dynamic_field_data[MESSAGES_SHEET_REF_FIELD_NAME_COLUMN] {
+                          DataType::String(v) => v.clone(),
+                            _ => return Err(Error { message: "ref field name has no string value".to_string() }),
+                        };
 
-            let field_type = match &field_data[MESSAGES_SHEET_FIELD_TYPE_COLUMN] {
-                DataType::Empty => break,
-                DataType::String(v) => v.clone(),
-                v => panic!("unexpected type in message field name column: {:?}", v),
-            };
+                        let ref_field_value = match &dynamic_field_data[MESSAGES_SHEET_REF_FIELD_VALUE_COLUMN] {
+                          DataType::String(v) => v.clone(),
+                            _ => return Err(Error { message: "ref field value has no string value".to_string() }),
+                        };
 
-            // TODO eventually make use of these
-            let _field_ref_field_name = match &field_data[MESSAGES_SHEET_REF_FIELD_NAME_COLUMN] {
-                DataType::Empty => (),
-                DataType::String(_v) => continue,
-                v => panic!("unexpected type in message ref field name column: {:?}", v),
-            };
+                        dynamic_fields.push((field_base.name.clone(), v, ref_field_name, ref_field_value))
+                    },
+                }
+            }
 
-            let field_number = match &field_data[MESSAGES_SHEET_FIELD_NUMBER_COLUMN] {
-                DataType::Empty => continue,
-                DataType::Int(v) => *v as u64,
-                DataType::Float(v) => *v as u64,
-                DataType::String(v) => {
-                    let trimmed = v.trim_start_matches("0x");
-                    u64::from_str_radix(trimmed, 16).ok()?
-                },
-                v => panic!("unexpected type in message field number column: {:?}", v),
-            };
+            fields.insert(field_base.name.to_string(), FittleField {
+                base: field_base,
+                dynamic_fields: BTreeMap::new(),
+            });
+        }
 
-            let field_array_length = match &field_data[MESSAGES_SHEET_ARRAY_COLUMN] {
-                DataType::Empty => None,
-                DataType::String(s) => {
-                    let without_brackets = &s.trim()[1..s.len()-1];
-                    match without_brackets {
-                        "N" => Some(0),
-                        v => u8::from_str_radix(v, 10).ok(),
-                    }
-                },
-                v => panic!("unexpected type in message array column: {:?}", v),
-            };
+        // Now that we've collected all of the fields, process the reference fields.
+        for (field_name, dynamic_field, ref_field_name, ref_field_value) in dynamic_fields {
+            // Assuming the same ref field name for all values. This is true for the current profile.
+            let ref_field_name = ref_field_name.split(",").map(str::trim).map(str::to_string).next()?;
+            let ref_field_enum_name = to_pascal_case(&ref_field_name);
 
-            let field_component_bits = match &field_data[MESSAGES_SHEET_BITS_COLUMN] {
-                DataType::Empty => vec![],
-                DataType::Int(v) => vec![*v as u8],
-                DataType::Float(v) => vec![*v as u8],
-                DataType::String(v) => {
-                    v.split(",")
-                        .map(str::trim)
-                        .map(<u8 as std::str::FromStr>::from_str)
-                        .collect::<Result<Vec<_>, _>>()
-                        .map_err(|_| Error { message: format!("failed to parse bits for {}", field_name) })?
-                },
-                v => panic!("unexpected type in message component bits column: {:?}", v),
-            };
+            let ref_field_values =
+                ref_field_value
+                    .split(",")
+                    .map(str::trim)
+                    .map(to_pascal_case)
+                    .map(|v| format!("crate::profile::enums::{}::{}", ref_field_enum_name, v))
+                    .collect();
 
-            let components_len = field_component_bits.len().max(1);
-
-            let field_components = match &field_data[MESSAGES_SHEET_COMPONENTS_COLUMN] {
-                DataType::Empty => vec![],
-                DataType::String(v) => v.split(",").map(|v| Some(v.to_string())).collect::<Vec<_>>(),
-                v => panic!("unexpected type in message components column: {:?}", v),
-            };
-
-            // TODO check if field_components is same len and return error otherwise
-
-            let field_scales = match &field_data[MESSAGES_SHEET_SCALE_COLUMN] {
-                DataType::Empty => vec![None; components_len],
-                DataType::Int(v) => vec![Some(*v as u16); components_len],
-                DataType::Float(v) => vec![Some(*v as u16); components_len],
-                DataType::String(v) => {
-                    v.split(",")
-                        .map(str::trim)
-                        .map(<u16 as std::str::FromStr>::from_str)
-                        .collect::<Result<Vec<_>, _>>()
-                        .map_err(|_| Error { message: format!("failed to parse scales for {}", field_name) })?
-                        .into_iter()
-                        .map(Option::Some)
-                        .collect::<Vec<_>>()
-                },
-                v => panic!("unexpected type in message scale column: {:?}", v),
-            };
-
-            let field_offsets = match &field_data[MESSAGES_SHEET_OFFSET_COLUMN] {
-                DataType::Empty => vec![None; components_len],
-                DataType::Int(v) => vec![Some(*v as i16)],
-                DataType::Float(v) => vec![Some(*v as i16)],
-                DataType::String(v) => {
-                    v.split(",")
-                        .map(str::trim)
-                        .map(<i16 as std::str::FromStr>::from_str)
-                        .collect::<Result<Vec<_>, _>>()
-                        .map_err(|_| Error { message: format!("failed to parse offsets for {}", field_name) })?
-                        .into_iter()
-                        .map(Option::Some)
-                        .collect::<Vec<_>>()
-                },
-                v => panic!("unexpected type in message offset column: {:?}", v),
-            };
-
-            let field_units = match &field_data[MESSAGES_SHEET_UNITS_COLUMN] {
-                DataType::Empty => vec![None; components_len],
-                DataType::String(v) => {
-                    if v.find(',').is_some() {
-                        v.split(",")
-                            .map(|v| Some(v.trim().to_string()))
-                            .collect::<Vec<_>>()
-                    } else {
-                        vec![Some(v.clone()); components_len]
-                    }
-                },
-                v => panic!("unexpected type in units column: {:?}", v),
-            };
-
-            let components = if field_components.is_empty() {
-                Components::None(
-                    izip!(field_scales, field_offsets, field_units)
-                        .map(|(scale, offset, unit)| {
-                            FieldComponent { field: None, scale, offset, unit, bits: None }
-                        })
-                        .next()
-                        .unwrap_or_else(|| Default::default())
-                )
-            } else {
-                Components::Some(
-                    izip!(field_components, field_scales, field_offsets, field_units, field_component_bits)
-                        .map(|(field, scale, offset, unit, bits)| {
-                            FieldComponent { field, scale, offset, unit, bits: Some(bits) }
-                        })
-                        .collect::<Vec<_>>()
-                )
-            };
-
-            let field = FittleMessageField {
-                name: field_name.to_owned(),
-                number: field_number,
-                field_data: FieldData {
-                    base_type: field_type,
-                    array_length: field_array_length,
-                    components,
-                },
-            };
-
-            fields.insert(field_name.to_string(), field);
+            fields
+                .get_mut(&field_name)
+                .map(|field| {
+                    field.dynamic_fields
+                        .entry(ref_field_name)
+                        .or_insert_with(Vec::new)
+                        .push(FittleDynamicField {
+                            base: dynamic_field,
+                            ref_field_values,
+                        });
+                    });
         }
 
         messages.push(FittleMessage {
             name: to_pascal_case(message_name),
             module: message_name.clone(),
             fields,
-         });
+        });
     }
 
     messages.sort_by(|a, b| a.name.cmp(&b.name));
 
     Ok(messages)
+}
+
+enum ReadFieldResult {
+    Ignore,
+    NewMessage,
+    Success(FittleFieldBase),
+}
+
+fn read_field_base(field_data: &[calamine::DataType]) -> Result<ReadFieldResult, Error> {
+    use ReadFieldResult::*;
+
+    // TODO figure out how to handle these
+    match &field_data[MESSAGES_SHEET_COMMENT_COLUMN] {
+        DataType::String(v) => {
+            match v.as_str() {
+                "Use language_bits_x types where x is index of array." => return Ok(Ignore),
+                "Use sport_bits_x types where x is index of array." => return Ok(Ignore),
+                _ => (),
+            }
+        },
+        _ => (),
+    };
+
+    let field_name = match &field_data[MESSAGES_SHEET_FIELD_NAME_COLUMN] {
+        DataType::Empty => return Ok(NewMessage),
+        DataType::String(v) => if v == "type" { "type_" } else { v },
+        v => panic!("unexpected type in message field name column: {:?}", v),
+    };
+
+    let base_type = match &field_data[MESSAGES_SHEET_FIELD_TYPE_COLUMN] {
+        DataType::Empty => return Ok(NewMessage),
+        DataType::String(v) => v.clone(),
+        v => panic!("unexpected type in message field name column: {:?}", v),
+    };
+
+    let field_number = match &field_data[MESSAGES_SHEET_FIELD_NUMBER_COLUMN] {
+        DataType::Empty => None,
+        DataType::Int(v) => Some(*v as u8),
+        DataType::Float(v) => Some(*v as u8),
+        DataType::String(v) => u8::from_str_radix(v, 10).ok(),
+        v => panic!("unexpected type in message field number column: {:?}", v),
+    };
+
+    let array_length = match &field_data[MESSAGES_SHEET_ARRAY_COLUMN] {
+        DataType::Empty => None,
+        DataType::String(s) => {
+            let without_brackets = &s.trim()[1..s.len()-1];
+            match without_brackets {
+                "N" => Some(0),
+                v => u8::from_str_radix(v, 10).ok(),
+            }
+        },
+        v => panic!("unexpected type in message array column: {:?}", v),
+    };
+
+    let field_component_bits = match &field_data[MESSAGES_SHEET_BITS_COLUMN] {
+        DataType::Empty => vec![],
+        DataType::Int(v) => vec![*v as u8],
+        DataType::Float(v) => vec![*v as u8],
+        DataType::String(v) => {
+            v.split(",")
+                .map(str::trim)
+                .map(<u8 as std::str::FromStr>::from_str)
+                .collect::<Result<Vec<_>, _>>()
+                .map_err(|_| Error { message: format!("failed to parse bits for {}", field_name) })?
+        },
+        v => panic!("unexpected type in message component bits column: {:?}", v),
+    };
+
+    let components_len = field_component_bits.len().max(1);
+
+    let field_components = match &field_data[MESSAGES_SHEET_COMPONENTS_COLUMN] {
+        DataType::Empty => vec![],
+        DataType::String(v) => v.split(",").map(|v| Some(v.to_string())).collect::<Vec<_>>(),
+        v => panic!("unexpected type in message components column: {:?}", v),
+    };
+
+    // TODO check if field_components is same len and return error otherwise
+
+    let field_scales = match &field_data[MESSAGES_SHEET_SCALE_COLUMN] {
+        DataType::Empty => vec![None; components_len],
+        DataType::Int(v) => vec![Some(*v as u16); components_len],
+        DataType::Float(v) => vec![Some(*v as u16); components_len],
+        DataType::String(v) => {
+            v.split(",")
+                .map(str::trim)
+                .map(<u16 as std::str::FromStr>::from_str)
+                .collect::<Result<Vec<_>, _>>()
+                .map_err(|_| Error { message: format!("failed to parse scales for {}", field_name) })?
+                .into_iter()
+                .map(Option::Some)
+                .collect::<Vec<_>>()
+        },
+        v => panic!("unexpected type in message scale column: {:?}", v),
+    };
+
+    let field_offsets = match &field_data[MESSAGES_SHEET_OFFSET_COLUMN] {
+        DataType::Empty => vec![None; components_len],
+        DataType::Int(v) => vec![Some(*v as i16)],
+        DataType::Float(v) => vec![Some(*v as i16)],
+        DataType::String(v) => {
+            v.split(",")
+                .map(str::trim)
+                .map(<i16 as std::str::FromStr>::from_str)
+                .collect::<Result<Vec<_>, _>>()
+                .map_err(|_| Error { message: format!("failed to parse offsets for {}", field_name) })?
+                .into_iter()
+                .map(Option::Some)
+                .collect::<Vec<_>>()
+        },
+        v => panic!("unexpected type in message offset column: {:?}", v),
+    };
+
+    let field_units = match &field_data[MESSAGES_SHEET_UNITS_COLUMN] {
+        DataType::Empty => vec![None; components_len],
+        DataType::String(v) => {
+            if v.find(',').is_some() {
+                v.split(",")
+                    .map(|v| Some(v.trim().to_string()))
+                    .collect::<Vec<_>>()
+            } else {
+                vec![Some(v.clone()); components_len]
+            }
+        },
+        v => panic!("unexpected type in units column: {:?}", v),
+    };
+
+    let components = if field_components.is_empty() {
+        Components::None(
+            izip!(field_scales, field_offsets, field_units)
+            .map(|(scale, offset, unit)| {
+                FieldComponent { field: None, scale, offset, unit, bits: None }
+            })
+            .next()
+            .unwrap_or_else(|| Default::default())
+        )
+    } else {
+        Components::Some(
+            izip!(field_components, field_scales, field_offsets, field_units, field_component_bits)
+            .map(|(field, scale, offset, unit, bits)| {
+                FieldComponent { field, scale, offset, unit, bits: Some(bits) }
+            })
+            .collect::<Vec<_>>()
+        )
+    };
+
+    Ok(Success(FittleFieldBase {
+        name: field_name.to_owned(),
+        number: field_number,
+        field_data: FieldData {
+            base_type,
+            array_length,
+            components,
+        },
+    }))
 }
 
 fn field_content_type(field_type: &str) -> &str {

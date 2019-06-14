@@ -7,7 +7,7 @@ description = "A tool to generate Rust code for a FIT profile"
 
 [dependencies]
 calamine = "0.15"
-handlebars = "1.1"
+handlebars = { path = "../../../sunng87/handlebars-rust" }
 Inflector = "0.11"
 indoc = "0.3"
 itertools = "0.8"

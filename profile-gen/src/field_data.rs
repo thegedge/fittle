@@ -7,7 +7,7 @@ use serde::{
     ser::SerializeStruct,
 };
 
-#[derive(Default, Serialize)]
+#[derive(Clone, Default, Serialize)]
 pub struct FieldComponent {
     pub field: Option<String>,
     pub scale: Option<u16>,
@@ -16,11 +16,13 @@ pub struct FieldComponent {
     pub bits: Option<u8>,
 }
 
+#[derive(Clone)]
 pub enum Components {
     Some(Vec<FieldComponent>),
     None(FieldComponent),
 }
 
+#[derive(Clone)]
 pub struct FieldData {
     pub base_type: String,
     pub array_length: Option<u8>,
@@ -327,6 +329,7 @@ impl Serialize for FieldData {
             state.serialize_field("field_content", self.field_content())?;
             state.serialize_field("conversion_function", &self.conversion_function())?;
             state.serialize_field("to_bits_function", &self.to_bits_function())?;
+
             match &self.components {
                 Components::Some(c) => {
                     state.serialize_field("components", c)?;

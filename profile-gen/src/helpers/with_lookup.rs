@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
 use handlebars::{
+    BlockParams,
     Context,
     Handlebars,
     Helper,
@@ -15,7 +14,7 @@ use serde_json::value::{
     Value as Json,
 };
 
-pub fn with_lookup(h: &Helper, r: &Handlebars, ctx: &Context, rc: &mut RenderContext, out: &mut Output) -> HelperResult {
+pub fn with_lookup(h: &Helper, r: &Handlebars, ctx: &Context, rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
     let container = h.param(0).ok_or_else(|| RenderError::new("expected container param"))?;
     let lookup_param = h.param(1).ok_or_else(|| RenderError::new("expected lookup param"))?;
 
@@ -60,14 +59,13 @@ pub fn with_lookup(h: &Helper, r: &Handlebars, ctx: &Context, rc: &mut RenderCon
 
         let local_path_root =
             container
-            .path_root()
-            .map(|p| format!("{}/{}", rc.get_path(), p));
+                .path_root()
+                .map(|p| format!("{}/{}", rc.get_path(), p));
 
         if let Some(ref p) = local_path_root {
             local_rc.push_local_path_root(p.clone());
         }
 
-        /*
         if let Some(inner_path) = container.path() {
             let new_path = match lookup_param.value() {
                 Json::String(s) => format!("{}/{}/[{}]", local_rc.get_path(), inner_path, s),
@@ -76,13 +74,11 @@ pub fn with_lookup(h: &Helper, r: &Handlebars, ctx: &Context, rc: &mut RenderCon
             };
             local_rc.set_path(new_path);
         }
-        */
 
-        if let Some((bp_key, bp_val)) = h.block_param_pair() {
-            let mut map = HashMap::new();
-            map.insert(bp_key.to_string(), lookup_param.value());
-            map.insert(bp_val.to_string(), lookup_value);
-            local_rc.push_block_context(&map)?;
+        if let Some(block_param) = h.block_param() {
+            let mut params = BlockParams::new();
+            params.add_path(block_param, local_rc.get_path())?;
+            local_rc.push_block_context(params)?;
         }
 
         template.render(r, ctx, &mut local_rc, out)?;
