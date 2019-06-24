@@ -220,7 +220,6 @@ impl FieldContent {
     }
 }
 
-from_impl!(u8, UnsignedInt8 | UnsignedInt8z);
 from_impl!(u16, UnsignedInt16 | UnsignedInt16z);
 from_impl!(u32, UnsignedInt32 | UnsignedInt32z);
 from_impl!(u64, UnsignedInt64 | UnsignedInt64z);
@@ -232,4 +231,16 @@ from_impl!(f32, Float32);
 from_impl!(f64, Float64);
 from_impl!(String, String);
 from_impl!(Vec<u8>, ByteArray);
-from_impl!(bool, Enum, |v| v != 0);
+
+from_impl!(bool, Enum => |v| v != 0);
+
+from_impl!(u8,
+    UnsignedInt8 => u8::from,
+    UnsignedInt8z => u8::from,
+    ByteArray => |v: Vec<u8>| {
+        if v.len() != 1 {
+            panic!("u8 can only come from a 1-element ByteArray");
+        }
+        v[0]
+    }
+);
